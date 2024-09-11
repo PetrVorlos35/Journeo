@@ -1,14 +1,24 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import Navbar from './Navbar';
+import Footer from './Footer';
 
 function LandingPage() {
+  const navigate = useNavigate(); // Hook to programmatically navigate
+
+  const handleLoginClick = () => {
+    navigate('/login'); // Redirect to the login page
+  };
+
   return (
     <div className="w-full">
+      <Navbar />
       {/* Hero Section */}
-      <section className="bg-green-500 text-white py-20">
+      <section className="bg-blue-600 text-white py-20">
         <div className="container mx-auto text-center">
           <h1 className="text-5xl font-bold">Learnify</h1>
           <p className="text-xl mt-4">Your ultimate e-learning platform for schools and teachers.</p>
-          <a href="/signup" className="mt-6 inline-block bg-orange-500 text-white py-3 px-6 rounded-full text-lg hover:bg-orange-600 transition duration-300">Get Started</a>
+          <a onClick={handleLoginClick} className="mt-6 inline-block bg-white cursor-pointer text-black border-solid border-white border-2 py-3 px-6 rounded-full text-lg hover:bg-blue-600 hover:text-white transition duration-500">Get Started</a>
         </div>
       </section>
 
@@ -38,19 +48,15 @@ function LandingPage() {
       </section>
 
       {/* Call to Action Section */}
-      <section className="py-20 bg-orange-500 text-white">
+      <section className="py-20 bg-blue-600 text-white">
         <div className="container mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6">Start your journey today!</h2>
-          <a href="/signup" className="inline-block bg-white text-orange-500 py-3 px-6 rounded-full text-lg font-semibold hover:bg-orange-500 hover:text-white border-solid border-2 border-white transition duration-300">Sign Up Now</a>
+          <a href="/signup" className="inline-block bg-white text-black py-3 px-6 rounded-full text-lg font-semibold hover:bg-blue-600 hover:text-white border-solid border-2 border-white transition duration-300">Sign Up Now</a>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-8">
-        <div className="container mx-auto text-center">
-          <p>&copy; 2024 Learnify. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

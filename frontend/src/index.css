@@ -2,3 +2,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.menu-open {
+    animation: fadeIn 0.5s ease forwards;
+    display: flex !important; /* Overwrite hidden */
+  }
+  .menu-closed {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  
+  .fixed {
+    transition: transform 0.5s ease, opacity 0.5s ease;
+  }

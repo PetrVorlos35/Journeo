@@ -9,7 +9,7 @@ function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow-md sticky top-0">
+    <nav className="bg-white shadow-2xl sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center py-4 px-4 md:px-8">
         {/* Logo */}
         <div>
@@ -24,7 +24,6 @@ function Navbar() {
           <a href="/about" className="text-gray-700 hover:text-blue-600">About</a>
           <a href="/features" className="text-gray-700 hover:text-blue-600">Features</a>
           <a href="/contact" className="text-gray-700 hover:text-blue-600">Contact</a>
-          {/* <a href="/signup" className="bg-green-500 text-white py-2 px-4 rounded-full hover:bg-green-600">Sign Up</a> */}
         </div>
 
         {/* Hamburger Menu (Mobile) */}
@@ -38,14 +37,19 @@ function Navbar() {
       </div>
 
       {/* Mobile Menu */}
-      <div className={`${isOpen ? 'block' : 'hidden'} md:hidden`}>
-        <div className="flex flex-col items-center space-y-4 py-4">
-          <a href="/" className="text-gray-700 hover:text-blue-600">Home</a>
-          <a href="/about" className="text-gray-700 hover:text-blue-600">About</a>
-          <a href="/features" className="text-gray-700 hover:text-blue-600">Features</a>
-          <a href="/contact" className="text-gray-700 hover:text-blue-600">Contact</a>
-          {/* <a href="/signup" className="bg-green-500 text-white py-2 px-4 rounded-full hover:bg-green-600">Sign Up</a> */}
-        </div>
+      <div className={`fixed inset-0 bg-white z-40 md:hidden flex flex-col justify-center items-center space-y-6 transition-transform duration-300 ${isOpen ? 'menu-open' : 'menu-closed'}`}>
+        {/* Close Button */}
+        <button onClick={toggleMenu} className="absolute top-4 right-4 text-gray-700 focus:outline-none">
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {/* Menu Links */}
+        <a href="/" className="text-gray-700 hover:text-blue-600 text-xl">Home</a>
+        <a href="/about" className="text-gray-700 hover:text-blue-600 text-xl">About</a>
+        <a href="/features" className="text-gray-700 hover:text-blue-600 text-xl">Features</a>
+        <a href="/contact" className="text-gray-700 hover:text-blue-600 text-xl">Contact</a>
       </div>
     </nav>
   );

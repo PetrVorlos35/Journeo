@@ -11,51 +11,53 @@ function LandingPage() {
   };
 
   return (
-    <div className="w-full">
+    <div>
       <Navbar />
-      {/* Hero Section */}
-      <section className="bg-blue-600 text-white py-20">
+      {/* Header Section */}
+      <header className="bg-gray-400 text-white py-24">
         <div className="container mx-auto text-center">
-          <h1 className="text-5xl font-bold">Learnify</h1>
-          <p className="text-xl mt-4">Your ultimate e-learning platform for schools and teachers.</p>
-          <a onClick={handleLoginClick} className="mt-6 inline-block bg-white cursor-pointer text-black border-solid border-white border-2 py-3 px-6 rounded-full text-lg hover:bg-blue-600 hover:text-white transition duration-500">Get Started</a>
+          <h1 className="text-5xl font-bold mb-4">Welcome to Journeo</h1>
+          <p className="text-lg mb-6">Your personal travel planner</p>
+          <a onClick={handleLoginClick} className="bg-white text-gray-600 cursor-pointer py-3 px-6 rounded-full text-lg hover:bg-gray-200">
+            Get Started
+          </a>
+        </div>
+      </header>
+
+      {/* About Section */}
+      <section id="about" className="py-24 bg-gray-100">
+        <div className="container mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-6">Plan Your Next Adventure</h2>
+          <p className="text-lg leading-relaxed">
+            With Journeo, you can easily create detailed itineraries, track expenses, and explore new destinations. Whether you're traveling for business or pleasure, Journeo has got you covered.
+          </p>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-gray-100">
+      <section className="py-24">
         <div className="container mx-auto text-center">
-          <h2 className="text-3xl font-semibold mb-12">Why Learnify?</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="bg-white p-8 rounded-lg shadow-md">
-              <h3 className="text-2xl font-bold mb-4">Task Management</h3>
-              <p className="text-gray-600">Easily assign, track, and complete tasks with efficiency.</p>
+          <h2 className="text-3xl font-bold mb-12">Features</h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="feature-item p-6 bg-white rounded-lg shadow-md">
+              <h3 className="text-xl font-semibold mb-4">Itinerary Planning</h3>
+              <p>Create and organize your trips with ease.</p>
             </div>
-            <div className="bg-white p-8 rounded-lg shadow-md">
-              <h3 className="text-2xl font-bold mb-4">Interactive Learning</h3>
-              <p className="text-gray-600">Engage students with interactive content and feedback.</p>
+            <div className="feature-item p-6 bg-white rounded-lg shadow-md">
+              <h3 className="text-xl font-semibold mb-4">Expense Tracking</h3>
+              <p>Keep an eye on your travel budget and spending.</p>
             </div>
-            <div className="bg-white p-8 rounded-lg shadow-md">
-              <h3 className="text-2xl font-bold mb-4">Communication</h3>
-              <p className="text-gray-600">Seamless communication between students and teachers.</p>
+            <div className="feature-item p-6 bg-white rounded-lg shadow-md">
+              <h3 className="text-xl font-semibold mb-4">Map Integration</h3>
+              <p>Visualize your routes and destinations with maps.</p>
             </div>
-            <div className="bg-white p-8 rounded-lg shadow-md">
-              <h3 className="text-2xl font-bold mb-4">Calendar Sync</h3>
-              <p className="text-gray-600">Stay organized with integrated calendar features.</p>
+            <div className="feature-item p-6 bg-white rounded-lg shadow-md">
+              <h3 className="text-xl font-semibold mb-4">Flight tracking</h3>
+              <p>Track your flights and get real-time updates.</p>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Call to Action Section */}
-      <section className="py-20 bg-blue-600 text-white">
-        <div className="container mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-6">Start your journey today!</h2>
-          <a href="/signup" className="inline-block bg-white text-black py-3 px-6 rounded-full text-lg font-semibold hover:bg-blue-600 hover:text-white border-solid border-2 border-white transition duration-300">Sign Up Now</a>
-        </div>
-      </section>
-
-      {/* Footer */}
       <Footer />
     </div>
   );

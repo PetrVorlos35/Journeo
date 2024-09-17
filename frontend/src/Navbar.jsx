@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import logo from './assets/Learnify_sideText.jpg';
+import logo from './assets/Journeo_full.png';
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,7 +14,7 @@ function Navbar() {
         {/* Logo */}
         <div>
           <a href="/">
-            <img src={logo} alt="Learnify Logo" className="h-10 w-auto" /> {/* Insert the logo image */}
+            <img src={logo} alt="Journeo Logo" className="h-10 w-auto" /> {/* Insert the logo image */}
           </a>
         </div>
 

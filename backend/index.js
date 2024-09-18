@@ -28,7 +28,7 @@ db.connect((err) => {
 
 // Example route
 app.get('/', (req, res) => {
-  res.send('Learnify backend is running!');
+  res.send('Journeo backend is running!');
 });
 
 // Endpoint for user login/registration

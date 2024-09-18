@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -7,14 +6,14 @@ function LandingPage() {
   const navigate = useNavigate(); // Hook to programmatically navigate
 
   const handleLoginClick = () => {
-    navigate('/login'); // Redirect to the login page
+    navigate('/register'); // Redirect to the login page
   };
 
   return (
     <div>
       <Navbar />
       {/* Header Section */}
-      <header className="bg-gray-400 text-white py-24">
+      <header className="bg-gray-600 text-white py-24">
         <div className="container mx-auto text-center">
           <h1 className="text-5xl font-bold mb-4">Welcome to Journeo</h1>
           <p className="text-lg mb-6">Your personal travel planner</p>
@@ -29,7 +28,7 @@ function LandingPage() {
         <div className="container mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">Plan Your Next Adventure</h2>
           <p className="text-lg leading-relaxed">
-            With Journeo, you can easily create detailed itineraries, track expenses, and explore new destinations. Whether you're traveling for business or pleasure, Journeo has got you covered.
+            With Journeo, you can easily create detailed itineraries, track expenses, and explore new destinations. Whether you&apos;re traveling for business or pleasure, Journeo has got you covered.
           </p>
         </div>
       </section>

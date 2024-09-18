@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Navbar from './Navbar';
-import Footer from './Footer';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -73,7 +72,6 @@ function LoginForm() {
         </button>
       </form>
     </div>
-    <Footer />
     </div>
   );
 }

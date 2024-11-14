@@ -1,43 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./Navbar";
 import googleLogo from "./assets/google.png"; // Assuming the path of google logo
 
-function RegisterForm() {
+function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); // Second password field
   const [error, setError] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); // Error message for password mismatch
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match.");
-      return;
-    }
-
     try {
-      await axios.post("http://localhost:5001/auth/register", { email, password });
+      const res = await axios.post("http://localhost:5001/auth/login", { email, password });
+      localStorage.setItem("token", res.data.token);
       setSuccess(true);
-      setErrorMessage("");
       setError("");
       setTimeout(() => {
-        navigate("/login");
+        navigate("/dashboard");
       }, 1000);
     } catch (err) {
       console.error(err);
-      setError("Registration failed. Please try again.");
+      setError("Login failed. Please check your credentials.");
     }
   };
 
-  const handleGoogleRegister = () => {
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+  
+    if (token) {
+      localStorage.setItem("token", token);
+      navigate("/dashboard");
+    }
+  }, [navigate]);
+  
+  const handleGoogleLogin = () => {
     window.open("http://localhost:5001/auth/google", "_self");
   };
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-50">
@@ -46,7 +49,7 @@ function RegisterForm() {
         <div className="max-w-md w-full space-y-8">
           <div>
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-              Register your account
+              Log in to your account
             </h2>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -79,48 +82,29 @@ function RegisterForm() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                   placeholder="Password"
                 />
               </div>
-              <div>
-                <label htmlFor="confirm-password" className="sr-only">
-                  Confirm Password
-                </label>
-                <input
-                  id="confirm-password"
-                  name="confirm-password"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="Confirm Password"
-                />
-              </div>
             </div>
-
 
             <div>
               <button
                 type="submit"
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                Register
+              >
+                Log in
               </button>
             </div>
 
-                {errorMessage && (
-                  <p className="text-red-500 text-sm">{errorMessage}</p>
-                )}
             {error && <p className="text-red-500 mt-2">{error}</p>}
-            {success && <p className="text-green-500 mt-2">Registration successful! Redirecting...</p>}
+            {success && <p className="text-green-500 mt-2">Login successful! Redirecting...</p>}
 
             <div className="flex items-center justify-between">
             <p className="text-sm text-gray-600">
-              Already have an account?{" "}
-              <a href="/login" className="text-indigo-600 hover:text-indigo-500">
-                Log in here
+              Don&apos;t have an account?{" "}
+              <a href="/register" className="text-indigo-600 hover:text-indigo-500">
+                Register here
               </a>
             </p>
           </div>
@@ -133,7 +117,7 @@ function RegisterForm() {
             <div className="flex justify-center mt-4">
               <button
                 type="button"
-                onClick={handleGoogleRegister}
+                onClick={handleGoogleLogin}
                 className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 <img className="h-5 w-5 mr-2" src={googleLogo} alt="Google logo" />
@@ -147,4 +131,4 @@ function RegisterForm() {
   );
 }
 
-export default RegisterForm;
+export default LoginForm;

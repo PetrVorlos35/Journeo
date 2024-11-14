@@ -1,12 +1,29 @@
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useState, useEffect } from 'react'; // Import useState
 import Navbar from './Navbar';
 import Footer from './Footer';
 
 function LandingPage() {
   const navigate = useNavigate(); // Hook to programmatically navigate
 
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, []);
+
   const handleLoginClick = () => {
-    navigate('/register'); // Redirect to the login page
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+    else {
+      navigate("/login");
+    }
   };
 
   return (
@@ -18,7 +35,7 @@ function LandingPage() {
           <h1 className="text-5xl font-bold mb-4">Welcome to Journeo</h1>
           <p className="text-lg mb-6">Your personal travel planner</p>
           <a onClick={handleLoginClick} className="bg-white text-gray-600 cursor-pointer py-3 px-6 rounded-full text-lg hover:bg-gray-200">
-            Get Started
+            {isAuthenticated ? "Go to Dashboard" : "Log In"}
           </a>
         </div>
       </header>

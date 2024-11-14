@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from './assets/Journeo_full.png';
 
 function Navbar() {
@@ -8,9 +9,26 @@ function Navbar() {
     setIsOpen(!isOpen);
   };
 
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsAuthenticated(false);
+    navigate("/login");
+  };
   return (
     <nav className="bg-white shadow-2xl sticky top-0 z-50">
-      <div className="container mx-auto flex justify-between items-center py-4 px-4 md:px-8">
+      <div className="container mx-auto flex justify-between items-center py-4 px-4 md:px-8 ">
         {/* Logo */}
         <div>
           <a href="/">
@@ -20,10 +38,43 @@ function Navbar() {
 
         {/* Nav Links (Desktop) */}
         <div className="hidden md:flex space-x-8">
-          <a href="/" className="text-gray-700 hover:text-blue-600">Home</a>
-          <a href="/about" className="text-gray-700 hover:text-blue-600">About</a>
-          <a href="/features" className="text-gray-700 hover:text-blue-600">Features</a>
-          <a href="/contact" className="text-gray-700 hover:text-blue-600">Contact</a>
+          {!isAuthenticated ? (
+            <>
+              <a href="/" className="text-gray-700 hover:text-blue-600 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0">
+                Home
+              </a>
+            </>
+          ) : (
+            <>
+              <a href="/dashboard" className="text-gray-700 hover:text-blue-600 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0">
+                Dashboard
+              </a>
+            </>
+          )}
+          <a href="/about" className="relative text-gray-700 hover:text-blue-600 after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0">
+            About
+          </a>
+
+          <a href="/features" className="relative text-gray-700 hover:text-blue-600 after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0">
+            Features
+          </a>
+          {!isAuthenticated ? (
+            <>
+              <Link to="/login" className="text-gray-700 hover:text-blue-600 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0">
+                Login
+              </Link>
+              <Link to="/register" className="text-gray-700 hover:text-blue-600 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0">
+                Register
+              </Link>
+            </>
+          ) : (
+            <a
+              onClick={handleLogout}
+              className="text-gray-700 hover:text-blue-600 cursor-pointer after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0 relative"
+            >
+              Logout
+            </a>
+          )}
         </div>
 
         {/* Hamburger Menu (Mobile) */}
@@ -46,10 +97,30 @@ function Navbar() {
         </button>
 
         {/* Menu Links */}
-        <a href="/" className="text-gray-700 hover:text-blue-600 text-xl">Home</a>
+        {!isAuthenticated ? (
+          <>
+            <a href="/" className="text-gray-700 hover:text-blue-600 text-xl">Home</a>
+          </>
+        ) : (
+          <>
+            <a href="/dashboard" className="text-gray-700 hover:text-blue-600 text-xl">Dashboard</a>
+          </>
+        )}
         <a href="/about" className="text-gray-700 hover:text-blue-600 text-xl">About</a>
         <a href="/features" className="text-gray-700 hover:text-blue-600 text-xl">Features</a>
-        <a href="/contact" className="text-gray-700 hover:text-blue-600 text-xl">Contact</a>
+        {!isAuthenticated ? (
+            <>
+              <Link to="/login" className="text-gray-700 hover:text-blue-600 text-xl">Login</Link>
+              <Link to="/register" className="text-gray-700 hover:text-blue-600 text-xl">Register</Link>
+            </>
+          ) : (
+            <a
+              onClick={handleLogout}
+              className="text-gray-700 hover:text-blue-600 cursor-pointer text-xl"
+            >
+              Logout
+            </a>
+          )}
       </div>
     </nav>
   );

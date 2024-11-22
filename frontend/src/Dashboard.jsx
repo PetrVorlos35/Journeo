@@ -5,9 +5,11 @@ import AccountInfo from "./AccountInfo";
 import { DateRangePicker } from "react-date-range";
 import "react-date-range/dist/styles.css"; // základní styly
 import "react-date-range/dist/theme/default.css"; // výchozí téma
+import { LoadScript } from '@react-google-maps/api';
 // import BudgetTracking from "./BudgetTracking";
 // import Map from "./Map";
 import GoogleMap from "./GoogleMaps";
+import MapComponent from "./MapComponent";
 import UpcomingTrips from "./UpcomingTrips";
 
 function Dashboard() {
@@ -35,7 +37,7 @@ function Dashboard() {
       try {
         const token = localStorage.getItem('token'); // Replace with your token management logic
 
-        const response = await fetch('http://localhost:5001/account', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/account`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -83,7 +85,7 @@ function Dashboard() {
 
       // console.log('Creating trip:', tripData);
       
-      const response = await fetch('http://localhost:5001/trips', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/trips`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -201,8 +203,7 @@ function Dashboard() {
           {activeTab === "map" && (
             <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
               <h2 className="text-2xl font-bold mb-4 text-blue-500">Map</h2>
-              {/* <Map /> */}
-              <GoogleMap />
+              <MapComponent location="Praha" route={null} />
             </div>
           )}
 

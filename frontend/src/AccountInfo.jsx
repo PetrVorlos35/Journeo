@@ -20,7 +20,7 @@ function AccountInfo() {
     const fetchUserInfo = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5001/account', {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/account`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUserInfo(response.data);
@@ -48,7 +48,7 @@ function AccountInfo() {
   const handleSave = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put('http://localhost:5001/account/update', userInfo, {
+      await axios.put(`${import.meta.env.VITE_API_URL}/account/update`, userInfo, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setIsEditing(false);

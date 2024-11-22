@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 
 function UpcomingTrips({ userId }) {
@@ -8,12 +9,14 @@ function UpcomingTrips({ userId }) {
   const [activeCategory, setActiveCategory] = useState('ongoing');
   const [confirmDelete, setConfirmDelete] = useState(null); // Stav pro potvrzení mazání
 
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const fetchTrips = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`http://localhost:5001/getTrips?id=${userId}`, {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/getTrips?id=${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -40,7 +43,7 @@ function UpcomingTrips({ userId }) {
     // Funkce pro smazání po potvrzení
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5001/deleteTrip?id=${tripId}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/deleteTrip?id=${tripId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -54,6 +57,10 @@ function UpcomingTrips({ userId }) {
     }
     };
 
+    const handleViewTrip = (tripName, startDate, endDate, tripId) => {
+        navigate('/create-trip', { state: { tripName, startDate, endDate, tripId } });
+    }
+
   const now = new Date();
 
   const pastTrips = trips.filter(trip => new Date(trip.end_date) < now);
@@ -65,7 +72,7 @@ function UpcomingTrips({ userId }) {
         <div
               key={trip.id}
               className="flex mb-4 justify-between items-center bg-white p-4 rounded-lg shadow-md border-l-4 border-red-400 w-full hover:bg-gray-100 transition cursor-pointer"
-              onClick={() => alert(`Trip ID: ${trip.id}`)}
+              onClick={() => handleViewTrip(trip.title, trip.start_date, trip.end_date, trip.id)}
             >
               <div>
                 <h4 className="font-semibold text-gray-800">{trip.title}</h4>

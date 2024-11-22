@@ -22,7 +22,7 @@ function RegisterForm() {
     }
 
     try {
-      await axios.post("http://localhost:5001/auth/register", { email, password });
+      await axios.post(`${import.meta.env.VITE_API_URL}/auth/register`, { email, password });
       setSuccess(true);
       setErrorMessage("");
       setError("");
@@ -36,7 +36,7 @@ function RegisterForm() {
   };
 
   const handleGoogleRegister = () => {
-    window.open("http://localhost:5001/auth/google", "_self");
+    window.open(`${import.meta.env.VITE_API_URL}/auth/google`, "_self");
   };
 
   return (

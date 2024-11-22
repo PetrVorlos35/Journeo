@@ -220,7 +220,40 @@ app.post('/updateActivities', (req, res) => {
     console.error(err);
     return res.status(401).json({ message: 'Invalid token' });
   }
-})
+});
+
+app.get('/getActivities', (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const tripId = req.query.tripId;
+
+    if (!tripId) {
+      return res.status(400).json({ message: 'Trip ID is missing' }); // Add clear error message
+    }
+
+    const query = 'SELECT activities FROM trips WHERE id = ?';
+    db.query(query, [tripId], (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (results.length === 0 || !results[0].activities) {
+        return res.json({ activities: null });
+      }
+
+      const activities = JSON.parse(results[0].activities);
+      res.json({ activities });
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+});
+
+
 
 
 app.get('/getTrips', (req, res) => {

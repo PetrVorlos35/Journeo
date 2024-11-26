@@ -95,14 +95,12 @@ const MapComponent = ({ location, route, clearMap }) => {
 //   }, [clearMap, location, route]);
 
   return (
-    <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}> {/* Vložte svůj API klíč */}
-      <GoogleMap mapContainerStyle={mapContainerStyle} center={mapCenter} zoom={location ? 13 : 14} options={mapOptions}>
+      <GoogleMap mapContainerStyle={mapContainerStyle} center={mapCenter} zoom={location ? 13 : 10} options={mapOptions}>
         {/* Zobrazení markeru pro lokaci */}
         {location && <Marker position={mapCenter} />}
         {/* Zobrazení trasy */}
         {route.start && route.end && directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
       </GoogleMap>
-    </LoadScript>
   );
 };
 MapComponent.propTypes = {

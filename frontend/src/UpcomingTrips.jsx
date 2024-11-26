@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -59,6 +60,7 @@ function UpcomingTrips({ userId }) {
 
     const handleViewTrip = (tripName, startDate, endDate, tripId) => {
         navigate('/create-trip', { state: { tripName, startDate, endDate, tripId } });
+        // navigate(`/trip/overview/${tripId}`);
     }
 
   const now = new Date();
@@ -165,5 +167,8 @@ function UpcomingTrips({ userId }) {
     </div>
   );
 }
+UpcomingTrips.propTypes = {
+  userId: PropTypes.string.isRequired,
+};
 
 export default UpcomingTrips;

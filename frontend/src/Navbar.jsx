@@ -51,11 +51,11 @@ function Navbar() {
               </a>
             </>
           )}
-          <a href="/about" className="relative text-gray-700 hover:text-blue-600 after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0">
+          <a href="/#about" className="relative text-gray-700 hover:text-blue-600 after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0">
             About
           </a>
 
-          <a href="/features" className="relative text-gray-700 hover:text-blue-600 after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0">
+          <a href="/#features" className="relative text-gray-700 hover:text-blue-600 after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0">
             Features
           </a>
           {!isAuthenticated ? (
@@ -105,7 +105,7 @@ function Navbar() {
           <>
             <a href="/dashboard" className="text-gray-700 hover:text-blue-600 text-xl">Dashboard</a>
           </>
-        )}
+        )}  
         <a href="/about" className="text-gray-700 hover:text-blue-600 text-xl">About</a>
         <a href="/features" className="text-gray-700 hover:text-blue-600 text-xl">Features</a>
         {!isAuthenticated ? (

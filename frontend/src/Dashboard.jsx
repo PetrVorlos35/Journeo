@@ -203,7 +203,8 @@ function Dashboard() {
           {activeTab === "map" && (
             <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
               <h2 className="text-2xl font-bold mb-4 text-blue-500">Map</h2>
-              <MapComponent location="Praha" route={null} />
+              <p>Under construction...</p>
+              {/* <MapComponent location="Praha" route={null} /> */}
             </div>
           )}
 

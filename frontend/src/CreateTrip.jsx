@@ -130,8 +130,13 @@ const CreateTrip = () => {
     const [autocompleteEnd, setAutocompleteEnd] = useState(null);
     const [autocompleteLocation, setAutocompleteLocation] = useState(null);
     const [autocompleteStops, setAutocompleteStops] = useState([]);
-    const [locationInput, setLocationInput] = useState('');
+    const [locationInputs, setLocationInputs] = useState(dailyPlans.map(plan => plan.location || ''));
 
+    useEffect(() => {
+      // Ensure locationInputs is updated when dailyPlans changes
+      setLocationInputs(dailyPlans.map(plan => plan.location || ''));
+  }, [dailyPlans]);
+  
     const onLoadStart = (autocomplete) => {
         setAutocompleteStart(autocomplete);
     };
@@ -164,12 +169,27 @@ const CreateTrip = () => {
         const place = autocompleteLocation.getPlace();
         const formattedAddress = place.formatted_address;
         handleLocationChange(formattedAddress, currentDayIndex);
-        setLocationInput(formattedAddress);
+        const newLocationInputs = [...locationInputs];
+        newLocationInputs[currentDayIndex] = formattedAddress;
+        setLocationInputs(newLocationInputs);
     }
 };
 
-  const handleLocationInputChange = (e) => {
-    setLocationInput(e.target.value);
+const handleLocationInputChange = (e) => {
+  const newLocationInputs = [...locationInputs];
+  newLocationInputs[currentDayIndex] = e.target.value;
+  setLocationInputs(newLocationInputs);
+};
+
+const handleLocationInputConfirm = () => {
+  if (autocompleteLocation !== null) {
+      const place = autocompleteLocation.getPlace();
+      const formattedAddress = place.formatted_address;
+      handleLocationChange(formattedAddress, currentDayIndex);
+      const newLocationInputs = [...locationInputs];
+      newLocationInputs[currentDayIndex] = formattedAddress;
+      setLocationInputs(newLocationInputs);
+  }
 };
 
 
@@ -308,7 +328,7 @@ const CreateTrip = () => {
                       type="text"
                       className="w-full border rounded p-2"
                       placeholder="Např. Praha, Český Krumlov..."
-                      value={locationInput}
+                      value={locationInputs[currentDayIndex]}
                       onChange={handleLocationInputChange}
                       />
                     </Autocomplete>

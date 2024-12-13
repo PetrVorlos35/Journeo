@@ -210,12 +210,28 @@ app.post('/updateActivities', (req, res) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const { tripId, activities } = req.body;
-    const query = 'UPDATE trips SET activities = ? WHERE id = ?';
-    db.query(query, [JSON.stringify(activities), tripId], (err, result) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ message: 'Activities updated successfully' });
-    });
+    const { tripId, activities, budgets, accommodationCost, totalCost } = req.body;
+
+    // Aktualizace aktivit, rozpočtů a dalších údajů
+    const query = `
+      UPDATE trips 
+      SET activities = ?, budgets = ?, accommodation_cost = ?, total_cost = ?
+      WHERE id = ?`;
+
+    db.query(
+      query,
+      [
+        JSON.stringify(activities), 
+        JSON.stringify(budgets), 
+        accommodationCost, 
+        totalCost, 
+        tripId
+      ],
+      (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: 'Trip updated successfully' });
+      }
+    );
   } catch (err) {
     console.error(err);
     return res.status(401).json({ message: 'Invalid token' });
@@ -253,8 +269,110 @@ app.get('/getActivities', (req, res) => {
   }
 });
 
+app.get('/overviewTrip', (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
 
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
 
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const tripId = req.query.tripId;
+
+    if (!tripId) {
+      return res.status(400).json({ message: 'Trip ID is missing' });
+    }
+
+    const query = 'SELECT * FROM trips WHERE id = ?';
+    db.query(query, [tripId], (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (results.length === 0) {
+        return res.status(404).json({ message: 'Trip not found' });
+      }
+
+      const trip = results[0];
+      const activities = JSON.parse(trip.activities || '[]');
+      
+      // Summarize plans with AI (use OpenAI API or similar)
+      const summarizedPlan = activities
+        .map((activity) => activity.plan)
+        .filter((plan) => plan)
+        .join(', ');
+
+      res.json({
+        tripName: trip.title,
+        startDate: trip.start_date,
+        endDate: trip.end_date,
+        activities,
+        summarizedPlan, // Optional: summary of activities
+      });
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+});
+
+app.get('/budget', (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const id = req.query.id;
+
+    // Query to retrieve budgets, accommodation cost, and total cost
+    const query = 'SELECT budgets, accommodation_cost, total_cost FROM trips WHERE user_id = ?';
+    db.query(query, [id], (err, results) => {
+      if (err) {
+        console.error('Error querying database:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+      }
+
+      if (results.length === 0) {
+        return res.status(404).json({ message: 'No data found' });
+      }
+
+      let totalTransport = 0;
+      let totalFood = 0;
+      let totalActivities = 0;
+      let totalOther = 0;
+      let totalAccommodation = 0;
+      let totalOverallCost = 0;
+
+      results.forEach((row) => {
+        const budgets = row.budgets ? JSON.parse(row.budgets) : [];
+
+        budgets.forEach((budget) => {
+          totalTransport += budget.transport || 0;
+          totalFood += budget.food || 0;
+          totalActivities += budget.activities || 0;
+          totalOther += budget.other || 0;
+        });
+
+        totalAccommodation += parseFloat(row.accommodation_cost || 0);
+        totalOverallCost += parseFloat(row.total_cost || 0);
+      });
+
+      res.json({
+        totalTransport,
+        totalFood,
+        totalActivities,
+        totalOther,
+        totalAccommodation,
+        totalOverallCost,
+      });
+    });
+  } catch (err) {
+    console.error('Error verifying token:', err);
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+});
 
 app.get('/getTrips', (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];

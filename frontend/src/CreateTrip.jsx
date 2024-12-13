@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import { useState, useEffect } from "react";
 import { format, eachDayOfInterval } from "date-fns";
-import cs from "date-fns/locale/cs"; 
+import cs from "date-fns/locale/cs";
 import MapComponent from "./MapComponent";
 import { Autocomplete, LoadScript } from "@react-google-maps/api";
 
@@ -20,16 +20,17 @@ const CreateTrip = () => {
 //   const [locationData, setLocationData] = useState('');
 //   const [routeData, setRouteData] = useState({ start: '', end: '', stops: [] });
   const [inputType, setInputType] = useState('location'); // "location" or "route"
+  const [dailyBudgets, setDailyBudgets] = useState([]); // Nový stav pro denní rozpočty
+  const [accommodationCost, setAccommodationCost] = useState(0); // Náklady na ubytování
 
 
-  
-  
+
   const navigate = useNavigate();
 
   const handleClearMap = () => {
     setCurrentDayData(null); // Reset aktuální data
   };
-  
+
 
 
   useEffect(() => {
@@ -43,6 +44,8 @@ const CreateTrip = () => {
         location: '',
         route: { start: '', end: '', stops: [] },
       }));
+      const budgets = days.map(() => ({ transport: 0, food: 0, activities: 0, other: 0 }));
+      setDailyBudgets(budgets);
       setDailyPlans(days);
     }
   }, [startDate, endDate]);
@@ -61,6 +64,9 @@ const CreateTrip = () => {
         body: JSON.stringify({
             tripId,
             activities: dailyPlans,
+            budgets: dailyBudgets,
+            accommodationCost,
+            totalCost: calculateTripTotal(),
         })
     });
 
@@ -84,13 +90,13 @@ const CreateTrip = () => {
         if (autocomplete) {
           const place = autocomplete.getPlace();
           const location = place?.formatted_address || "";
-      
+
           if (location) {
             handleLocationChange(location, currentDayIndex);
           }
         }
       };
-      
+
 
       const handleLocationChange = (value, index) => {
         const updatedPlans = [...dailyPlans];
@@ -103,23 +109,38 @@ const CreateTrip = () => {
           }, 0); // Zpoždění, aby se mapě dal čas na reset
       };
 
-      const handleRouteChange = (field, value) => {
-        const updatedPlans = [...dailyPlans];
-        if (field === 'stops') {
-          updatedPlans[currentDayIndex].route.stops = value;
-        } else {
-          updatedPlans[currentDayIndex].route[field] = value;
-        }
-        updatedPlans[currentDayIndex].location = ''; // Resetuje lokaci, pokud se zadá trasa
-        setDailyPlans(updatedPlans);
+      const handleBudgetChange = (category, value) => {
+        const updatedBudgets = [...dailyBudgets];
+        updatedBudgets[currentDayIndex][category] = parseFloat(value) || 0;
+        setDailyBudgets(updatedBudgets);
       };
-  
+
+      const calculateDailyTotal = (budget) =>
+        Object.values(budget).reduce((sum, cost) => sum + cost, 0);
+
+      const calculateTripTotal = () =>
+        dailyBudgets.reduce((total, budget) => total + calculateDailyTotal(budget), 0) +
+        parseFloat(accommodationCost);
+
+
+        const handleRouteChange = (field, value) => {
+          const updatedPlans = [...dailyPlans];
+          if (field === 'stops') {
+            updatedPlans[currentDayIndex].route.stops = value;
+          } else {
+            updatedPlans[currentDayIndex].route[field] = value;
+          }
+          updatedPlans[currentDayIndex].location = ''; // Resetuje lokaci, pokud se zadá trasa
+          setDailyPlans(updatedPlans);
+        };
+
+
       const addStop = () => {
         const updatedPlans = [...dailyPlans];
         updatedPlans[currentDayIndex].route.stops.push('');
         setDailyPlans(updatedPlans);
       };
-  
+
       const removeStop = (index) => {
         const updatedPlans = [...dailyPlans];
         updatedPlans[currentDayIndex].route.stops = updatedPlans[currentDayIndex].route.stops.filter((_, i) => i !== index);
@@ -131,12 +152,16 @@ const CreateTrip = () => {
     const [autocompleteLocation, setAutocompleteLocation] = useState(null);
     const [autocompleteStops, setAutocompleteStops] = useState([]);
     const [locationInputs, setLocationInputs] = useState(dailyPlans.map(plan => plan.location || ''));
+    const [startLocation, setStartLocation] = useState('');
+    const [endLocation, setEndLocation] = useState('');
+    const [stops, setStops] = useState([]);
+    const [directions, setDirections] = useState(null);
 
     useEffect(() => {
       // Ensure locationInputs is updated when dailyPlans changes
       setLocationInputs(dailyPlans.map(plan => plan.location || ''));
   }, [dailyPlans]);
-  
+
     const onLoadStart = (autocomplete) => {
         setAutocompleteStart(autocomplete);
     };
@@ -207,7 +232,7 @@ const handleLocationInputConfirm = () => {
           handleRouteChange('stops', updatedStops);
       }
   };
-  
+
 
       const handleInputTypeChange = (type) => {
         setInputType(type);
@@ -219,7 +244,7 @@ const handleLocationInputConfirm = () => {
           setCurrentDayIndex(index);
           setCurrentDayData(dailyPlans[index]);
         }, 0); // Zpoždění, aby se mapě dal čas na reset
-        
+
         // Dynamicky nastavíme inputType podle dat daného dne
         const dayData = dailyPlans[index];
         if (dayData.location) {
@@ -227,15 +252,19 @@ const handleLocationInputConfirm = () => {
         } else if (dayData.route.start || dayData.route.end || dayData.route.stops.length > 0) {
           setInputType('route');
         }
-      
+
         setShowCalendar(false);
       };
 
       const handlePrevDay = () => {
         if (currentDayIndex > 0) {
           const prevIndex = currentDayIndex - 1;
-          setCurrentDayIndex(prevIndex);
-      
+          handleClearMap(); // Vymaž aktuální mapu
+          setTimeout(() => {
+            setCurrentDayIndex(prevIndex);
+            setCurrentDayData(dailyPlans[prevIndex]);
+          }, 0); // Zpoždění, aby se mapě dal čas na reset
+
           // Dynamicky nastavíme inputType podle dat předchozího dne
           const dayData = dailyPlans[prevIndex];
           if (dayData.location) {
@@ -249,8 +278,12 @@ const handleLocationInputConfirm = () => {
       const handleNextDay = () => {
         if (currentDayIndex < dailyPlans.length - 1) {
           const nextIndex = currentDayIndex + 1;
-          setCurrentDayIndex(nextIndex);
-      
+          handleClearMap(); // Vymaž aktuální mapu
+          setTimeout(() => {
+            setCurrentDayIndex(nextIndex);
+            setCurrentDayData(dailyPlans[nextIndex]);
+          }, 0); // Zpoždění, aby se mapě dal čas na reset
+
           // Dynamicky nastavíme inputType podle dat následujícího dne
           const dayData = dailyPlans[nextIndex];
           if (dayData.location) {
@@ -259,6 +292,13 @@ const handleLocationInputConfirm = () => {
             setInputType('route');
           }
         }
+      };
+
+      const translations = {
+        transport: "Doprava",
+        food: "Jídlo",
+        activities: "Aktivity",
+        other: "Ostatní",
       };
 
   return (
@@ -296,6 +336,29 @@ const handleLocationInputConfirm = () => {
                         className="w-full border rounded p-2"
                         placeholder="Popis denní aktivity..."
                     ></textarea>
+                </div>
+
+                {/* Sekce pro denní rozpočet */}
+                <div className="mb-4">
+                  <h3 className="font-bold text-lg">Denní rozpočet</h3>
+                  <div className="flex flex-col gap-2">
+                    {["transport", "food", "activities", "other"].map((category) => (
+                      <div key={category} className="flex justify-between items-center">
+                        <label className="font-medium capitalize">{translations[category]}:</label>
+                        <input
+                          type="number"
+                          className="border rounded p-1 w-1/2"
+                          value={dailyBudgets[currentDayIndex]?.[category] || ''}
+                          placeholder="0"
+                          onChange={(e) => handleBudgetChange(category, e.target.value)}
+                        />
+                      </div>
+                    ))}
+                    <div className="flex justify-between items-center font-bold mt-2">
+                      <span>Celkový denní rozpočet:</span>
+                      <span>{calculateDailyTotal(dailyBudgets[currentDayIndex])} CZK</span>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="mb-4">
@@ -471,7 +534,7 @@ const handleLocationInputConfirm = () => {
                   className={`w-full text-left p-2 border rounded ${index === currentDayIndex ? 'bg-blue-200' : 'hover:bg-gray-100'}`}
                   onClick={() => handleDayClick(index)}
                 >
-                  Den {index + 1} ({format(dailyPlans[index].date, "EEEE", { locale: cs })}) - {format(day.date, "dd.MM.yyyy")} 
+                  Den {index + 1} ({format(dailyPlans[index].date, "EEEE", { locale: cs })}) - {format(day.date, "dd.MM.yyyy")}
                 </button>
               ))}
             </div>
@@ -513,13 +576,18 @@ const handleLocationInputConfirm = () => {
                 {inputType === 'location' && (
                 <div className="mb-4">
                     <label className="block text-gray-700 font-bold mb-2">Zadejte lokaci:</label>
-                    <input
-                    type="text"
-                    className="w-full border rounded p-2"
-                    placeholder="Např. Praha, Český Krumlov..."
-                    value={dailyPlans[currentDayIndex]?.location || ''}
-                    onChange={(e) => handleLocationChange(e.target.value)}
-                    />
+                    {/* <Autocomplete
+                    onLoad={onLoadLocation}
+                    onPlaceChanged={onPlaceChangedLocation}
+                    > */}
+                      <input
+                      type="text"
+                      className="w-full border rounded p-2"
+                      placeholder="Např. Praha, Český Krumlov..."
+                      value={locationInputs[currentDayIndex]}
+                      onChange={handleLocationInputChange}
+                      />
+                    {/* </Autocomplete> */}
                 </div>
                 )}
 
@@ -529,27 +597,37 @@ const handleLocationInputConfirm = () => {
                     <label className="block text-gray-700 font-bold mb-2">Zadejte trasu:</label>
                     <div className="flex flex-col gap-2">
                     {/* Startovní bod */}
-                    <input
-                        type="text"
-                        className="w-full border rounded p-2"
-                        placeholder="Startovní bod"
-                        value={dailyPlans[currentDayIndex]?.route.start || ''}
-                        onChange={(e) => handleRouteChange('start', e.target.value)}
-                    />
-                    {/* Zastávky */}
-                    {dailyPlans[currentDayIndex]?.route.stops.map((stop, index) => (
-                        <div key={index} className="flex items-center gap-2">
+                    {/* <Autocomplete
+                        onLoad={onLoadStart}
+                        onPlaceChanged={onPlaceChangedStart}
+                    > */}
                         <input
                             type="text"
                             className="w-full border rounded p-2"
-                            placeholder={`Zastávka ${index + 1}`}
-                            value={stop}
-                            onChange={(e) => {
-                            const updatedStops = [...dailyPlans[currentDayIndex].route.stops];
-                            updatedStops[index] = e.target.value;
-                            handleRouteChange('stops', updatedStops);
-                            }}
+                            placeholder="Startovní bod"
+                            value={dailyPlans[currentDayIndex]?.route.start || ''}
+                            onChange={(e) => handleRouteChange('start', e.target.value)}
                         />
+                    {/* </Autocomplete> */}
+                    {/* Zastávky */}
+                    {dailyPlans[currentDayIndex]?.route.stops.map((stop, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                        {/* <Autocomplete
+                            onLoad={(autocomplete) => onLoadStop(autocomplete, index)}
+                            onPlaceChanged={() => onPlaceChangedStop(index)}
+                        > */}
+                            <input
+                                type="text"
+                                className="w-full border rounded p-2"
+                                placeholder={`Zastávka ${index + 1}`}
+                                value={stop}
+                                onChange={(e) => {
+                                    const updatedStops = [...dailyPlans[currentDayIndex].route.stops];
+                                    updatedStops[index] = e.target.value;
+                                    handleRouteChange('stops', updatedStops);
+                                }}
+                            />
+                        {/* </Autocomplete> */}
                         <button onClick={() => removeStop(index)} className="p-2 text-red-500 hover:text-red-600">
                             <svg
                             version="1.1"
@@ -589,28 +667,33 @@ const handleLocationInputConfirm = () => {
                         </svg>
                     </button>
                     {/* Cílový bod */}
-                    <input
-                        type="text"
-                        className="w-full border rounded p-2"
-                        placeholder="Cílový bod"
-                        value={dailyPlans[currentDayIndex]?.route.end || ''}
-                        onChange={(e) => handleRouteChange('end', e.target.value)}
-                    />
+                    {/* <Autocomplete
+                    onLoad={onLoadEnd}
+                    onPlaceChanged={onPlaceChangedEnd}
+                    > */}
+                      <input
+                          type="text"
+                          className="w-full border rounded p-2"
+                          placeholder="Cílový bod"
+                          value={dailyPlans[currentDayIndex]?.route.end || ''}
+                          onChange={(e) => handleRouteChange('end', e.target.value)}
+                      />
+                     {/* </Autocomplete> */}
                     </div>
                 </div>
                 )}
 
                 <div className="mt-6">
-                    <MapComponent
+                <MapComponent
                         location={inputType === 'location' ? dailyPlans[currentDayIndex]?.location : null}
                         route={inputType === 'route' ? dailyPlans[currentDayIndex]?.route : { start: '', end: '', stops: [] }}
                         clearMap={!currentDayData}
-                        />
+                    />
                 </div>
 
             </div>
 
-            
+
           )}
 
           {/* Tlačítka pro přepínání dnů */}
@@ -661,7 +744,22 @@ const handleLocationInputConfirm = () => {
         </div>
 
         {(currentDayIndex === dailyPlans.length - 1) && (
-            <div className="mt-4 text-center">
+            <div className="mt-6 p-4 bg-white rounded shadow-md text-center">
+              <h3 className="font-bold text-lg">Celkový rozpočet</h3>
+              <div className="flex justify-between items-center">
+                <label className="font-medium">Náklady na ubytování:</label>
+                <input
+                  type="number"
+                  className="border rounded p-1 w-1/2"
+                  value={accommodationCost || ''}
+                  placeholder="0"
+                  onChange={(e) => setAccommodationCost(e.target.value)}
+                />
+              </div>
+              <div className="flex justify-between items-center font-bold mt-2">
+                <span>Celkový rozpočet:</span>
+                <span>{calculateTripTotal()} CZK</span>
+              </div>
                 <button onClick={handleUpdate} className="bg-blue-500 text-white font-bold py-2 w-full md:w-fit px-4 rounded hover:bg-blue-600">
                 Uložit plán
                 </button>

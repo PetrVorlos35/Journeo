@@ -3,10 +3,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import AccountInfo from "./AccountInfo";
 import { DateRangePicker } from "react-date-range";
+import { cs } from "date-fns/locale"; // český jazykový balíček
 import "react-date-range/dist/styles.css"; // základní styly
 import "react-date-range/dist/theme/default.css"; // výchozí téma
 import { LoadScript } from '@react-google-maps/api';
-// import BudgetTracking from "./BudgetTracking";
+import BudgetTracking from "./BudgetTracking";
 // import Map from "./Map";
 import GoogleMap from "./GoogleMaps";
 import MapComponent from "./MapComponent";
@@ -204,15 +205,14 @@ function Dashboard() {
             <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
               <h2 className="text-2xl font-bold mb-4 text-blue-500">Map</h2>
               <p>Under construction...</p>
-              {/* <MapComponent location="Praha" route={null} /> */}
             </div>
           )}
 
           {activeTab === "budgetTracking" && (
             <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
               <h2 className="text-2xl font-bold mb-4 text-blue-500">Budget Tracking</h2>
-              <p>Under construction...</p>
-              {/* <BudgetTracking /> */}
+              {/* <p>Under construction...</p> */}
+              <BudgetTracking userId={userId} />
             </div>
           )}
 
@@ -253,6 +253,7 @@ function Dashboard() {
                  fixedHeight={true}
                  staticRanges={[]}
                  inputRanges={[]}
+                 locale={cs}
                  className="w-fit border border-gray-300 rounded m-auto relative left-2/4 transform -translate-x-2/4"   
                />
              </div>

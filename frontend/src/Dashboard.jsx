@@ -65,7 +65,6 @@ function Dashboard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log(userId);
     
 
     if (!userId) {
@@ -74,17 +73,16 @@ function Dashboard() {
     }
 
     const tripData = {
-      userId: userId, // Include the user ID in the trip data
+      userId: userId,
       title: tripName,
       startDate: dateRange[0].startDate.toLocaleDateString("en-CA"),
       endDate: dateRange[0].endDate.toLocaleDateString("en-CA"),
-      activities: [], // Initialize as an empty array or adjust if needed
+      activities: [],
     };
 
     try {
-      const token = localStorage.getItem('token'); // Replace with your token management logic
+      const token = localStorage.getItem('token');
 
-      // console.log('Creating trip:', tripData);
       
       const response = await fetch(`${import.meta.env.VITE_API_URL}/trips`, {
         method: 'POST',

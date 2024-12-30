@@ -174,19 +174,13 @@ app.get('/account', (req, res) => {
   }
 });
 
-// Endpoint to create a new trip with user association
 app.post('/trips', (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];
-
   if (!token) {
     return res.status(401).json({ message: 'No token provided' });
   }
-
   try {
-    // Verify and decode the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    
 
     const { userId, title, startDate, endDate, activities } = req.body;
     const query = 'INSERT INTO trips (user_id, title, start_date, end_date, activities) VALUES (?, ?, ?, ?, ?)';

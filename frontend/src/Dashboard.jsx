@@ -65,13 +65,10 @@ function Dashboard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-
     if (!userId) {
       console.error('User ID not available');
       return;
     }
-
     const tripData = {
       userId: userId,
       title: tripName,
@@ -79,11 +76,8 @@ function Dashboard() {
       endDate: dateRange[0].endDate.toLocaleDateString("en-CA"),
       activities: [],
     };
-
     try {
       const token = localStorage.getItem('token');
-
-      
       const response = await fetch(`${import.meta.env.VITE_API_URL}/trips`, {
         method: 'POST',
         headers: {
@@ -92,12 +86,10 @@ function Dashboard() {
         },
         body: JSON.stringify(tripData),
       });
-
       const result = await response.json();
       if (response.ok) {
         const startDate = dateRange[0].startDate.toLocaleDateString("en-CA"); // Formát YYYY-MM-DD
         const endDate = dateRange[0].endDate.toLocaleDateString("en-CA"); // Formát YYYY-MM-DD
-        
         navigate("/create-trip", { state: { tripName, startDate, endDate, tripId: result.tripId } });
       } else {
         console.error('Error creating trip:', result);

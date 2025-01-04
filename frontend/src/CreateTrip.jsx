@@ -127,16 +127,16 @@ const CreateTrip = () => {
 
       const [autocomplete, setAutocomplete] = useState(null);
 
-      const handlePlaceChanged = () => {
-        if (autocomplete) {
-          const place = autocomplete.getPlace();
-          const location = place?.formatted_address || "";
+      // const handlePlaceChanged = () => {
+      //   if (autocomplete) {
+      //     const place = autocomplete.getPlace();
+      //     const location = place?.formatted_address || "";
 
-          if (location) {
-            handleLocationChange(location, currentDayIndex);
-          }
-        }
-      };
+      //     if (location) {
+      //       handleLocationChange(location, currentDayIndex);
+      //     }
+      //   }
+      // };
 
 
       const handleLocationChange = (value, index) => {
@@ -150,11 +150,11 @@ const CreateTrip = () => {
           }, 0); // Zpoždění, aby se mapě dal čas na reset
       };
 
-      const handleBudgetChange = (category, value) => {
-        const updatedBudgets = [...dailyBudgets];
-        updatedBudgets[currentDayIndex][category] = parseFloat(value) || 0;
-        setDailyBudgets(updatedBudgets);
-      };
+      // const handleBudgetChange = (category, value) => {
+      //   const updatedBudgets = [...dailyBudgets];
+      //   updatedBudgets[currentDayIndex][category] = parseFloat(value) || 0;
+      //   setDailyBudgets(updatedBudgets);
+      // };
 
       const calculateDailyTotal = (budget) => {
         return (budget.expenses || []).reduce((sum, expense) => sum + expense.amount, 0);
@@ -196,10 +196,10 @@ const CreateTrip = () => {
     const [autocompleteLocation, setAutocompleteLocation] = useState(null);
     const [autocompleteStops, setAutocompleteStops] = useState([]);
     const [locationInputs, setLocationInputs] = useState(dailyPlans.map(plan => plan.location || ''));
-    const [startLocation, setStartLocation] = useState('');
-    const [endLocation, setEndLocation] = useState('');
-    const [stops, setStops] = useState([]);
-    const [directions, setDirections] = useState(null);
+    // const [startLocation, setStartLocation] = useState('');
+    // const [endLocation, setEndLocation] = useState('');
+    // const [stops, setStops] = useState([]);
+    // const [directions, setDirections] = useState(null);
 
     useEffect(() => {
       // Ensure locationInputs is updated when dailyPlans changes
@@ -250,16 +250,16 @@ const handleLocationInputChange = (e) => {
   setLocationInputs(newLocationInputs);
 };
 
-const handleLocationInputConfirm = () => {
-  if (autocompleteLocation !== null) {
-      const place = autocompleteLocation.getPlace();
-      const formattedAddress = place.formatted_address;
-      handleLocationChange(formattedAddress, currentDayIndex);
-      const newLocationInputs = [...locationInputs];
-      newLocationInputs[currentDayIndex] = formattedAddress;
-      setLocationInputs(newLocationInputs);
-  }
-};
+// const handleLocationInputConfirm = () => {
+//   if (autocompleteLocation !== null) {
+//       const place = autocompleteLocation.getPlace();
+//       const formattedAddress = place.formatted_address;
+//       handleLocationChange(formattedAddress, currentDayIndex);
+//       const newLocationInputs = [...locationInputs];
+//       newLocationInputs[currentDayIndex] = formattedAddress;
+//       setLocationInputs(newLocationInputs);
+//   }
+// };
 
 
   const onLoadStop = (autocomplete, index) => {
@@ -363,12 +363,12 @@ const handleLocationInputConfirm = () => {
         setDailyBudgets(updatedBudgets);
       };
 
-      const translations = {
-        transport: "Doprava",
-        food: "Jídlo",
-        activities: "Aktivity",
-        other: "Ostatní",
-      };
+      // const translations = {
+      //   transport: "Doprava",
+      //   food: "Jídlo",
+      //   activities: "Aktivity",
+      //   other: "Ostatní",
+      // };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-50">

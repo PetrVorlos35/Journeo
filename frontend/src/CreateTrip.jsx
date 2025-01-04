@@ -11,17 +11,15 @@ const libraries = ["places"]; // Nutné pro Autocomplete
 
 const CreateTrip = () => {
   const location = useLocation();
-  const { tripName, startDate, endDate, tripId } = location.state || {};
-  const [dailyPlans, setDailyPlans] = useState([]);
+  const { tripName = '', startDate = '', endDate = '', tripId = null } = location.state || {};
+  const [dailyPlans = [], setDailyPlans] = useState([]);
   const [currentDayData, setCurrentDayData] = useState(null);
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [showCalendar, setShowCalendar] = useState(false);
-//   const [activityDescription, setActivityDescription] = useState('');
-//   const [locationData, setLocationData] = useState('');
-//   const [routeData, setRouteData] = useState({ start: '', end: '', stops: [] });
   const [inputType, setInputType] = useState('location'); // "location" or "route"
-  const [dailyBudgets, setDailyBudgets] = useState([]); // Nový stav pro denní rozpočty
-  const [accommodationCost, setAccommodationCost] = useState(0); // Náklady na ubytování
+  const [dailyBudgets = [], setDailyBudgets] = useState([]); // Nový stav pro denní rozpočty
+  const [accommodationCost, setAccommodationCost] = useState(location.state.accommodationCost || 0); // Náklady na ubytování
+
 
 
 
@@ -31,24 +29,67 @@ const CreateTrip = () => {
     setCurrentDayData(null); // Reset aktuální data
   };
 
-
+  const convertDailyPlans = (activities, startDate, endDate) => {
+    const dateRange = eachDayOfInterval({
+      start: new Date(startDate),
+      end: new Date(endDate),
+    });
+  
+    return dateRange.map((date, index) => ({
+      date,
+      plan: activities[index]?.plan || '',
+      location: activities[index]?.location || '',
+      route: activities[index]?.route || { start: '', end: '', stops: [] },
+    }));
+  };
+  
+  const convertDailyBudgets = (dailyBudgets, length) => {
+    return Array.from({ length }, (_, index) => ({
+      expenses: dailyBudgets[index]?.expenses?.map(expense => ({
+        category: expense.category || "other",
+        amount: expense.amount || 0,
+        description: expense.description || "",
+      })) || [],
+    }));
+  };
+  
+  
 
   useEffect(() => {
     if (startDate && endDate) {
       const days = eachDayOfInterval({
         start: new Date(startDate),
         end: new Date(endDate),
-      }).map((date) => ({
-        date,
-        plan: '',
-        location: '',
-        route: { start: '', end: '', stops: [] },
-      }));
-      const budgets = days.map(() => ({ transport: 0, food: 0, activities: 0, other: 0 }));
-      setDailyBudgets(budgets);
-      setDailyPlans(days);
+      });
+  
+      const budgets = days.map(() => ({ expenses: [] }));
+  
+      const activities = location.state.activities 
+        ? JSON.parse(location.state.activities) 
+        : []; // Výchozí hodnota pro activities
+  
+      const budgetsData = location.state.budgets 
+        ? JSON.parse(location.state.budgets) 
+        : budgets; // Výchozí hodnota pro budgets
+  
+      const convertedPlans = convertDailyPlans(activities, startDate, endDate);
+      const convertedBudgets = convertDailyBudgets(budgetsData, days.length);
+  
+      setDailyPlans(convertedPlans);
+      setDailyBudgets(convertedBudgets);
     }
   }, [startDate, endDate]);
+  
+  
+
+  useEffect(() => {
+    if (dailyPlans.length > 0) {
+      // Ensure dailyPlans is populated before triggering handleDayClick
+      setTimeout(() => {
+        handleDayClick(0);
+      }, 100);
+    }
+  }, [dailyPlans]);
 
   const handleUpdate = async () => {
     // console.log(dailyPlans);
@@ -115,12 +156,15 @@ const CreateTrip = () => {
         setDailyBudgets(updatedBudgets);
       };
 
-      const calculateDailyTotal = (budget) =>
-        Object.values(budget).reduce((sum, cost) => sum + cost, 0);
+      const calculateDailyTotal = (budget) => {
+        return (budget.expenses || []).reduce((sum, expense) => sum + expense.amount, 0);
+      };
+      
 
       const calculateTripTotal = () =>
         dailyBudgets.reduce((total, budget) => total + calculateDailyTotal(budget), 0) +
-        parseFloat(accommodationCost);
+        parseFloat(accommodationCost || 0);
+      
 
 
         const handleRouteChange = (field, value) => {
@@ -294,6 +338,31 @@ const handleLocationInputConfirm = () => {
         }
       };
 
+      const addExpense = () => {
+        const updatedBudgets = [...dailyBudgets];
+        updatedBudgets[currentDayIndex].expenses = [
+          ...(updatedBudgets[currentDayIndex].expenses || []),
+          { category: "transport", amount: 0, description: "" },
+        ];
+        setDailyBudgets(updatedBudgets);
+      };
+
+      const handleExpenseChange = (index, field, value) => {
+        const updatedBudgets = [...dailyBudgets];
+        const updatedExpenses = [...(updatedBudgets[currentDayIndex].expenses || [])];
+        updatedExpenses[index][field] = field === "amount" ? parseFloat(value) || 0 : value;
+        updatedBudgets[currentDayIndex].expenses = updatedExpenses;
+        setDailyBudgets(updatedBudgets);
+      };
+
+      const removeExpense = (index) => {
+        const updatedBudgets = [...dailyBudgets];
+        const updatedExpenses = [...(updatedBudgets[currentDayIndex].expenses || [])];
+        updatedExpenses.splice(index, 1);
+        updatedBudgets[currentDayIndex].expenses = updatedExpenses;
+        setDailyBudgets(updatedBudgets);
+      };
+
       const translations = {
         transport: "Doprava",
         food: "Jídlo",
@@ -316,9 +385,9 @@ const handleLocationInputConfirm = () => {
         <h1 className="text-3xl font-bold text-center flex-grow">{tripName}</h1>
         </div>
         {/* Desktopové zobrazení: Vedle sebe vytváření dne a kalendář */}
-        <div className="hidden md:flex space-x-4">
+        <div className=" md:flex md:space-x-4 flex-col md:flex-row">
           {/* Levý panel pro aktuální den */}
-          <div className="relative w-2/3 border rounded-lg p-4 max-h-[600px] overflow-y-auto shadow-md bg-white">
+          <div className="relative md:w-2/3 w-full border rounded-lg p-4 max-h-[600px] overflow-y-auto shadow-md bg-white">
             {dailyPlans.length > 0 && (
               <div>
                 <h2 className="text-xl font-semibold mb-2">
@@ -339,27 +408,60 @@ const handleLocationInputConfirm = () => {
                 </div>
 
                 {/* Sekce pro denní rozpočet */}
-                <div className="mb-4">
-                  <h3 className="font-bold text-lg">Denní rozpočet</h3>
-                  <div className="flex flex-col gap-2">
-                    {["transport", "food", "activities", "other"].map((category) => (
-                      <div key={category} className="flex justify-between items-center">
-                        <label className="font-medium capitalize">{translations[category]}:</label>
-                        <input
-                          type="number"
-                          className="border rounded p-1 w-1/2"
-                          value={dailyBudgets[currentDayIndex]?.[category] || ''}
-                          placeholder="0"
-                          onChange={(e) => handleBudgetChange(category, e.target.value)}
-                        />
-                      </div>
-                    ))}
-                    <div className="flex justify-between items-center font-bold mt-2">
-                      <span>Celkový denní rozpočet:</span>
-                      <span>{calculateDailyTotal(dailyBudgets[currentDayIndex])} CZK</span>
+              <div className="mb-4">
+                <h3 className="font-bold text-lg">Denní rozpočet</h3>
+                <div className="flex flex-col gap-2">
+                  {dailyBudgets[currentDayIndex]?.expenses?.map((expense, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <select
+                        value={expense.category}
+                        onChange={(e) => handleExpenseChange(index, "category", e.target.value)}
+                        className="border rounded p-1 w-1/3"
+                      >
+                        <option value="transport">Doprava</option>
+                        <option value="food">Jídlo</option>
+                        <option value="activities">Aktivity</option>
+                        <option value="other">Ostatní</option>
+                      </select>
+                      <input
+                        type="number"
+                        value={expense.amount}
+                        onChange={(e) => handleExpenseChange(index, "amount", e.target.value)}
+                        placeholder="Částka"
+                        className="border rounded p-1 w-1/3"
+                      />
+                      <input
+                        type="text"
+                        value={expense.description}
+                        onChange={(e) => handleExpenseChange(index, "description", e.target.value)}
+                        placeholder="Popis"
+                        className="border rounded p-1 w-1/3"
+                      />
+                      <button
+                        onClick={() => removeExpense(index)}
+                        className="text-red-500 hover:text-red-600"
+                      >
+                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 74.6094 92.8223" className="h-6 w-6">
+                    <g>
+                      <rect height="92.8223" opacity="0" width="74.6094" x="0" y="0" />
+                      <path d="M26.0254 73.0957C27.6855 73.0957 28.7598 72.0703 28.7109 70.5566L27.5879 30.5176C27.5391 28.9551 26.4648 27.9785 24.9023 27.9785C23.291 27.9785 22.168 29.0039 22.2168 30.5176L23.3398 70.5566C23.3887 72.1191 24.4629 73.0957 26.0254 73.0957ZM37.3047 73.0957C38.9648 73.0957 40.0879 72.0703 40.0879 70.5566L40.0879 30.5176C40.0879 29.0039 38.9648 27.9785 37.3047 27.9785C35.6445 27.9785 34.5215 29.0039 34.5215 30.5176L34.5215 70.5566C34.5215 72.0703 35.6445 73.0957 37.3047 73.0957ZM48.6328 73.0957C50.1465 73.0957 51.2695 72.1191 51.3184 70.5566L52.3926 30.5176C52.4414 29.0039 51.3672 27.9785 49.707 27.9785C48.1445 27.9785 47.0703 29.0039 47.0215 30.5176L45.9473 70.5566C45.8984 72.0703 46.9727 73.0957 48.6328 73.0957ZM20.2637 18.0176L27.1973 18.0176L27.1973 9.81445C27.1973 7.8125 28.6133 6.49414 30.6641 6.49414L43.8965 6.49414C45.8984 6.49414 47.3145 7.8125 47.3145 9.81445L47.3145 18.0176L54.2969 18.0176L54.2969 9.32617C54.2969 3.56445 50.5371 0 44.3848 0L30.127 0C24.0234 0 20.2637 3.56445 20.2637 9.32617ZM3.22266 21.4844L71.3867 21.4844C73.1934 21.4844 74.6094 20.0195 74.6094 18.2129C74.6094 16.4062 73.1445 14.9414 71.3867 14.9414L3.22266 14.9414C1.51367 14.9414 0 16.4062 0 18.2129C0 20.0195 1.51367 21.4844 3.22266 21.4844ZM19.6777 85.6934L54.9805 85.6934C60.791 85.6934 64.5508 82.0801 64.8438 76.2207L67.3828 20.752L60.4004 20.752L57.959 75.4883C57.8613 77.6855 56.3965 79.1504 54.248 79.1504L20.3125 79.1504C18.2617 79.1504 16.748 77.6367 16.6504 75.4883L14.0625 20.752L7.22656 20.752L9.81445 76.2695C10.1074 82.1289 13.7695 85.6934 19.6777 85.6934Z" fill="currentColor" />
+                    </g>
+                  </svg>
+                      </button>
                     </div>
-                  </div>
+                  ))}
+                  <button
+                    onClick={addExpense}
+                    className="bg-blue-500 text-white font-bold py-1 px-4 rounded hover:bg-blue-600"
+                  >
+                    Přidat útratu
+                  </button>
                 </div>
+                <div className="flex justify-between items-center font-bold mt-2">
+                  <span>Celkový denní rozpočet:</span>
+                  <span>{calculateDailyTotal(dailyBudgets[currentDayIndex])} CZK</span>
+                </div>
+              </div>
 
                 <div className="mb-4">
                     <label className="block text-gray-700 font-bold mb-2">Zvolte možnost:</label>
@@ -491,18 +593,18 @@ const handleLocationInputConfirm = () => {
                 )}
 
                 <div className="mt-6 mb-4">
-                    <MapComponent
+                    {/* <MapComponent
                         location={inputType === 'location' ? dailyPlans[currentDayIndex]?.location : null}
                         route={inputType === 'route' ? dailyPlans[currentDayIndex]?.route : { start: '', end: '', stops: [] }}
                         clearMap={!currentDayData}
-                        />
+                        /> */}
                 </div>
 
                 {/* Tlačítka pro rychlé přecházení mezi dny ve spodních rozích */}
                 <div className="flex justify-between items-center bottom-4">
                 <div className="text-left">
                     <button
-                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded disabled:opacity-50"
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded disabled:opacity-50 w-full md:w-auto"
                     onClick={handlePrevDay}
                     disabled={currentDayIndex === 0}
                     >
@@ -511,7 +613,7 @@ const handleLocationInputConfirm = () => {
                 </div>
                 <div className="text-right">
                     <button
-                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded disabled:opacity-50"
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded disabled:opacity-50 w-full md:w-auto"
                     onClick={handleNextDay}
                     disabled={currentDayIndex === dailyPlans.length - 1}
                     >
@@ -525,7 +627,7 @@ const handleLocationInputConfirm = () => {
           </div>
 
           {/* Pravý panel pro kalendář */}
-          <div className="w-1/3 border rounded-lg p-4 shadow-md max-h-[600px] overflow-y-auto bg-white">
+          <div className="md:w-1/3 w-full border rounded-lg p-4 shadow-md max-h-[600px] mt-6 md:mt-0 overflow-y-auto bg-white">
             <h3 className="text-lg font-semibold mb-2">Kalendář</h3>
             <div className="space-y-2">
               {dailyPlans.map((day, index) => (
@@ -541,207 +643,7 @@ const handleLocationInputConfirm = () => {
           </div>
         </div>
 
-        {/* Mobilní zobrazení */}
-        <div className="md:hidden">
-          {dailyPlans.length > 0 && (
-            <div className="border rounded-lg p-4 shadow-md mb-4 bg-white">
-              <h2 className="text-xl font-semibold mb-2">
-                Den {currentDayIndex + 1} - {format(dailyPlans[currentDayIndex].date, "dd.MM.yyyy")} <span className="absolute right-9">{format(dailyPlans[currentDayIndex].date, "EEEE", { locale: cs })}</span>
-              </h2>
-              <textarea
-                className="w-full border rounded p-2 mb-4"
-                placeholder="Popis denní aktivity..."
-                value={dailyPlans[currentDayIndex].plan || ''}
-                onChange={(e) => handlePlanChange(e.target.value)}
-              />
-
-                <div className="mb-4">
-                    <label className="block text-gray-700 font-bold mb-2">Zvolte možnost:</label>
-                    <div className="flex space-x-4">
-                        <button
-                        className={`py-2 px-4 rounded ${inputType === 'location' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-                        onClick={() => handleInputTypeChange('location')}
-                        >
-                        Lokace
-                        </button>
-                        <button
-                        className={`py-2 px-4 rounded ${inputType === 'route' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-                        onClick={() => handleInputTypeChange('route')}
-                        >
-                        Trasa
-                        </button>
-                    </div>
-                </div>
-
-                {inputType === 'location' && (
-                <div className="mb-4">
-                    <label className="block text-gray-700 font-bold mb-2">Zadejte lokaci:</label>
-                    {/* <Autocomplete
-                    onLoad={onLoadLocation}
-                    onPlaceChanged={onPlaceChangedLocation}
-                    > */}
-                      <input
-                      type="text"
-                      className="w-full border rounded p-2"
-                      placeholder="Např. Praha, Český Krumlov..."
-                      value={locationInputs[currentDayIndex]}
-                      onChange={handleLocationInputChange}
-                      />
-                    {/* </Autocomplete> */}
-                </div>
-                )}
-
-                 {/* Dynamické zobrazení uložené trasy */}
-                 {inputType === 'route' && (
-                <div className="mb-4">
-                    <label className="block text-gray-700 font-bold mb-2">Zadejte trasu:</label>
-                    <div className="flex flex-col gap-2">
-                    {/* Startovní bod */}
-                    {/* <Autocomplete
-                        onLoad={onLoadStart}
-                        onPlaceChanged={onPlaceChangedStart}
-                    > */}
-                        <input
-                            type="text"
-                            className="w-full border rounded p-2"
-                            placeholder="Startovní bod"
-                            value={dailyPlans[currentDayIndex]?.route.start || ''}
-                            onChange={(e) => handleRouteChange('start', e.target.value)}
-                        />
-                    {/* </Autocomplete> */}
-                    {/* Zastávky */}
-                    {dailyPlans[currentDayIndex]?.route.stops.map((stop, index) => (
-                        <div key={index} className="flex items-center gap-2">
-                        {/* <Autocomplete
-                            onLoad={(autocomplete) => onLoadStop(autocomplete, index)}
-                            onPlaceChanged={() => onPlaceChangedStop(index)}
-                        > */}
-                            <input
-                                type="text"
-                                className="w-full border rounded p-2"
-                                placeholder={`Zastávka ${index + 1}`}
-                                value={stop}
-                                onChange={(e) => {
-                                    const updatedStops = [...dailyPlans[currentDayIndex].route.stops];
-                                    updatedStops[index] = e.target.value;
-                                    handleRouteChange('stops', updatedStops);
-                                }}
-                            />
-                        {/* </Autocomplete> */}
-                        <button onClick={() => removeStop(index)} className="p-2 text-red-500 hover:text-red-600">
-                            <svg
-                            version="1.1"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 78.8574 78.8574"
-                            className="w-6 h-6"
-                            >
-                            <g>
-                                <rect height="78.8574" opacity="0" width="78.8574" x="0" y="0" />
-                                <path
-                                d="M78.8574 39.4043C78.8574 61.1328 61.1816 78.8086 39.4043 78.8086C17.6758 78.8086 0 61.1328 0 39.4043C0 17.6758 17.6758 0 39.4043 0C61.1816 0 78.8574 17.6758 78.8574 39.4043ZM24.5605 35.6445C21.875 35.6445 20.166 37.0117 20.166 39.502C20.166 41.9434 21.9727 43.2617 24.5605 43.2617L54.3457 43.2617C56.9336 43.2617 58.6426 41.9434 58.6426 39.502C58.6426 37.0117 57.0312 35.6445 54.3457 35.6445Z"
-                                fill="currentColor"
-                                />
-                            </g>
-                            </svg>
-                        </button>
-                        </div>
-                    ))}
-                    {/* Přidání zastávky */}
-                    <button
-                        onClick={addStop}
-                        className="p-2 flex items-center self-center text-blue-500 hover:text-blue-600"
-                    >
-                        <svg
-                        version="1.1"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 78.8574 78.8574"
-                        className="w-8 h-8"
-                        >
-                        <g>
-                            <rect height="78.8574" opacity="0" width="78.8574" x="0" y="0" />
-                            <path
-                            d="M78.8574 39.4043C78.8574 61.1328 61.1816 78.8086 39.4043 78.8086C17.6758 78.8086 0 61.1328 0 39.4043C0 17.6758 17.6758 0 39.4043 0C61.1816 0 78.8574 17.6758 78.8574 39.4043ZM35.6445 24.1699L35.6445 35.5957L24.2188 35.5957C21.9238 35.5957 20.3125 37.1582 20.3125 39.4531C20.3125 41.6992 21.9238 43.2129 24.2188 43.2129L35.6445 43.2129L35.6445 54.6387C35.6445 56.8848 37.1094 58.4961 39.3555 58.4961C41.6504 58.4961 43.2129 56.9336 43.2129 54.6387L43.2129 43.2129L54.6875 43.2129C56.9336 43.2129 58.5449 41.6992 58.5449 39.4531C58.5449 37.1582 56.9336 35.5957 54.6875 35.5957L43.2129 35.5957L43.2129 24.1699C43.2129 21.875 41.6504 20.3125 39.3555 20.3125C37.1094 20.3125 35.6445 21.875 35.6445 24.1699Z"
-                            fill="currentColor"
-                            />
-                        </g>
-                        </svg>
-                    </button>
-                    {/* Cílový bod */}
-                    {/* <Autocomplete
-                    onLoad={onLoadEnd}
-                    onPlaceChanged={onPlaceChangedEnd}
-                    > */}
-                      <input
-                          type="text"
-                          className="w-full border rounded p-2"
-                          placeholder="Cílový bod"
-                          value={dailyPlans[currentDayIndex]?.route.end || ''}
-                          onChange={(e) => handleRouteChange('end', e.target.value)}
-                      />
-                     {/* </Autocomplete> */}
-                    </div>
-                </div>
-                )}
-
-                <div className="mt-6">
-                <MapComponent
-                        location={inputType === 'location' ? dailyPlans[currentDayIndex]?.location : null}
-                        route={inputType === 'route' ? dailyPlans[currentDayIndex]?.route : { start: '', end: '', stops: [] }}
-                        clearMap={!currentDayData}
-                    />
-                </div>
-
-            </div>
-
-
-          )}
-
-          {/* Tlačítka pro přepínání dnů */}
-          <div className="flex justify-between mb-4">
-            <button
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded disabled:opacity-50"
-              onClick={handlePrevDay}
-              disabled={currentDayIndex === 0}
-            >
-              Předchozí den
-            </button>
-            <button
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded disabled:opacity-50"
-              onClick={handleNextDay}
-              disabled={currentDayIndex === dailyPlans.length - 1}
-            >
-              Další den
-            </button>
-          </div>
-
-          {/* Tlačítko pro zobrazení kalendáře */}
-          <div className="mb-4">
-            <button
-              className="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
-              onClick={() => setShowCalendar(!showCalendar)}
-            >
-              {showCalendar ? 'Skrýt kalendář' : 'Zobrazit kalendář'}
-            </button>
-          </div>
-
-          {/* Kalendář pro mobilní zobrazení */}
-          {showCalendar && (
-            <div className="border rounded-lg p-4 shadow-md max-h-[400px] overflow-y-auto bg-white">
-              <h3 className="text-lg font-semibold mb-2">Kalendář</h3>
-              <div className="space-y-2">
-                {dailyPlans.map((day, index) => (
-                  <button
-                    key={index}
-                    className={`w-full text-left p-2 border rounded ${index === currentDayIndex ? 'bg-blue-200' : 'hover:bg-gray-100'}`}
-                    onClick={() => handleDayClick(index)}
-                  >
-                    Den {index + 1} - {format(day.date, "dd.MM.yyyy")}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+        
 
         {(currentDayIndex === dailyPlans.length - 1) && (
             <div className="mt-6 p-4 bg-white rounded shadow-md text-center">

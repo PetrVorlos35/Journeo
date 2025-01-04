@@ -32,6 +32,46 @@ const BudgetTracking = ({ userId }) => {
   const [totals, setTotals] = useState(null);
   const [chartData, setChartData] = useState(null);
   const [chartType, setChartType] = useState('doughnut'); // Default chart type
+  const [savedChartType, setSavedChartType] = useState(null); // The chart type saved in the database
+
+
+  useEffect(() => {
+    const fetchDefaultChartType = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/chart-type?userId=${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+        if (response.data.chartType) {
+          setSavedChartType(response.data.chartType);
+          setChartType(response.data.chartType); // Set the default chart type
+        }
+      } catch (error) {
+        console.error('Error fetching default chart type:', error.message);
+      }
+    };
+  
+    fetchDefaultChartType();
+  }, [userId]);
+  
+
+  
+  const saveChartType = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/user/chart-type`,
+        { userId, chartType },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setSavedChartType(chartType); // Update the saved chart type
+    } catch (error) {
+      console.error('Error saving chart type:', error.message);
+    }
+  };
+  
+  
 
   useEffect(() => {
     const fetchBudgetData = async () => {
@@ -45,39 +85,43 @@ const BudgetTracking = ({ userId }) => {
           throw new Error('No budget data found');
         }
 
-        const data = response.data;
+        const {
+          totalTransport,
+          totalFood,
+          totalActivities,
+          totalOther,
+          totalAccommodation,
+          totalOverallCost,
+        } = response.data;
 
-        // Set the totals for display
-        setTotals(data);
+        // Update state with totals
+        setTotals({
+          transport: totalTransport,
+          food: totalFood,
+          activities: totalActivities,
+          other: totalOther,
+          accommodation: totalAccommodation,
+          totalOverallCost,
+        });
 
-        // Calculate percentages
-        const totalOverallCost = data.totalOverallCost;
-        const percentages = {
-          transport: ((data.totalTransport / totalOverallCost) * 100).toFixed(2),
-          food: ((data.totalFood / totalOverallCost) * 100).toFixed(2),
-          activities: ((data.totalActivities / totalOverallCost) * 100).toFixed(2),
-          other: ((data.totalOther / totalOverallCost) * 100).toFixed(2),
-          accommodation: ((data.totalAccommodation / totalOverallCost) * 100).toFixed(2),
-        };
-
-        // Prepare the data for the chart
+        // Prepare data for charts
         const chartDataset = {
           labels: [
-            `Transport (${data.totalTransport} CZK)`,
-            `Food (${data.totalFood} CZK)`,
-            `Activities (${data.totalActivities} CZK)`,
-            `Other (${data.totalOther} CZK)`,
-            `Accommodation (${data.totalAccommodation} CZK)`,
+            `Transport (${totalTransport} CZK)`,
+            `Food (${totalFood} CZK)`,
+            `Activities (${totalActivities} CZK)`,
+            `Other (${totalOther} CZK)`,
+            `Accommodation (${totalAccommodation} CZK)`,
           ],
           datasets: [
             {
               label: 'Expenses (% of Total)',
               data: [
-                percentages.transport,
-                percentages.food,
-                percentages.activities,
-                percentages.other,
-                percentages.accommodation,
+                totalTransport,
+                totalFood,
+                totalActivities,
+                totalOther,
+                totalAccommodation,
               ],
               backgroundColor: [
                 'rgba(75,192,192,0.6)',
@@ -129,18 +173,14 @@ const BudgetTracking = ({ userId }) => {
   };
 
   return (
-    <div className="budget-tracking ">
-      {/* <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Budget Tracking</h2> */}
-
-      {/* Display the Overall Cost */}
+    <div className="budget-tracking">
       {totals && (
         <div className="text-center mb-6">
           <h3 className="text-xl font-semibold text-gray-700">Total Overall Cost</h3>
-          <p className="text-lg text-blue-500">{totals.totalOverallCost} CZK</p>
+          <p className="text-lg text-blue-500">{totals?.totalOverallCost || 0} CZK</p>
         </div>
       )}
 
-      {/* Chart type toggle */}
       <div className="flex justify-center items-center mb-6">
         <label htmlFor="chartType" className="mr-3 text-gray-700 font-medium">
           Choose Chart Type:
@@ -158,12 +198,57 @@ const BudgetTracking = ({ userId }) => {
           <option value="polarArea">Polar Area</option>
           <option value="line">Line</option>
         </select>
+        {/* Show Save Button only if the chart type has changed */}
+  {chartType !== savedChartType && (
+    <button
+      onClick={saveChartType}
+      className="ml-3 p-2 text-blue-500 hover:text-blue-700 focus:outline-none"
+      title="Save selected chart type"
+    >
+      {/* Display the unsaved icon */}
+      <svg
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        viewBox="0 0 52.5879 83.252"
+        className="w-6 h-6"
+      >
+        <g>
+          <rect height="83.252" opacity="0" width="52.5879" x="0" y="0" />
+          <path
+            d="M4.44336 83.1055C6.49414 83.1055 7.71484 81.8848 11.7188 78.0273L25.9277 64.2578C26.123 64.0625 26.5137 64.0625 26.6602 64.2578L40.8691 78.0273C44.9219 81.8848 46.0938 83.1055 48.1934 83.1055C50.9766 83.1055 52.5879 81.25 52.5879 77.9785L52.5879 11.377C52.5879 3.80859 48.8281 0 41.3574 0L11.2305 0C3.75977 0 0 3.80859 0 11.377L0 77.9785C0 81.25 1.61133 83.1055 4.44336 83.1055ZM8.00781 71.1426C7.4707 71.6309 6.88477 71.4844 6.88477 70.752L6.88477 11.4746C6.88477 8.44727 8.49609 6.88477 11.5723 6.88477L41.0156 6.88477C44.0918 6.88477 45.7031 8.44727 45.7031 11.4746L45.7031 70.752C45.7031 71.4844 45.1172 71.6309 44.6289 71.1426L28.5156 55.8594C27.1484 54.541 25.4395 54.541 24.0723 55.8594Z"
+            fill="black"
+            fillOpacity="0.85"
+          />
+        </g>
+      </svg>
+    </button>
+  )}
+
+  {/* Show a "saved" icon if the chart type is already saved */}
+  {chartType === savedChartType && (
+    <div className="ml-3 p-2">
+      <svg
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        viewBox="0 0 52.5879 83.252"
+        className="w-6 h-6 text-green-500"
+      >
+        <g>
+          <rect height="83.252" opacity="0" width="52.5879" x="0" y="0" />
+          <path
+            d="M4.44336 83.1055C6.49414 83.1055 7.71484 81.8848 11.7188 78.0273L25.9277 64.2578C26.123 64.0625 26.5137 64.0625 26.6602 64.2578L40.8691 78.0273C44.9219 81.8848 46.0938 83.1055 48.1934 83.1055C50.9766 83.1055 52.5879 81.25 52.5879 77.9785L52.5879 11.377C52.5879 3.80859 48.8281 0 41.3574 0L11.2305 0C3.75977 0 0 3.80859 0 11.377L0 77.9785C0 81.25 1.61133 83.1055 4.44336 83.1055Z"
+            fill="black"
+            fillOpacity="0.85"
+          />
+        </g>
+      </svg>
+    </div>
+  )}
       </div>
 
-      {/* Render the selected chart */}
-      <div className="bg-gray-50 p-4 rounded-lg shadow-inner">
-        {renderChart()}
-      </div>
+      <div className="bg-gray-50 p-4 rounded-lg shadow-inner">{renderChart()}</div>
     </div>
   );
 };

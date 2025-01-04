@@ -342,11 +342,27 @@ app.get('/budget', (req, res) => {
       results.forEach((row) => {
         const budgets = row.budgets ? JSON.parse(row.budgets) : [];
 
-        budgets.forEach((budget) => {
-          totalTransport += budget.transport || 0;
-          totalFood += budget.food || 0;
-          totalActivities += budget.activities || 0;
-          totalOther += budget.other || 0;
+        budgets.forEach((day) => {
+          if (day.expenses && Array.isArray(day.expenses)) {
+            day.expenses.forEach((expense) => {
+              switch (expense.category) {
+                case 'transport':
+                  totalTransport += expense.amount || 0;
+                  break;
+                case 'food':
+                  totalFood += expense.amount || 0;
+                  break;
+                case 'activities':
+                  totalActivities += expense.amount || 0;
+                  break;
+                case 'other':
+                  totalOther += expense.amount || 0;
+                  break;
+                default:
+                  break;
+              }
+            });
+          }
         });
 
         totalAccommodation += parseFloat(row.accommodation_cost || 0);
@@ -367,6 +383,63 @@ app.get('/budget', (req, res) => {
     return res.status(401).json({ message: 'Invalid token' });
   }
 });
+
+app.post('/user/chart-type', (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { userId, chartType } = req.body;
+
+    const query = 'UPDATE users SET graf = ? WHERE id = ?';
+    db.query(query, [chartType, userId], (err, result) => {
+      if (err) {
+        console.error('Error updating chart type:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+      }
+
+      res.status(200).json({ message: 'Chart type saved successfully' });
+    });
+  } catch (err) {
+    console.error('Error verifying token:', err);
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+});
+
+
+app.get('/user/chart-type', (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = req.query.userId;
+
+    const query = 'SELECT graf FROM users WHERE id = ?';
+    db.query(query, [userId], (err, result) => {
+      if (err) {
+        console.error('Error fetching chart type:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+      }
+
+      if (result.length === 0) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      res.status(200).json({ chartType: result[0].graf });
+    });
+  } catch (err) {
+    console.error('Error verifying token:', err);
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+});
+
+
 
 app.get('/getTrips', (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];

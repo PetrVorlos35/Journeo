@@ -28,6 +28,7 @@
     "react-leaflet": "^4.2.1",
     "react-native-calendars": "^1.1307.0",
     "react-router-dom": "^6.26.2",
+    "react-toastify": "^11.0.2",
     "use-places-autocomplete": "^4.0.1"
   },
   "devDependencies": {

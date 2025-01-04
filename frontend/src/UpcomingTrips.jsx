@@ -3,6 +3,10 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 
 function UpcomingTrips({ userId }) {
   const [trips, setTrips] = useState([]);
@@ -11,6 +15,8 @@ function UpcomingTrips({ userId }) {
   const [confirmDelete, setConfirmDelete] = useState(null); // Stav pro potvrzení mazání
 
   const navigate = useNavigate();
+
+  // toast.configure();
 
 
   useEffect(() => {
@@ -41,7 +47,6 @@ function UpcomingTrips({ userId }) {
   }, [userId]);
 
   const handleDelete = async (tripId) => {
-    // Funkce pro smazání po potvrzení
     try {
       const token = localStorage.getItem('token');
       await axios.delete(`${import.meta.env.VITE_API_URL}/deleteTrip?id=${tripId}`, {
@@ -51,15 +56,31 @@ function UpcomingTrips({ userId }) {
       });
       setTrips((prevTrips) => prevTrips.filter(trip => trip.id !== tripId));
       setConfirmDelete(null);
-      alert('Trip deleted successfully.');
+      toast.success('Trip deleted successfully.', {
+        position: "top-right", // Pozice toasty
+        autoClose: 3000, // Zavření po 3 sekundách
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     } catch (error) {
       console.error('Error deleting trip:', error);
-      alert('Failed to delete the trip.');
+      toast.error('Failed to delete the trip.', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
-    };
+  };
 
-    const handleViewTrip = (tripName, startDate, endDate, tripId) => {
-        navigate('/create-trip', { state: { tripName, startDate, endDate, tripId } });
+    const handleViewTrip = (tripName, startDate, endDate, tripId, activities, budgets, accommodationCost) => {
+        navigate('/create-trip', { state: { tripName, startDate, endDate, tripId, activities, budgets, accommodationCost } });
         // navigate(`/trip/overview/${tripId}`);
     }
 
@@ -74,7 +95,7 @@ function UpcomingTrips({ userId }) {
         <div
               key={trip.id}
               className="flex mb-4 justify-between items-center bg-white p-4 rounded-lg shadow-md border-l-4 border-red-400 w-full hover:bg-gray-100 transition cursor-pointer"
-              onClick={() => handleViewTrip(trip.title, trip.start_date, trip.end_date, trip.id)}
+              onClick={() => handleViewTrip(trip.title, trip.start_date, trip.end_date, trip.id, trip.activities, trip.budgets, trip.accommodation_cost)}
             >
               <div>
                 <h4 className="font-semibold text-gray-800">{trip.title}</h4>
@@ -137,6 +158,7 @@ function UpcomingTrips({ userId }) {
 
   return (
     <div className="p-6">
+          <ToastContainer />
       <nav className="flex justify-center mb-6">
         <button
           className={`px-4 py-2 mx-2 rounded-lg ${activeCategory === 'past' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
@@ -168,7 +190,7 @@ function UpcomingTrips({ userId }) {
   );
 }
 UpcomingTrips.propTypes = {
-  userId: PropTypes.string.isRequired,
+  userId: PropTypes.number.isRequired,
 };
 
 export default UpcomingTrips;

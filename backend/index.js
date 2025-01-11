@@ -142,6 +142,11 @@ app.put('/account/update', (req, res) => {
 });
 
 
+app.get('/connection', (req, res) => {
+  res.json({ message: 'Connected to the backend!' });
+}
+);
+
 
 app.get('/account', (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];

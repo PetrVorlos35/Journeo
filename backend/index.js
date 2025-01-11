@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(passport.initialize());
 
 // Database connection
-const db = mysql.createConnection({
+const db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -30,13 +30,15 @@ const db = mysql.createConnection({
   port: process.env.DB_PORT,
 });
 
-db.connect((err) => {
+db.getConnection((err, connection) => {
   if (err) {
-    console.log('Error connecting to MySQL:', err);
+    console.error('Database connection failed:', err.stack);
     return;
   }
-  console.log('Connected to MySQL');
+  console.log('Connected to database.');
+  connection.release();
 });
+
 
 // Passport Google OAuth setup
 passport.use(

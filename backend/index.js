@@ -46,7 +46,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: 'https://journeo-api.vercel.app/auth/google/callback',
+      callbackURL: '/auth/google/callback',
     },
     (accessToken, refreshToken, profile, done) => {
       const email = profile.emails[0].value;

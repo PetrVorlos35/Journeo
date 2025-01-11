@@ -143,7 +143,13 @@ app.put('/account/update', (req, res) => {
 
 
 app.get('/connection', (req, res) => {
-  res.json({ message: 'Connected to the backend!' });
+
+  db.query('SELECT 1 + 1 AS result', (error, results) => {
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.json({ message: 'Connected to the backend!' });
+  });
 }
 );
 

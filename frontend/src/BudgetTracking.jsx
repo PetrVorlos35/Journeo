@@ -153,7 +153,7 @@ const BudgetTracking = ({ userId }) => {
     };
 
     fetchBudgetData();
-  }, [userId]);
+  }, [userId, t]);
 
   const renderChart = () => {
     if (!chartData) return <p className="text-gray-500">Loading chart...</p>;

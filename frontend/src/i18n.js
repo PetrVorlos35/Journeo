@@ -101,7 +101,12 @@ i18n
           calendar: "Calendar",
           totalBudget: "Total Budget",
           accomodationCost: "Accommodation Cost:",
-          savePlan: "Save Plan"
+          savePlan: "Save Plan",
+          journeoAbout: "About Journeo",
+          journeoAboutDes: "Journeo is your go-to platform for trip planning and itinerary management. Explore, plan, and enjoy hassle-free travels.",
+          guickLinks: "Quick Links",
+          followUs: "Follow Us",
+          allRights: "All rights reserved"
         },
       },
       cs: {
@@ -155,7 +160,7 @@ i18n
           noActivities: "Žádné konkrétní aktivity",
           totalCost: "Celková cena",
           budgetChart: "Vyberte typ grafu:",
-          Doughnut: "Koláčový graf",
+          Doughnut: "Prstencový graf",
           Bar: "Sloupcový graf",
           Pie: "Koláčový graf",
           Radar: "Radiální graf",
@@ -198,7 +203,12 @@ i18n
           calendar: "Kalendář",
           totalBudget: "Celkový rozpočet",
           accomodationCost: "Náklady na ubytování:",
-          savePlan: "Uložit plán"
+          savePlan: "Uložit plán",
+          journeoAbout: "O aplikaci Journeo",
+          journeoAboutDes: "Journeo je vaší platformou pro plánování výletů a správu itinerářů. Prozkoumejte, plánujte a užívejte si bezstarostné cesty.",
+          guickLinks: "Rychlé odkazy",
+          followUs: "Sledujte nás",
+          allRights: "Všechna práva vyhrazena"
         },
       },
     },

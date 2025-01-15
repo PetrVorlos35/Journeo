@@ -58,7 +58,6 @@ function GoogleMapComponent() {
 
   return (
     <LoadScript 
-      googleMapsApiKey="AIzaSyB2uqk-K2L8qlZohu25CwbhAH6V4YnV--w" 
       libraries={["places"]} 
       onLoad={() => setApiLoaded(true)} // Set API as loaded once it's ready
     >

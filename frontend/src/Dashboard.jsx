@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import AccountInfo from "./AccountInfo";
 import { DateRangePicker } from "react-date-range";
-import { cs } from "date-fns/locale"; // český jazykový balíček
+import { cs, enUS } from "date-fns/locale"; // český jazykový balíček
 import "react-date-range/dist/styles.css"; // základní styly
 import "react-date-range/dist/theme/default.css"; // výchozí téma
 import { LoadScript } from '@react-google-maps/api';
@@ -12,6 +12,8 @@ import BudgetTracking from "./BudgetTracking";
 import GoogleMap from "./GoogleMaps";
 import MapComponent from "./MapComponent";
 import UpcomingTrips from "./UpcomingTrips";
+import { useTranslation } from 'react-i18next';
+
 
 function Dashboard() {
   const [activeTab, setActiveTab] = useState("createTrip");
@@ -31,6 +33,18 @@ function Dashboard() {
 
   const navigate = useNavigate(); // useNavigate hook for navigation
   const location = useLocation(); // useLocation to get URL parameters
+
+  const { t, i18n } = useTranslation();
+
+  const getLocale = () => {
+    switch (i18n.language) {
+      case "cs":
+        return cs;
+      case "en":
+      default:
+        return enUS;
+    }
+  };
 
   useEffect(() => {
     // Function to fetch user data and set user ID
@@ -141,43 +155,37 @@ function Dashboard() {
             onClick={() => setActiveTab("createTrip")}
             className={`inline-block p-3 transition-all duration-300 ${activeTab === "createTrip" ? "text-blue-500 transition-none border-b-blue-600 border-b-2" : "text-gray-500 hover:text-blue-400 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"}`}
           >
-            📝 Plan a Trip
+            📝 {t('planTrip')}
           </button>
           <button 
             onClick={() => setActiveTab("upcomingTrips")}
             className={`inline-block p-3 transition-all duration-300 ${activeTab === "upcomingTrips" ? "text-blue-500 transition-none border-b-blue-600 border-b-2" : "text-gray-500 hover:text-blue-400 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"}`}
           >
-            🗓️ Trips
+            🗓️ {t('trips')}
           </button>
-          {/* <button 
-            onClick={() => setActiveTab("tripHistory")}
-            className={`inline-block p-3 transition-all duration-300 ${activeTab === "tripHistory" ? "text-blue-500 transition-none border-b-blue-600 border-b-2" : "text-gray-500 hover:text-blue-400 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"}`}
-          >
-            📅 Trip History
-          </button> */}
           <button 
             onClick={() => setActiveTab("statistics")}
             className={`inline-block p-3 transition-all duration-300 ${activeTab === "statistics" ? "text-blue-500 transition-none border-b-blue-600 border-b-2" : "text-gray-500 hover:text-blue-400 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"}`}
           >
-            📊 Statistics
+            📊 {t('statistics')}
           </button>
           <button
             onClick={() => setActiveTab("budgetTracking")}
             className={`inline-block p-3 transition-all duration-300 ${activeTab === "budgetTracking" ? "text-blue-500 transition-none border-b-blue-600 border-b-2" : "text-gray-500 hover:text-blue-400 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"}`}
           >
-            💰 Budget Tracking
+            💰 {t('budgetTracking')}
           </button>
           <button
             onClick={() => setActiveTab("map")}
             className={`inline-block p-3 transition-all duration-300 ${activeTab === "map" ? "text-blue-500 transition-none border-b-blue-600 border-b-2" : "text-gray-500 hover:text-blue-400 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"}`}
           >
-            🗺️ Map
+            🗺️ {t('mapHead')}
           </button>
           <button 
             onClick={() => setActiveTab("accountInfo")}
             className={`inline-block p-3 transition-all duration-300 ${activeTab === "accountInfo" ? "text-blue-500 transition-none border-b-blue-600 border-b-2" : "text-gray-500 hover:text-blue-400 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"}`}
           >
-            👤 Account Info
+            👤 {t('accountInfo')}
           </button>
         </div>
 
@@ -186,21 +194,21 @@ function Dashboard() {
         <div className="flex justify-center transition-all duration-300">
           {activeTab === "upcomingTrips" && (
             <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
-              <h2 className="text-2xl font-bold mb-4 text-blue-500">My Trips</h2>
+              <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('myTrips')}</h2>
               <UpcomingTrips userId={userId} />
         </div>
           )}
 
           {activeTab === "map" && (
             <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
-              <h2 className="text-2xl font-bold mb-4 text-blue-500">Map</h2>
-              <p>Under construction...</p>
+              <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('mapHead')}</h2>
+              <p>{t('construction')}</p>
             </div>
           )}
 
           {activeTab === "budgetTracking" && (
             <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
-              <h2 className="text-2xl font-bold mb-4 text-blue-500">Budget Tracking</h2>
+              <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('budgetTracking')}</h2>
               {/* <p>Under construction...</p> */}
               <BudgetTracking userId={userId} />
             </div>
@@ -209,22 +217,23 @@ function Dashboard() {
 
           {activeTab === "createTrip" && (
            <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
-           <h2 className="text-2xl font-bold mb-4 text-blue-500">Plan a New Trip</h2>
+           <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('newTrip')}</h2>
            <form onSubmit={handleSubmit}>
              <div className="mb-4">
-               <label htmlFor="tripName" className="block text-sm font-medium text-gray-700">Název výletu</label>
+               <label htmlFor="tripName" className="block text-sm font-medium text-gray-700">{t('tripName')}</label>
                <input
                  type="text"
                  id="tripName"
                  name="tripName"
                  className="mt-1 p-2 border border-gray-300 rounded w-full"
                  value={tripName}
+                 placeholder={t('tripNameDes')}
                  onChange={(e) => setTripName(e.target.value)}
                  required
                />
              </div>
              <div className="mb-4">
-               <label className="block text-sm font-medium text-gray-700">Datum od - do</label>
+               <label className="block text-sm font-medium text-gray-700">{t('dateFromTo')}</label>
                <style>
                  {`
                    .rdrDefinedRangesWrapper {
@@ -243,37 +252,22 @@ function Dashboard() {
                  fixedHeight={true}
                  staticRanges={[]}
                  inputRanges={[]}
-                 locale={cs}
+                 locale={getLocale()}
                  className="w-fit border border-gray-300 rounded m-auto relative left-2/4 transform -translate-x-2/4"   
                />
              </div>
              <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full mt-4 hover:bg-blue-600">
-               Vytvořit výlet
+                {t('createTrip')}
              </button>
            </form>
          </div>
           )}
-          
-          {/* {activeTab === "tripHistory" && (
-            <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
-              <h2 className="text-2xl font-bold mb-4 text-blue-500">Trip History</h2>
-              {tripHistory.length > 0 ? (
-                <ul>
-                  {tripHistory.map((trip, index) => (
-                    <li key={index} className="border-b py-2">{trip.destination} on {trip.date}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No past trips.</p>
-              )}
-            </div>
-          )} */}
 
           {activeTab === "statistics" && (
             <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
-              <h2 className="text-2xl font-bold mb-4 text-blue-500">Travel Statistics</h2>
-              <p>Total distance traveled: <strong>{statistics.distance} km</strong></p>
-              <p>Total time spent traveling: <strong>{statistics.time} hours</strong></p>
+              <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('statsHead')}</h2>
+              <p>{t('statsDistance')} <strong>{statistics.distance} km</strong></p>
+              <p>{t('statsTime')} <strong>{statistics.time} {t('hours')}</strong></p>
             </div>
           )}
 

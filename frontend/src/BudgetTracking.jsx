@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { Bar, Doughnut, Pie, Radar, PolarArea, Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -33,6 +34,9 @@ const BudgetTracking = ({ userId }) => {
   const [chartData, setChartData] = useState(null);
   const [chartType, setChartType] = useState('doughnut'); // Default chart type
   const [savedChartType, setSavedChartType] = useState(null); // The chart type saved in the database
+
+  const { t } = useTranslation();
+
 
 
   useEffect(() => {
@@ -107,11 +111,11 @@ const BudgetTracking = ({ userId }) => {
         // Prepare data for charts
         const chartDataset = {
           labels: [
-            `Transport (${totalTransport} CZK)`,
-            `Food (${totalFood} CZK)`,
-            `Activities (${totalActivities} CZK)`,
-            `Other (${totalOther} CZK)`,
-            `Accommodation (${totalAccommodation} CZK)`,
+            `${t('Transport')} (${totalTransport} CZK)`,
+            `${t('Food')} (${totalFood} CZK)`,
+            `${t('Activities')} (${totalActivities} CZK)`,
+            `${t('Other')} (${totalOther} CZK)`,
+            `${t('Accommodation')} (${totalAccommodation} CZK)`,
           ],
           datasets: [
             {
@@ -176,14 +180,14 @@ const BudgetTracking = ({ userId }) => {
     <div className="budget-tracking">
       {totals && (
         <div className="text-center mb-6">
-          <h3 className="text-xl font-semibold text-gray-700">Total Overall Cost</h3>
+          <h3 className="text-xl font-semibold text-gray-700">{t('totalCost')}</h3>
           <p className="text-lg text-blue-500">{totals?.totalOverallCost || 0} CZK</p>
         </div>
       )}
 
       <div className="flex justify-center items-center mb-6">
         <label htmlFor="chartType" className="mr-3 text-gray-700 font-medium">
-          Choose Chart Type:
+        {t('budgetChart')}
         </label>
         <select
           id="chartType"
@@ -191,12 +195,12 @@ const BudgetTracking = ({ userId }) => {
           onChange={(e) => setChartType(e.target.value)}
           className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="doughnut">Doughnut</option>
-          <option value="bar">Bar</option>
-          <option value="pie">Pie</option>
-          <option value="radar">Radar</option>
-          <option value="polarArea">Polar Area</option>
-          <option value="line">Line</option>
+          <option value="doughnut">{t('Doughnut')}</option>
+          <option value="bar">{t('Bar')}</option>
+          <option value="pie">{t('Pie')}</option>
+          <option value="radar">{t('Radar')}</option>
+          <option value="polarArea">{t('PolarArea')}</option>
+          <option value="line">{t('Line')}</option>
         </select>
         {/* Show Save Button only if the chart type has changed */}
   {chartType !== savedChartType && (

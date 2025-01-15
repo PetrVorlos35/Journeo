@@ -16,6 +16,8 @@
     "browser-image-compression": "^2.0.2",
     "chart.js": "^4.4.7",
     "google-map-react": "^2.2.1",
+    "i18next": "^24.2.1",
+    "i18next-browser-languagedetector": "^8.0.2",
     "leaflet": "^1.9.4",
     "leaflet-routing-machine": "^3.2.12",
     "maplibre-gl": "^4.7.1",
@@ -25,10 +27,12 @@
     "react-date-range": "^2.0.1",
     "react-datepicker": "^7.5.0",
     "react-dom": "^18.3.1",
+    "react-i18next": "^15.4.0",
     "react-leaflet": "^4.2.1",
     "react-native-calendars": "^1.1307.0",
     "react-router-dom": "^6.26.2",
     "react-toastify": "^11.0.2",
+    "react-world-flags": "^1.6.0",
     "use-places-autocomplete": "^4.0.1"
   },
   "devDependencies": {

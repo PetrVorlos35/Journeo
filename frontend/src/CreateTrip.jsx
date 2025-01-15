@@ -2,9 +2,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import { useState, useEffect } from "react";
 import { format, eachDayOfInterval } from "date-fns";
-import cs from "date-fns/locale/cs";
+import { cs, enUS } from "date-fns/locale"; // Importy lokalizací
 import MapComponent from "./MapComponent";
 import { Autocomplete, LoadScript } from "@react-google-maps/api";
+import { useTranslation } from 'react-i18next';
+
 
 const libraries = ["places"]; // Nutné pro Autocomplete
 
@@ -20,6 +22,7 @@ const CreateTrip = () => {
   const [dailyBudgets = [], setDailyBudgets] = useState([]); // Nový stav pro denní rozpočty
   const [accommodationCost, setAccommodationCost] = useState(location.state.accommodationCost || 0); // Náklady na ubytování
 
+  const { t, i18n } = useTranslation();
 
 
 
@@ -41,6 +44,16 @@ const CreateTrip = () => {
       location: activities[index]?.location || '',
       route: activities[index]?.route || { start: '', end: '', stops: [] },
     }));
+  };
+
+  const getLocale = () => {
+    switch (i18n.language) {
+      case "cs":
+        return cs;
+      case "en":
+      default:
+        return enUS;
+    }
   };
   
   const convertDailyBudgets = (dailyBudgets, length) => {
@@ -380,7 +393,7 @@ const handleLocationInputChange = (e) => {
             href="/dashboard"
             className="text-blue-500 hover:text-blue-600 font-bold px-4 py-2 rounded"
         >
-            ← Zpět
+            ← {t('back')}
         </a>
         <h1 className="text-3xl font-bold text-center flex-grow">{tripName}</h1>
         </div>
@@ -391,25 +404,25 @@ const handleLocationInputChange = (e) => {
             {dailyPlans.length > 0 && (
               <div>
                 <h2 className="text-xl font-semibold mb-2">
-                  Den {currentDayIndex + 1} - {format(dailyPlans[currentDayIndex].date, "dd.MM.yyyy")} <span className="text-center right-4 absolute">{format(dailyPlans[currentDayIndex].date, "EEEE", { locale: cs })}</span>
+                {t('day')} {currentDayIndex + 1} - {format(dailyPlans[currentDayIndex].date, "dd.MM.yyyy")} <span className="text-center right-4 absolute">{format(dailyPlans[currentDayIndex].date, "EEEE", { locale: getLocale() })}</span>
                 </h2>
 
                 <div className="mb-4">
                     <label htmlFor="activityDescription" className="block text-gray-700 font-bold mb-2">
-                        Denní aktivita:
+                    {t('dailyActivity')}
                     </label>
                     <textarea
                         id="activityDescription"
                         value={dailyPlans[currentDayIndex]?.plan || ''}
                         onChange={(e) => handlePlanChange(e.target.value)}
                         className="w-full border rounded p-2"
-                        placeholder="Popis denní aktivity..."
+                        placeholder={t('dailyActivityDes')}
                     ></textarea>
                 </div>
 
                 {/* Sekce pro denní rozpočet */}
               <div className="mb-4">
-                <h3 className="font-bold text-lg">Denní rozpočet</h3>
+                <h3 className="font-bold text-lg">{t('dailyBudget')}</h3>
                 <div className="flex flex-col gap-2">
                   {dailyBudgets[currentDayIndex]?.expenses?.map((expense, index) => (
                     <div key={index} className="flex items-center gap-2">
@@ -418,10 +431,10 @@ const handleLocationInputChange = (e) => {
                         onChange={(e) => handleExpenseChange(index, "category", e.target.value)}
                         className="border rounded p-1 w-1/3"
                       >
-                        <option value="transport">Doprava</option>
-                        <option value="food">Jídlo</option>
-                        <option value="activities">Aktivity</option>
-                        <option value="other">Ostatní</option>
+                        <option value="transport">{t('Transport')}</option>
+                        <option value="food">{t('Food')}</option>
+                        <option value="activities">{t('Activities')}</option>
+                        <option value="other">{t('Other')}</option>
                       </select>
                       <input
                         type="number"
@@ -434,7 +447,7 @@ const handleLocationInputChange = (e) => {
                         type="text"
                         value={expense.description}
                         onChange={(e) => handleExpenseChange(index, "description", e.target.value)}
-                        placeholder="Popis"
+                        placeholder={t('BudgetDescription')}
                         className="border rounded p-1 w-1/3"
                       />
                       <button
@@ -454,29 +467,29 @@ const handleLocationInputChange = (e) => {
                     onClick={addExpense}
                     className="bg-blue-500 text-white font-bold py-1 px-4 rounded hover:bg-blue-600"
                   >
-                    Přidat útratu
+                    {t('addExpense')}
                   </button>
                 </div>
                 <div className="flex justify-between items-center font-bold mt-2">
-                  <span>Celkový denní rozpočet:</span>
+                  <span>{t('totalDailyExpense')}</span>
                   <span>{calculateDailyTotal(dailyBudgets[currentDayIndex])} CZK</span>
                 </div>
               </div>
 
                 <div className="mb-4">
-                    <label className="block text-gray-700 font-bold mb-2">Zvolte možnost:</label>
+                    <label className="block text-gray-700 font-bold mb-2">{t('option')}</label>
                     <div className="flex space-x-4">
                         <button
                         className={`py-2 px-4 rounded ${inputType === 'location' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
                         onClick={() => handleInputTypeChange('location')}
                         >
-                        Lokace
+                        {t('location')}
                         </button>
                         <button
                         className={`py-2 px-4 rounded ${inputType === 'route' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
                         onClick={() => handleInputTypeChange('route')}
                         >
-                        Trasa
+                        {t('route')}
                         </button>
                     </div>
                 </div>
@@ -484,7 +497,7 @@ const handleLocationInputChange = (e) => {
                 {/* Dynamické zobrazení uložené lokace */}
                 {inputType === 'location' && (
                 <div className="mb-4">
-                    <label className="block text-gray-700 font-bold mb-2">Zadejte lokaci:</label>
+                    <label className="block text-gray-700 font-bold mb-2">{t('enterLocation')}</label>
                     <Autocomplete
                     onLoad={onLoadLocation}
                     onPlaceChanged={onPlaceChangedLocation}
@@ -492,7 +505,7 @@ const handleLocationInputChange = (e) => {
                       <input
                       type="text"
                       className="w-full border rounded p-2"
-                      placeholder="Např. Praha, Český Krumlov..."
+                      placeholder={t('locationPlaceHolder')}
                       value={locationInputs[currentDayIndex]}
                       onChange={handleLocationInputChange}
                       />
@@ -503,7 +516,7 @@ const handleLocationInputChange = (e) => {
                 {/* Dynamické zobrazení uložené trasy */}
                 {inputType === 'route' && (
                 <div className="mb-4">
-                    <label className="block text-gray-700 font-bold mb-2">Zadejte trasu:</label>
+                    <label className="block text-gray-700 font-bold mb-2">{t('enterRoute')}</label>
                     <div className="flex flex-col gap-2">
                     {/* Startovní bod */}
                     <Autocomplete
@@ -513,7 +526,7 @@ const handleLocationInputChange = (e) => {
                         <input
                             type="text"
                             className="w-full border rounded p-2"
-                            placeholder="Startovní bod"
+                            placeholder={t('routePlaceHolderStart')}
                             value={dailyPlans[currentDayIndex]?.route.start || ''}
                             onChange={(e) => handleRouteChange('start', e.target.value)}
                         />
@@ -528,7 +541,7 @@ const handleLocationInputChange = (e) => {
                             <input
                                 type="text"
                                 className="w-full border rounded p-2"
-                                placeholder={`Zastávka ${index + 1}`}
+                                placeholder={`${t('routePlaceHolderStops')} ${index + 1}`}
                                 value={stop}
                                 onChange={(e) => {
                                     const updatedStops = [...dailyPlans[currentDayIndex].route.stops];
@@ -583,7 +596,7 @@ const handleLocationInputChange = (e) => {
                       <input
                           type="text"
                           className="w-full border rounded p-2"
-                          placeholder="Cílový bod"
+                          placeholder={t('routePlaceHolderEnd')}
                           value={dailyPlans[currentDayIndex]?.route.end || ''}
                           onChange={(e) => handleRouteChange('end', e.target.value)}
                       />
@@ -608,7 +621,7 @@ const handleLocationInputChange = (e) => {
                     onClick={handlePrevDay}
                     disabled={currentDayIndex === 0}
                     >
-                    Předchozí den
+                    {t('previousDay')}
                     </button>
                 </div>
                 <div className="text-right">
@@ -617,7 +630,7 @@ const handleLocationInputChange = (e) => {
                     onClick={handleNextDay}
                     disabled={currentDayIndex === dailyPlans.length - 1}
                     >
-                    Další den
+                    {t('nextDay')}
                     </button>
                 </div>
                 </div>
@@ -628,7 +641,7 @@ const handleLocationInputChange = (e) => {
 
           {/* Pravý panel pro kalendář */}
           <div className="md:w-1/3 w-full border rounded-lg p-4 shadow-md max-h-[600px] mt-6 md:mt-0 overflow-y-auto bg-white">
-            <h3 className="text-lg font-semibold mb-2">Kalendář</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('calendar')}</h3>
             <div className="space-y-2">
               {dailyPlans.map((day, index) => (
                 <button
@@ -636,7 +649,7 @@ const handleLocationInputChange = (e) => {
                   className={`w-full text-left p-2 border rounded ${index === currentDayIndex ? 'bg-blue-200' : 'hover:bg-gray-100'}`}
                   onClick={() => handleDayClick(index)}
                 >
-                  Den {index + 1} ({format(dailyPlans[index].date, "EEEE", { locale: cs })}) - {format(day.date, "dd.MM.yyyy")}
+                  {t('day')} {index + 1} ({format(dailyPlans[index].date, "EEEE", { locale: getLocale() })}) - {format(day.date, "dd.MM.yyyy")}
                 </button>
               ))}
             </div>
@@ -647,9 +660,9 @@ const handleLocationInputChange = (e) => {
 
         {(currentDayIndex === dailyPlans.length - 1) && (
             <div className="mt-6 p-4 bg-white rounded shadow-md text-center">
-              <h3 className="font-bold text-lg">Celkový rozpočet</h3>
+              <h3 className="font-bold text-lg">{t('totalBudget')}</h3>
               <div className="flex justify-between items-center">
-                <label className="font-medium">Náklady na ubytování:</label>
+                <label className="font-medium">{t('accomodationCost')}</label>
                 <input
                   type="number"
                   className="border rounded p-1 w-1/2"
@@ -659,11 +672,11 @@ const handleLocationInputChange = (e) => {
                 />
               </div>
               <div className="flex justify-between items-center font-bold mt-2">
-                <span>Celkový rozpočet:</span>
+                <span>{t('totalBudget')}</span>
                 <span>{calculateTripTotal()} CZK</span>
               </div>
                 <button onClick={handleUpdate} className="bg-blue-500 text-white font-bold py-2 w-full md:w-fit px-4 rounded hover:bg-blue-600">
-                Uložit plán
+                {t('savePlan')}
                 </button>
             </div>
         )}

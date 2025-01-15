@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
+
 
 function AccountInfo() {
     const navigate = useNavigate();
@@ -15,6 +17,9 @@ function AccountInfo() {
   });
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -65,20 +70,20 @@ function AccountInfo() {
 
   return (
     <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
-      <h2 className="text-2xl font-bold mb-4 text-blue-500">Account Overview</h2>
+      <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('accountOver')}</h2>
 
       {/* Profile Picture */}
       {userInfo.profilovka ? (
         <img src={userInfo.profilovka} alt="Profile" className="w-24 h-24 rounded-full mb-4" />
       ) : (
-        <p className="text-red-500">No profile picture</p>
+        <p className="text-red-500">{t('noPic')}</p>
       )}
 
       {/* Full Name */}
       {isEditing ? (
         <>
           <label>
-            First Name:
+          {t('firstName')}
             <input
               type="text"
               name="jmeno"
@@ -88,7 +93,7 @@ function AccountInfo() {
             />
           </label>
           <label>
-            Last Name:
+          {t('lastName')}
             <input
               type="text"
               name="prijmeni"
@@ -100,14 +105,14 @@ function AccountInfo() {
         </>
       ) : (
         <p>
-          Full Name: <strong>{userInfo.jmeno} {userInfo.prijmeni}</strong>
+          {t('fullName')} <strong>{userInfo.jmeno} {userInfo.prijmeni}</strong>
         </p>
       )}
 
       {/* Nickname */}
       {isEditing ? (
         <label>
-          Nickname:
+          {t('nickName')}
           <input
             type="text"
             name="prezdivka"
@@ -117,9 +122,9 @@ function AccountInfo() {
           />
         </label>
       ) : userInfo.prezdivka ? (
-        <p>Nickname: <strong>{userInfo.prezdivka}</strong></p>
+        <p>{t('nickName')} <strong>{userInfo.prezdivka}</strong></p>
       ) : (
-        <p className="text-red-500">Nickname not set</p>
+        <p className="text-red-500">{t('noNick')}</p>
       )}
 
       {/* Email */}
@@ -129,21 +134,21 @@ function AccountInfo() {
       {isEditing ? (
         <div>
           <button onClick={handleSave} className="bg-green-500 text-white p-2 rounded w-full mt-4 hover:bg-green-600">
-            Save
+            {t('save')}
           </button>
           <button onClick={handleEditToggle} className="bg-gray-500 text-white p-2 rounded w-full mt-4 hover:bg-gray-600">
-            Cancel
+          {t('cancel')}
           </button>
         </div>
       ) : (
         <button onClick={handleEditToggle} className="bg-blue-500 text-white p-2 rounded w-full mt-4 hover:bg-blue-600">
-          Edit Profile
+          {t('editProfile')}
         </button>
       )}
 
       {/* Logout Button */}
       <button onClick={handleLogout} className="bg-red-500 text-white p-2 rounded w-full mt-4 hover:bg-red-600">
-        Logout
+        {t('logout')}
       </button>
 
       {/* Error Message */}

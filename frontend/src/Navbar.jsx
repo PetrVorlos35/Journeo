@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from './assets/Journeo_full.png';
+import LanguageSelector from './LanguageSelector';
+import { useTranslation } from 'react-i18next';
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+
+  const { t } = useTranslation();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -41,7 +45,7 @@ function Navbar() {
           {!isAuthenticated ? (
             <>
               <a href="/" className="text-gray-700 hover:text-blue-600 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0">
-                Home
+              {t('home')}
               </a>
             </>
           ) : (
@@ -52,19 +56,19 @@ function Navbar() {
             </>
           )}
           <a href="/#about" className="relative text-gray-700 hover:text-blue-600 after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0">
-            About
+          {t('about')}
           </a>
 
           <a href="/#features" className="relative text-gray-700 hover:text-blue-600 after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0">
-            Features
+          {t('features')}
           </a>
           {!isAuthenticated ? (
             <>
               <Link to="/login" className="text-gray-700 hover:text-blue-600 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0">
-                Login
+                {t("login")}
               </Link>
               <Link to="/register" className="text-gray-700 hover:text-blue-600 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0">
-                Register
+              {t('register')}
               </Link>
             </>
           ) : (
@@ -72,9 +76,10 @@ function Navbar() {
               onClick={handleLogout}
               className="text-gray-700 hover:text-blue-600 cursor-pointer after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0 relative"
             >
-              Logout
+              {t("logout")}
             </a>
           )}
+          <LanguageSelector />
         </div>
 
         {/* Hamburger Menu (Mobile) */}
@@ -107,11 +112,11 @@ function Navbar() {
           </>
         )}  
         <a href="/about" className="text-gray-700 hover:text-blue-600 text-xl">About</a>
-        <a href="/features" className="text-gray-700 hover:text-blue-600 text-xl">Features</a>
+        <a href="/features" className="text-gray-700 hover:text-blue-600 text-xl">{t('features')}</a>
         {!isAuthenticated ? (
             <>
-              <Link to="/login" className="text-gray-700 hover:text-blue-600 text-xl">Login</Link>
-              <Link to="/register" className="text-gray-700 hover:text-blue-600 text-xl">Register</Link>
+              <Link to="/login" className="text-gray-700 hover:text-blue-600 text-xl">{t("login")}</Link>
+              <Link to="/register" className="text-gray-700 hover:text-blue-600 text-xl">{t('register')}</Link>
             </>
           ) : (
             <a

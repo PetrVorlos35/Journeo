@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./Navbar";
 import googleLogo from "./assets/google.png"; // Assuming the path of google logo
+import { useTranslation } from 'react-i18next';
+
 
 function RegisterForm() {
   const [email, setEmail] = useState("");
@@ -12,6 +14,7 @@ function RegisterForm() {
   const [errorMessage, setErrorMessage] = useState(""); // Error message for password mismatch
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,7 +49,7 @@ function RegisterForm() {
         <div className="max-w-md w-full space-y-8">
           <div>
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-              Register your account
+            {t('registerHead')}
             </h2>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -64,7 +67,7 @@ function RegisterForm() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Email address"
+                  placeholder={t("email")}
                 />
               </div>
               <div>
@@ -80,7 +83,7 @@ function RegisterForm() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="Password"
+                  placeholder={t("password")}
                 />
               </div>
               <div>
@@ -95,7 +98,7 @@ function RegisterForm() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="Confirm Password"
+                  placeholder={t("passwordConfirm")}
                 />
               </div>
             </div>
@@ -106,7 +109,7 @@ function RegisterForm() {
                 type="submit"
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                Register
+                {t('register')}
               </button>
             </div>
 
@@ -118,15 +121,15 @@ function RegisterForm() {
 
             <div className="flex items-center justify-between">
             <p className="text-sm text-gray-600">
-              Already have an account?{" "}
+            {t('noAccount')}{" "}
               <a href="/login" className="text-indigo-600 hover:text-indigo-500">
-                Log in here
+              {t('noAccountLinkLogin')}
               </a>
             </p>
           </div>
 
             <div className="relative flex items-center justify-center">
-              <span className="absolute  px-2 text-gray-500">Or continue with</span>
+              <span className="absolute  px-2 text-gray-500">{t('continueW')}</span>
               <div className="w-full border-t border-gray-300 mt-4"></div>
             </div>
 

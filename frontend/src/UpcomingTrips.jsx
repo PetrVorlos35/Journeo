@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useTranslation } from 'react-i18next';
+
 
 
 
@@ -15,6 +17,8 @@ function UpcomingTrips({ userId }) {
   const [confirmDelete, setConfirmDelete] = useState(null); // Stav pro potvrzení mazání
 
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
 
   // toast.configure();
 
@@ -100,7 +104,7 @@ function UpcomingTrips({ userId }) {
               <div>
                 <h4 className="font-semibold text-gray-800">{trip.title}</h4>
                 <p>{format(new Date(trip.start_date), 'dd.MM.yyyy')} - {format(new Date(trip.end_date), 'dd.MM.yyyy')}</p>
-                <p className="text-xs mt-1">No specific activities</p>
+                <p className="text-xs mt-1">{t('noActivities')}</p>
               </div>
               {confirmDelete === trip.id ? (
                 <div className="flex space-x-2">
@@ -164,19 +168,19 @@ function UpcomingTrips({ userId }) {
           className={`px-4 py-2 mx-2 rounded-lg ${activeCategory === 'past' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
           onClick={() => setActiveCategory('past')}
         >
-          Past Trips
+          {t('tripsPast')}
         </button>
         <button
           className={`px-4 py-2 mx-2 rounded-lg ${activeCategory === 'ongoing' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
           onClick={() => setActiveCategory('ongoing')}
         >
-          Ongoing Trips
+          {t('tripsOn')}
         </button>
         <button
           className={`px-4 py-2 mx-2 rounded-lg ${activeCategory === 'upcoming' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
           onClick={() => setActiveCategory('upcoming')}
         >
-          Upcoming Trips
+          {t('tripsUp')}
         </button>
       </nav>
 

@@ -60,7 +60,7 @@ function UpcomingTrips({ userId }) {
       });
       setTrips((prevTrips) => prevTrips.filter(trip => trip.id !== tripId));
       setConfirmDelete(null);
-      toast.success('Trip deleted successfully.', {
+      toast.success(t('deletedTripSuccess'), {
         position: "top-right", // Pozice toasty
         autoClose: 3000, // Zavření po 3 sekundách
         hideProgressBar: false,
@@ -71,7 +71,7 @@ function UpcomingTrips({ userId }) {
       });
     } catch (error) {
       console.error('Error deleting trip:', error);
-      toast.error('Failed to delete the trip.', {
+      toast.error(t('deletedTripError'), {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,

@@ -39,6 +39,12 @@ db.getConnection((err, connection) => {
   connection.release();
 });
 
+// setInterval(() => {
+//   db.query('SELECT 1', (err) => {
+//     if (err) console.error('Database keep-alive failed:', err);
+//   });
+// }, 10000); // každých 10 sekund
+
 
 // Passport Google OAuth setup
 passport.use(

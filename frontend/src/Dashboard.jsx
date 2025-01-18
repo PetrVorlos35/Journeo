@@ -149,16 +149,10 @@ function Dashboard() {
       <Navbar />
       <div className="max-w-7xl mx-auto p-6">
         {/* Tab Navigation */}
-        <div className="w-full text-center overflow-x-scroll whitespace-nowrap space-x-4 md:space-x-8 mb-6 px-4">
-        <button
-            onClick={() => setActiveTab("createTrip")}
-            className={`inline-block p-3 transition-all duration-300 ${
-              activeTab === "createTrip"
-                ? "text-blue-500 transition-none border-b-blue-600 border-b-2"
-                : "text-gray-500 hover:text-blue-400 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"
-            }`}
-          >
-            <svg
+        <div className="w-full text-center overflow-x-scroll whitespace-nowrap space-x-4 md:space-x-8 mb-6 px-4 ">
+  {[
+    { tab: "createTrip", label: t("planTrip"), svg: (
+      <svg
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
               xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -179,18 +173,9 @@ function Dashboard() {
                 />
               </g>
             </svg>
-            {t("planTrip")}
-          </button>
-
-          <button
-            onClick={() => setActiveTab("upcomingTrips")}
-            className={`inline-block p-3 transition-all duration-300 ${
-              activeTab === "upcomingTrips"
-                ? "text-blue-500 transition-none border-b-blue-600 border-b-2"
-                : "text-gray-500 hover:text-blue-400 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"
-            }`}
-          >
-            <svg
+    ) },
+    { tab: "upcomingTrips", label: t("trips"), svg: (
+      <svg
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
               xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -206,18 +191,9 @@ function Dashboard() {
                 />
               </g>
             </svg>
-            {t("trips")}
-          </button>
-
-          <button
-            onClick={() => setActiveTab("statistics")}
-            className={`inline-block p-3 transition-all duration-300 ${
-              activeTab === "statistics"
-                ? "text-blue-500 transition-none border-b-blue-600 border-b-2"
-                : "text-gray-500 hover:text-blue-400 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"
-            }`}
-          >
-            <svg
+    ) },
+    { tab: "statistics", label: t("statistics"), svg: (
+      <svg
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
               xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -253,18 +229,9 @@ function Dashboard() {
                 />
               </g>
             </svg>
-            {t("statistics")}
-          </button>
-
-          <button
-            onClick={() => setActiveTab("budgetTracking")}
-            className={`inline-block p-3 transition-all duration-300 ${
-              activeTab === "budgetTracking"
-                ? "text-blue-500 transition-none border-b-blue-600 border-b-2"
-                : "text-gray-500 hover:text-blue-400 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"
-            }`}
-          >
-            <svg
+    ) },
+  { tab: "budgetTracking", label: t("budgetTracking"), svg: (
+    <svg
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
               xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -280,18 +247,9 @@ function Dashboard() {
                 />
               </g>
             </svg>
-            {t("budgetTracking")}
-          </button>
-
-          <button
-            onClick={() => setActiveTab("map")}
-            className={`inline-block p-3 transition-all duration-300 ${
-              activeTab === "map"
-                ? "text-blue-500 transition-none border-b-blue-600 border-b-2"
-                : "text-gray-500 hover:text-blue-400 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"
-            }`}
-          >
-            <svg
+  )},
+  { tab: "map", label: t("mapHead"), svg: (
+<svg
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
               xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -307,18 +265,9 @@ function Dashboard() {
                 />
               </g>
             </svg>
-            {t("mapHead")}
-          </button>
-
-          <button
-            onClick={() => setActiveTab("accountInfo")}
-            className={`inline-block p-3 transition-all duration-300 ${
-              activeTab === "accountInfo"
-                ? "text-blue-500 transition-none border-b-blue-600 border-b-2"
-                : "text-gray-500 hover:text-blue-400 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"
-            }`}
-          >
-            <svg
+  )},
+    { tab: "accountInfo", label: t("accountInfo"), svg: (
+<svg
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
               xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -334,10 +283,24 @@ function Dashboard() {
                 />
               </g>
             </svg>
-            {t("accountInfo")}
-          </button>
+  )},
+    // Add other tabs here...
+  ].map(({ tab, label, svg }) => (
+    <button
+      key={tab}
+      onClick={() => setActiveTab(tab)}
+      className={`inline-block p-3 transition-all duration-300 ${
+        activeTab === tab
+          ? "text-blue-600 transition-none border-b-blue-600 border-b-2"
+          : " text-gray-500 hover:text-blue-600 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"
+      }`}
+    >
+      {svg}
+      {label}
+    </button>
+  ))}
+</div>
 
-        </div>
 
 
         {/* Tab Content */}
@@ -406,7 +369,7 @@ function Dashboard() {
                  className="w-fit border border-gray-300 rounded m-auto relative left-2/4 transform -translate-x-2/4"   
                />
              </div>
-             <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full mt-4 hover:bg-blue-600">
+             <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full mt-4 hover:bg-blue-600 transition duration-300 transform hover:shadow-2xl">
                 {t('createTrip')}
              </button>
            </form>
@@ -414,7 +377,7 @@ function Dashboard() {
           )}
 
           {activeTab === "statistics" && (
-            <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
+            <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full  sm:w-10/12 md:w-8/12 lg:w-6/12">
               <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('statsHead')}</h2>
               <p>{t('statsDistance')} <strong>{statistics.distance} km</strong></p>
               <p>{t('statsTime')} <strong>{statistics.time} {t('hours')}</strong></p>

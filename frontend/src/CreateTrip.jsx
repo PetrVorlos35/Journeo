@@ -21,6 +21,7 @@ const CreateTrip = () => {
   const [inputType, setInputType] = useState('location'); // "location" or "route"
   const [dailyBudgets = [], setDailyBudgets] = useState([]); // Nový stav pro denní rozpočty
   const [accommodationCost, setAccommodationCost] = useState(location.state.accommodationCost || 0); // Náklady na ubytování
+  const [tempPlan, setTempPlan] = useState("");
 
   const { t, i18n } = useTranslation();
 
@@ -31,6 +32,19 @@ const CreateTrip = () => {
   const handleClearMap = () => {
     setCurrentDayData(null); // Reset aktuální data
   };
+
+  useEffect(() => {
+    // Aktualizace tempPlan při změně aktuálního dne
+    setTempPlan(dailyPlans[currentDayIndex]?.plan || '');
+}, [currentDayIndex]);
+
+const handleTempPlanChange = (e) => {
+    setTempPlan(e.target.value); // Lokálně aktualizujeme hodnotu
+};
+
+const handleBlur = () => {
+    handlePlanChange(tempPlan); // Aktualizujeme hlavní plán pouze po onBlur
+};
 
   const convertDailyPlans = (activities, startDate, endDate) => {
     const dateRange = eachDayOfInterval({
@@ -97,12 +111,13 @@ const CreateTrip = () => {
 
   useEffect(() => {
     if (dailyPlans.length > 0) {
-      // Ensure dailyPlans is populated before triggering handleDayClick
-      setTimeout(() => {
-        handleDayClick(0);
-      }, 100);
+        setTimeout(() => {
+            handleDayClick(0);
+        }, 100);
     }
-  }, [dailyPlans]);
+    // Spustí se pouze jednou při načtení komponenty
+}, []);
+
 
   const handleUpdate = async () => {
     // console.log(dailyPlans);
@@ -413,8 +428,9 @@ const handleLocationInputChange = (e) => {
                     </label>
                     <textarea
                         id="activityDescription"
-                        value={dailyPlans[currentDayIndex]?.plan || ''}
-                        onChange={(e) => handlePlanChange(e.target.value)}
+                        value={dailyPlans[currentDayIndex]?.plan || tempPlan}
+                        onChange={handleTempPlanChange} // Okamžitě aktualizuje tempPlan
+                        onBlur={handleBlur} // Ukládá změnu do dailyPlans až při onBlur
                         className="w-full border rounded p-2"
                         placeholder={t('dailyActivityDes')}
                     ></textarea>
@@ -606,11 +622,11 @@ const handleLocationInputChange = (e) => {
                 )}
 
                 <div className="mt-6 mb-4">
-                    {/* <MapComponent
+                    <MapComponent
                         location={inputType === 'location' ? dailyPlans[currentDayIndex]?.location : null}
                         route={inputType === 'route' ? dailyPlans[currentDayIndex]?.route : { start: '', end: '', stops: [] }}
                         clearMap={!currentDayData}
-                        /> */}
+                        />
                 </div>
 
                 {/* Tlačítka pro rychlé přecházení mezi dny ve spodních rozích */}

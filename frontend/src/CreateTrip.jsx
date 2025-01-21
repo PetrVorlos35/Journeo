@@ -6,6 +6,7 @@ import { cs, enUS } from "date-fns/locale";
 import MapComponent from "./MapComponent";
 import { Autocomplete, LoadScript } from "@react-google-maps/api";
 import { useTranslation } from 'react-i18next';
+import { toast, ToastContainer, Slide } from "react-toastify";
 
 
 const libraries = ["places"];
@@ -335,11 +336,22 @@ const handleLocationInputChange = (e) => {
         updatedExpenses.splice(index, 1);
         updatedBudgets[currentDayIndex].expenses = updatedExpenses;
         setDailyBudgets(updatedBudgets);
+        toast.success(t('deletedExpenseSuccess'), {
+          position: "top-right", 
+          autoClose: 3000, 
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          transition: Slide,
+        });
       };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-50">
       <Navbar />
+      <ToastContainer />
       <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} libraries={libraries}>
       <div className="p-6">
       <div className="flex items-center justify-between mb-4">
@@ -396,7 +408,7 @@ const handleLocationInputChange = (e) => {
                       </select>
                       <input
                         type="number"
-                        value={expense.amount}
+                        value={expense.amount || ''}
                         onChange={(e) => handleExpenseChange(index, "amount", e.target.value)}
                         placeholder="Částka"
                         className="border rounded p-1 w-1/3"

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import { ToastContainer, toast } from 'react-toastify';
+import { Slide, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
 
@@ -65,6 +65,7 @@ function UpcomingTrips({ userId }) {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
+        transition: Slide,
       });
     } catch (error) {
       console.error('Error deleting trip:', error);

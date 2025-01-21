@@ -111,6 +111,7 @@ i18n
           ctaDes: "Join thousands of travelers who plan their trips with us. Click the button and start exploring!",
           deletedTripSuccess: "Trip successfully deleted!",
           deletedTripError: "Failed to delete the trip!",
+          deletedExpenseSuccess: "Expense successfully deleted!",
         },
       },
       cs: {
@@ -217,6 +218,7 @@ i18n
           ctaDes: "Připojte se k tisícům cestovatelů, kteří si plánují své výlety s námi. Klikněte na tlačítko a začněte objevovat!",
           deletedTripSuccess: "Výlet byl úspěšně smazán!",
           deletedTripError: "Nepodařilo se smazat výlet!",
+          deletedExpenseSuccess: "Útrata byla úspěšně smazána!",
         },
       },
     },

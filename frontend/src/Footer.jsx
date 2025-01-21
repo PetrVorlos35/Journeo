@@ -1,4 +1,4 @@
-import { FaFacebook, FaTwitter, FaInstagram, FaSpotify, FaLinkedin } from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaInstagram, FaSpotify, FaLinkedin, FaGithub } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import logo from './assets/Journeo_white.png';
@@ -52,28 +52,33 @@ function Footer() {
             <div className="flex space-x-4">
             {/* Instagram */}
             <a href="https://instagram.com/petr.vorel35" target="_blank" rel="noopener noreferrer" className="group">
-                <FaInstagram size={24} className="transition-all duration-300 group-hover:fill-[url(#instagram-gradient)]" />
+                <FaInstagram size={24} className="transition-all duration-300 group-hover:scale-110 group-hover:fill-[url(#instagram-gradient)]" />
             </a>
 
             {/* Facebook */}
             <a href="https://facebook.com/PetrVorlicek06" target="_blank" rel="noopener noreferrer" className="group">
-                <FaFacebook size={24} className="transition-all duration-300 group-hover:fill-[url(#facebook-gradient)]" />
+                <FaFacebook size={24} className="transition-all duration-300 group-hover:scale-110 group-hover:fill-[url(#facebook-gradient)]" />
             </a>
 
             {/* Twitter/X */}
             <a href="https://x.com/Vorel35" target="_blank" rel="noopener noreferrer" className="group">
-                <FaTwitter size={24} className="transition-all duration-300 group-hover:fill-[url(#twitter-gradient)]" />
+                <FaTwitter size={24} className="transition-all duration-300 group-hover:scale-110 group-hover:fill-[url(#twitter-gradient)]" />
             </a>
 
             {/* Spotify */}
             <a href="https://open.spotify.com/playlist/5TwZJVsfH5I2swTuiZXJx6" target="_blank" rel="noopener noreferrer" className="group">
-                <FaSpotify size={24} className="transition-all duration-300 group-hover:fill-[url(#spotify-gradient)]" />
+                <FaSpotify size={24} className="transition-all duration-300 group-hover:scale-110 group-hover:fill-[url(#spotify-gradient)]" />
             </a>
 
              {/* LinkedIn */}
             <a href="https://www.linkedin.com/in/petr-vorlicek/" target="_blank" rel="noopener noreferrer" className="group">
-                <FaLinkedin size={24} className="transition-all duration-300 group-hover:fill-[url(#linkedin-gradient)]" />
+                <FaLinkedin size={24} className="transition-all duration-300 group-hover:scale-110 group-hover:fill-[url(#linkedin-gradient)]" />
             </a>
+
+            <a href="https://github.com/PetrVorlos35/Journeo" target="_blank" rel="noopener noreferrer" className="group relative">
+            <FaGithub size={24} className="transition-all duration-300 group-hover:text-gray-400 group-hover:scale-110 group-hover:drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]" />
+            </a>
+
 
             {/* Gradient Definitions */}
             <svg width="0" height="0">

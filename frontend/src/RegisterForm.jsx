@@ -2,16 +2,16 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./Navbar";
-import googleLogo from "./assets/google.png"; // Assuming the path of google logo
+import googleLogo from "./assets/google.png"; 
 import { useTranslation } from 'react-i18next';
 
 
 function RegisterForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); // Second password field
+  const [confirmPassword, setConfirmPassword] = useState(""); 
   const [error, setError] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); // Error message for password mismatch
+  const [errorMessage, setErrorMessage] = useState(""); 
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();

@@ -3,9 +3,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import AccountInfo from "./AccountInfo";
 import { DateRangePicker } from "react-date-range";
-import { cs, enUS } from "date-fns/locale"; // český jazykový balíček
-import "react-date-range/dist/styles.css"; // základní styly
-import "react-date-range/dist/theme/default.css"; // výchozí téma
+import { cs, enUS } from "date-fns/locale"; 
+import "react-date-range/dist/styles.css"; 
+import "react-date-range/dist/theme/default.css"; 
 import { LoadScript } from '@react-google-maps/api';
 import BudgetTracking from "./BudgetTracking";
 // import Map from "./Map";
@@ -26,12 +26,10 @@ function Dashboard() {
     }
   ]);
   const [userId, setUserId] = useState(null);
-  const [upcomingTrips, setUpcomingTrips] = useState([]);
-  const [tripHistory, setTripHistory] = useState([]);
   const [statistics, setStatistics] = useState({ distance: 0, time: 0 });
 
-  const navigate = useNavigate(); // useNavigate hook for navigation
-  const location = useLocation(); // useLocation to get URL parameters
+  const navigate = useNavigate(); 
+  const location = useLocation();
 
   const { t, i18n } = useTranslation();
 
@@ -46,10 +44,9 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    // Function to fetch user data and set user ID
     const fetchUserId = async () => {
       try {
-        const token = localStorage.getItem('token'); // Replace with your token management logic
+        const token = localStorage.getItem('token');
 
         const response = await fetch(`${import.meta.env.VITE_API_URL}/account`, {
           method: 'GET',
@@ -60,7 +57,7 @@ function Dashboard() {
 
         const result = await response.json();
         if (response.ok) {
-          setUserId(result.id); // Store the user ID from the response
+          setUserId(result.id);
           
         } else {
           console.error('Error fetching user ID:', result.message);
@@ -71,7 +68,7 @@ function Dashboard() {
     };
     const delayFetch = setTimeout(() => {
       fetchUserId();
-    }, 1000); // Delay by 1000 ms (1 second)
+    }, 1000); 
   
     return () => clearTimeout(delayFetch); 
   }, []);
@@ -101,8 +98,8 @@ function Dashboard() {
       });
       const result = await response.json();
       if (response.ok) {
-        const startDate = dateRange[0].startDate.toLocaleDateString("en-CA"); // Formát YYYY-MM-DD
-        const endDate = dateRange[0].endDate.toLocaleDateString("en-CA"); // Formát YYYY-MM-DD
+        const startDate = dateRange[0].startDate.toLocaleDateString("en-CA"); 
+        const endDate = dateRange[0].endDate.toLocaleDateString("en-CA"); 
         navigate("/create-trip", { state: { tripName, startDate, endDate, tripId: result.tripId } });
       } else {
         console.error('Error creating trip:', result);
@@ -118,18 +115,14 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    // Získat token z URL, pokud je přítomen
     const urlParams = new URLSearchParams(location.search);
     const token = urlParams.get("token");
 
     if (token) {
-      // Uložit token do localStorage
       localStorage.setItem("token", token);
 
-      // Odstranit token z URL, aby nebyl vidět v adrese
       navigate("/dashboard", { replace: true });
     } else {
-      // Získat token z localStorage
       const savedToken = localStorage.getItem("token");
 
       if (savedToken) {
@@ -284,7 +277,6 @@ function Dashboard() {
               </g>
             </svg>
   )},
-    // Add other tabs here...
   ].map(({ tab, label, svg }) => (
     <button
       key={tab}
@@ -309,7 +301,7 @@ function Dashboard() {
             <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
               <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('myTrips')}</h2>
               <UpcomingTrips userId={userId} />
-        </div>
+            </div>
           )}
 
           {activeTab === "map" && (
@@ -322,7 +314,6 @@ function Dashboard() {
           {activeTab === "budgetTracking" && (
             <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
               <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('budgetTracking')}</h2>
-              {/* <p>Under construction...</p> */}
               <BudgetTracking userId={userId} />
             </div>
           )}

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./Navbar";
-import googleLogo from "./assets/google.png"; // Assuming the path of google logo
+import googleLogo from "./assets/google.png"; 
 import { useTranslation } from 'react-i18next';
 
 

@@ -16,7 +16,6 @@ import {
   Legend,
 } from 'chart.js';
 
-// Register Chart.js components
 ChartJS.register(
   ArcElement,
   BarElement,
@@ -32,8 +31,8 @@ ChartJS.register(
 const BudgetTracking = ({ userId }) => {
   const [totals, setTotals] = useState(null);
   const [chartData, setChartData] = useState(null);
-  const [chartType, setChartType] = useState('doughnut'); // Default chart type
-  const [savedChartType, setSavedChartType] = useState(null); // The chart type saved in the database
+  const [chartType, setChartType] = useState('doughnut');
+  const [savedChartType, setSavedChartType] = useState(null);
 
   const { t } = useTranslation();
 
@@ -43,13 +42,13 @@ const BudgetTracking = ({ userId }) => {
     const fetchDefaultChartType = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/chart-type?userId=${userId}`, {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/chart-type?userId=${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
   
         if (response.data.chartType) {
           setSavedChartType(response.data.chartType);
-          setChartType(response.data.chartType); // Set the default chart type
+          setChartType(response.data.chartType);
         }
       } catch (error) {
         console.error('Error fetching default chart type:', error.message);
@@ -65,11 +64,11 @@ const BudgetTracking = ({ userId }) => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        `${import.meta.env.VITE_API_URL}/user/chart-type`,
+        `${import.meta.env.VITE_API_URL}/chart-type`,
         { userId, chartType },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setSavedChartType(chartType); // Update the saved chart type
+      setSavedChartType(chartType);
     } catch (error) {
       console.error('Error saving chart type:', error.message);
     }
@@ -98,7 +97,6 @@ const BudgetTracking = ({ userId }) => {
           totalOverallCost,
         } = response.data;
 
-        // Update state with totals
         setTotals({
           transport: totalTransport,
           food: totalFood,
@@ -108,7 +106,6 @@ const BudgetTracking = ({ userId }) => {
           totalOverallCost,
         });
 
-        // Prepare data for charts
         const chartDataset = {
           labels: [
             `${t('Transport')} (${totalTransport} CZK)`,
@@ -202,14 +199,12 @@ const BudgetTracking = ({ userId }) => {
           <option value="polarArea">{t('PolarArea')}</option>
           <option value="line">{t('Line')}</option>
         </select>
-        {/* Show Save Button only if the chart type has changed */}
   {chartType !== savedChartType && (
     <button
       onClick={saveChartType}
       className="ml-3 p-2 text-blue-500 hover:text-blue-700 focus:outline-none"
       title="Save selected chart type"
     >
-      {/* Display the unsaved icon */}
       <svg
         version="1.1"
         xmlns="http://www.w3.org/2000/svg"
@@ -229,7 +224,6 @@ const BudgetTracking = ({ userId }) => {
     </button>
   )}
 
-  {/* Show a "saved" icon if the chart type is already saved */}
   {chartType === savedChartType && (
     <div className="ml-3 p-2">
       <svg

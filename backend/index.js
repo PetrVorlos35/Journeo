@@ -11,7 +11,7 @@ dotenv.config();
 
 const app = express();
 const corsOptions = {
-  origin: 'http://localhost:5173', // Allow your frontend's origin
+  origin: 'http://localhost:5173',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -21,7 +21,6 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(passport.initialize());
 
-// Database connection
 const db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -46,7 +45,6 @@ db.getConnection((err, connection) => {
 // }, 10000); // každých 10 sekund
 
 
-// Passport Google OAuth setup
 passport.use(
   new GoogleStrategy(
     {
@@ -74,20 +72,16 @@ passport.use(
   )
 );
 
-// Google OAuth routes
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 app.get('/auth/google/callback', passport.authenticate('google', { session: false, failureRedirect: '/' }), (req, res) => {
   const user = req.user;
 
-  // Generate JWT token
   const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-  // Redirect to frontend and pass the token as a query parameter
   res.redirect(`http://localhost:5173/dashboard?token=${token}`);
 });
 
-// Register route
 app.post('/auth/register', async (req, res) => {
   const { email, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -101,14 +95,12 @@ app.post('/auth/register', async (req, res) => {
     db.query(queryInsertUser, [email, hashedPassword], (err, result) => {
       if (err) return res.status(500).json({ error: err.message });
 
-      // Generate JWT token
       const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
       res.status(201).json({ message: 'User registered successfully!', token });
     });
   });
 });
 
-// Login route
 app.post('/auth/login', (req, res) => {
   const { email, password } = req.body;
 
@@ -121,7 +113,6 @@ app.post('/auth/login', (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
-    // Generate JWT token
     const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({ token });
   });
@@ -170,7 +161,6 @@ app.get('/account', (req, res) => {
   }
 
   try {
-    // Verify and decode the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const query = 'SELECT * FROM users WHERE email = ?';
     db.query(query, [decoded.email], (err, results) => {
@@ -226,7 +216,6 @@ app.post('/updateActivities', (req, res) => {
 
     const { tripId, activities, budgets, accommodationCost, totalCost } = req.body;
 
-    // Aktualizace aktivit, rozpočtů a dalších údajů
     const query = `
       UPDATE trips 
       SET activities = ?, budgets = ?, accommodation_cost = ?, total_cost = ?
@@ -264,7 +253,7 @@ app.get('/getActivities', (req, res) => {
     const tripId = req.query.tripId;
 
     if (!tripId) {
-      return res.status(400).json({ message: 'Trip ID is missing' }); // Add clear error message
+      return res.status(400).json({ message: 'Trip ID is missing' });
     }
 
     const query = 'SELECT activities FROM trips WHERE id = ?';
@@ -308,7 +297,6 @@ app.get('/overviewTrip', (req, res) => {
       const trip = results[0];
       const activities = JSON.parse(trip.activities || '[]');
       
-      // Summarize plans with AI (use OpenAI API or similar)
       const summarizedPlan = activities
         .map((activity) => activity.plan)
         .filter((plan) => plan)
@@ -319,7 +307,7 @@ app.get('/overviewTrip', (req, res) => {
         startDate: trip.start_date,
         endDate: trip.end_date,
         activities,
-        summarizedPlan, // Optional: summary of activities
+        summarizedPlan,
       });
     });
   } catch (err) {
@@ -340,7 +328,6 @@ app.get('/budget', (req, res) => {
 
     const id = req.query.id;
 
-    // Query to retrieve budgets, accommodation cost, and total cost
     const query = 'SELECT budgets, accommodation_cost, total_cost FROM trips WHERE user_id = ?';
     db.query(query, [id], (err, results) => {
       if (err) {
@@ -507,9 +494,6 @@ app.delete('/deleteTrip', (req, res) => {
 })
 
 
-
-
-// Start the server
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

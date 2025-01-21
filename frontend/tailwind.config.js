@@ -5,7 +5,11 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",  // Tailwind will scan your JSX files for classes
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        josefin: ["Josefin Sans", "sans-serif"],
+      },
+    },
   },
   plugins: [],
 };

@@ -7,7 +7,7 @@ const LanguageSelector = () => {
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
-    setSelectedLang(lng); // Aktualizuje aktuální jazyk
+    setSelectedLang(lng);
   };
 
   return (

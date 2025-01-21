@@ -14,13 +14,10 @@ function UpcomingTrips({ userId }) {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('ongoing');
-  const [confirmDelete, setConfirmDelete] = useState(null); // Stav pro potvrzení mazání
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   const navigate = useNavigate();
   const { t } = useTranslation();
-
-
-  // toast.configure();
 
 
   useEffect(() => {
@@ -61,8 +58,8 @@ function UpcomingTrips({ userId }) {
       setTrips((prevTrips) => prevTrips.filter(trip => trip.id !== tripId));
       setConfirmDelete(null);
       toast.success(t('deletedTripSuccess'), {
-        position: "top-right", // Pozice toasty
-        autoClose: 3000, // Zavření po 3 sekundách
+        position: "top-right", 
+        autoClose: 3000, 
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -184,7 +181,7 @@ function UpcomingTrips({ userId }) {
         </button>
       </nav>
 
-      <div className="trip-category transition-all duration-300">
+      <div className="trip-category transition-all duration-300 max-h-80 overflow-y-auto">
         {loading && <p className="text-center">Loading...</p>}
         {!loading && activeCategory === 'past' && renderTrips(pastTrips)}
         {!loading && activeCategory === 'ongoing' && renderTrips(ongoingTrips)}

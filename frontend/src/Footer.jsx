@@ -1,4 +1,4 @@
-import { FaFacebook, FaTwitter, FaInstagram, FaSpotify } from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaInstagram, FaSpotify, FaLinkedin } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import logo from './assets/Journeo_white.png';
@@ -70,6 +70,11 @@ function Footer() {
                 <FaSpotify size={24} className="transition-all duration-300 group-hover:fill-[url(#spotify-gradient)]" />
             </a>
 
+             {/* LinkedIn */}
+            <a href="https://www.linkedin.com/in/petr-vorlicek/" target="_blank" rel="noopener noreferrer" className="group">
+                <FaLinkedin size={24} className="transition-all duration-300 group-hover:fill-[url(#linkedin-gradient)]" />
+            </a>
+
             {/* Gradient Definitions */}
             <svg width="0" height="0">
                 {/* Instagram */}
@@ -95,6 +100,12 @@ function Footer() {
                 <linearGradient id="spotify-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" style={{ stopColor: "#1DB954", stopOpacity: 1 }} />
                 <stop offset="100%" style={{ stopColor: "#1ED760", stopOpacity: 1 }} />
+                </linearGradient>
+
+                {/* LinkedIn */}
+                <linearGradient id="linkedin-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style={{ stopColor: "#0A66C2", stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: "#004182", stopOpacity: 1 }} />
                 </linearGradient>
             </svg>
             </div>

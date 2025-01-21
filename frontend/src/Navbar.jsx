@@ -36,7 +36,7 @@ function Navbar() {
         {/* Logo */}
         <div>
           <a href="/">
-            <img src={logo} alt="Journeo Logo" className="h-10 w-auto" /> {/* Insert the logo image */}
+            <img src={logo} alt="Journeo Logo" className="h-10 w-auto" />
           </a>
         </div>
 

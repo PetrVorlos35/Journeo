@@ -2,13 +2,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import { useState, useEffect } from "react";
 import { format, eachDayOfInterval } from "date-fns";
-import { cs, enUS } from "date-fns/locale"; // Importy lokalizací
+import { cs, enUS } from "date-fns/locale";
 import MapComponent from "./MapComponent";
 import { Autocomplete, LoadScript } from "@react-google-maps/api";
 import { useTranslation } from 'react-i18next';
 
 
-const libraries = ["places"]; // Nutné pro Autocomplete
+const libraries = ["places"];
 
 
 const CreateTrip = () => {
@@ -18,9 +18,9 @@ const CreateTrip = () => {
   const [currentDayData, setCurrentDayData] = useState(null);
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [showCalendar, setShowCalendar] = useState(false);
-  const [inputType, setInputType] = useState('location'); // "location" or "route"
-  const [dailyBudgets = [], setDailyBudgets] = useState([]); // Nový stav pro denní rozpočty
-  const [accommodationCost, setAccommodationCost] = useState(location.state.accommodationCost || 0); // Náklady na ubytování
+  const [inputType, setInputType] = useState('location'); 
+  const [dailyBudgets = [], setDailyBudgets] = useState([]); 
+  const [accommodationCost, setAccommodationCost] = useState(location.state.accommodationCost || 0);
   const [tempPlan, setTempPlan] = useState("");
 
   const { t, i18n } = useTranslation();
@@ -30,21 +30,13 @@ const CreateTrip = () => {
   const navigate = useNavigate();
 
   const handleClearMap = () => {
-    setCurrentDayData(null); // Reset aktuální data
+    setCurrentDayData(null);
   };
 
   useEffect(() => {
-    // Aktualizace tempPlan při změně aktuálního dne
-    setTempPlan(dailyPlans[currentDayIndex]?.plan || '');
-}, [currentDayIndex]);
-
-const handleTempPlanChange = (e) => {
-    setTempPlan(e.target.value); // Lokálně aktualizujeme hodnotu
-};
-
-const handleBlur = () => {
-    handlePlanChange(tempPlan); // Aktualizujeme hlavní plán pouze po onBlur
-};
+    setTempPlan(dailyPlans[currentDayIndex]?.plan || ''); 
+  }, [currentDayIndex, dailyPlans]);
+  
 
   const convertDailyPlans = (activities, startDate, endDate) => {
     const dateRange = eachDayOfInterval({
@@ -93,11 +85,11 @@ const handleBlur = () => {
   
       const activities = location.state.activities 
         ? JSON.parse(location.state.activities) 
-        : []; // Výchozí hodnota pro activities
+        : [];
   
       const budgetsData = location.state.budgets 
         ? JSON.parse(location.state.budgets) 
-        : budgets; // Výchozí hodnota pro budgets
+        : budgets;
   
       const convertedPlans = convertDailyPlans(activities, startDate, endDate);
       const convertedBudgets = convertDailyBudgets(budgetsData, days.length);
@@ -115,12 +107,10 @@ const handleBlur = () => {
             handleDayClick(0);
         }, 100);
     }
-    // Spustí se pouze jednou při načtení komponenty
 }, []);
 
 
   const handleUpdate = async () => {
-    // console.log(dailyPlans);
 
     const token = localStorage.getItem("token");
 
@@ -147,42 +137,17 @@ const handleBlur = () => {
 
     };
 
-    const handlePlanChange = (value) => {
-        const updatedPlans = [...dailyPlans];
-        updatedPlans[currentDayIndex].plan = value;
-        setDailyPlans(updatedPlans);
-      };
-
-      const [autocomplete, setAutocomplete] = useState(null);
-
-      // const handlePlaceChanged = () => {
-      //   if (autocomplete) {
-      //     const place = autocomplete.getPlace();
-      //     const location = place?.formatted_address || "";
-
-      //     if (location) {
-      //       handleLocationChange(location, currentDayIndex);
-      //     }
-      //   }
-      // };
 
 
       const handleLocationChange = (value, index) => {
         const updatedPlans = [...dailyPlans];
         updatedPlans[currentDayIndex].location = value;
-        updatedPlans[currentDayIndex].route = { start: '', end: '', stops: [] }; // Resetuje trasu, pokud se zadá lokace
+        updatedPlans[currentDayIndex].route = { start: '', end: '', stops: [] }; 
         setDailyPlans(updatedPlans);
-        setAutocomplete(null); // Resetuje autocomplete
         setTimeout(() => {
             setCurrentDayData(dailyPlans[index]);
-          }, 0); // Zpoždění, aby se mapě dal čas na reset
+          }, 0); 
       };
-
-      // const handleBudgetChange = (category, value) => {
-      //   const updatedBudgets = [...dailyBudgets];
-      //   updatedBudgets[currentDayIndex][category] = parseFloat(value) || 0;
-      //   setDailyBudgets(updatedBudgets);
-      // };
 
       const calculateDailyTotal = (budget) => {
         return (budget.expenses || []).reduce((sum, expense) => sum + expense.amount, 0);
@@ -202,7 +167,7 @@ const handleBlur = () => {
           } else {
             updatedPlans[currentDayIndex].route[field] = value;
           }
-          updatedPlans[currentDayIndex].location = ''; // Resetuje lokaci, pokud se zadá trasa
+          updatedPlans[currentDayIndex].location = '';
           setDailyPlans(updatedPlans);
         };
 
@@ -224,13 +189,8 @@ const handleBlur = () => {
     const [autocompleteLocation, setAutocompleteLocation] = useState(null);
     const [autocompleteStops, setAutocompleteStops] = useState([]);
     const [locationInputs, setLocationInputs] = useState(dailyPlans.map(plan => plan.location || ''));
-    // const [startLocation, setStartLocation] = useState('');
-    // const [endLocation, setEndLocation] = useState('');
-    // const [stops, setStops] = useState([]);
-    // const [directions, setDirections] = useState(null);
 
     useEffect(() => {
-      // Ensure locationInputs is updated when dailyPlans changes
       setLocationInputs(dailyPlans.map(plan => plan.location || ''));
   }, [dailyPlans]);
 
@@ -278,17 +238,6 @@ const handleLocationInputChange = (e) => {
   setLocationInputs(newLocationInputs);
 };
 
-// const handleLocationInputConfirm = () => {
-//   if (autocompleteLocation !== null) {
-//       const place = autocompleteLocation.getPlace();
-//       const formattedAddress = place.formatted_address;
-//       handleLocationChange(formattedAddress, currentDayIndex);
-//       const newLocationInputs = [...locationInputs];
-//       newLocationInputs[currentDayIndex] = formattedAddress;
-//       setLocationInputs(newLocationInputs);
-//   }
-// };
-
 
   const onLoadStop = (autocomplete, index) => {
       const newAutocompleteStops = [...autocompleteStops];
@@ -311,13 +260,12 @@ const handleLocationInputChange = (e) => {
       };
 
       const handleDayClick = (index) => {
-        handleClearMap(); // Vymaž aktuální mapu
+        handleClearMap();
         setTimeout(() => {
           setCurrentDayIndex(index);
           setCurrentDayData(dailyPlans[index]);
-        }, 0); // Zpoždění, aby se mapě dal čas na reset
+        }, 0); 
 
-        // Dynamicky nastavíme inputType podle dat daného dne
         const dayData = dailyPlans[index];
         if (dayData.location) {
           setInputType('location');
@@ -331,13 +279,12 @@ const handleLocationInputChange = (e) => {
       const handlePrevDay = () => {
         if (currentDayIndex > 0) {
           const prevIndex = currentDayIndex - 1;
-          handleClearMap(); // Vymaž aktuální mapu
+          handleClearMap();
           setTimeout(() => {
             setCurrentDayIndex(prevIndex);
             setCurrentDayData(dailyPlans[prevIndex]);
-          }, 0); // Zpoždění, aby se mapě dal čas na reset
+          }, 0); 
 
-          // Dynamicky nastavíme inputType podle dat předchozího dne
           const dayData = dailyPlans[prevIndex];
           if (dayData.location) {
             setInputType('location');
@@ -350,13 +297,12 @@ const handleLocationInputChange = (e) => {
       const handleNextDay = () => {
         if (currentDayIndex < dailyPlans.length - 1) {
           const nextIndex = currentDayIndex + 1;
-          handleClearMap(); // Vymaž aktuální mapu
+          handleClearMap(); 
           setTimeout(() => {
             setCurrentDayIndex(nextIndex);
             setCurrentDayData(dailyPlans[nextIndex]);
-          }, 0); // Zpoždění, aby se mapě dal čas na reset
+          }, 0); 
 
-          // Dynamicky nastavíme inputType podle dat následujícího dne
           const dayData = dailyPlans[nextIndex];
           if (dayData.location) {
             setInputType('location');
@@ -391,13 +337,6 @@ const handleLocationInputChange = (e) => {
         setDailyBudgets(updatedBudgets);
       };
 
-      // const translations = {
-      //   transport: "Doprava",
-      //   food: "Jídlo",
-      //   activities: "Aktivity",
-      //   other: "Ostatní",
-      // };
-
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-50">
       <Navbar />
@@ -412,7 +351,6 @@ const handleLocationInputChange = (e) => {
         </a>
         <h1 className="text-3xl font-bold text-center flex-grow">{tripName}</h1>
         </div>
-        {/* Desktopové zobrazení: Vedle sebe vytváření dne a kalendář */}
         <div className=" md:flex md:space-x-4 flex-col md:flex-row">
           {/* Levý panel pro aktuální den */}
           <div className="relative md:w-2/3 w-full border rounded-lg p-4 max-h-[600px] overflow-y-auto shadow-md bg-white">
@@ -427,12 +365,16 @@ const handleLocationInputChange = (e) => {
                     {t('dailyActivity')}
                     </label>
                     <textarea
-                        id="activityDescription"
-                        value={dailyPlans[currentDayIndex]?.plan || tempPlan}
-                        onChange={handleTempPlanChange} // Okamžitě aktualizuje tempPlan
-                        onBlur={handleBlur} // Ukládá změnu do dailyPlans až při onBlur
-                        className="w-full border rounded p-2"
-                        placeholder={t('dailyActivityDes')}
+                      id="activityDescription"
+                      value={tempPlan} 
+                      onChange={(e) => setTempPlan(e.target.value)} 
+                      onBlur={() => {
+                        const updatedPlans = [...dailyPlans];
+                        updatedPlans[currentDayIndex].plan = tempPlan; 
+                        setDailyPlans(updatedPlans);
+                      }}
+                      className="w-full border rounded p-2"
+                      placeholder={t('dailyActivityDes')}
                     ></textarea>
                 </div>
 

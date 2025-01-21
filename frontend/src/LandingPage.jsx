@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useTranslation } from "react-i18next";
-import { FaMapMarkedAlt, FaClipboardList, FaDollarSign } from "react-icons/fa";
 
 function LandingPage() {
   const navigate = useNavigate();
@@ -25,7 +24,7 @@ function LandingPage() {
 
       {/* Hero Section */}
       <header className="relative bg-gradient-to-b from-blue-200 to-blue-50 text-white py-40 flex flex-col items-center text-center px-4">
-        <h1 className="text-6xl font-extrabold drop-shadow-lg text-blue-500">{t("welcome")}</h1>
+        <h1 className="text-6xl font-extrabold drop-shadow-xl text-blue-500">{t("welcome")}</h1>
         <p className="text-lg mt-4 max-w-2xl mx-auto text-blue-500">{t("description")}</p>
         <button 
           onClick={handleLoginClick} 

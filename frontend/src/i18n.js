@@ -3,8 +3,8 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 i18n
-  .use(LanguageDetector) // Automaticky detekuje jazyk prohlížeče
-  .use(initReactI18next) // Integrace s Reactem
+  .use(LanguageDetector)
+  .use(initReactI18next)
   .init({
     resources: {
       en: {
@@ -220,9 +220,9 @@ i18n
         },
       },
     },
-    fallbackLng: 'en', // Jazyk, na který přepne, pokud aktuální není dostupný
+    fallbackLng: 'en', 
     interpolation: {
-      escapeValue: false, // React už escapuje texty
+      escapeValue: false,
     },
   });
 

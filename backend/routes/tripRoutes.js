@@ -6,7 +6,9 @@ const {
   overviewTrip,
   getTrips,
   deleteTrip,
-  getBudget
+  getBudget, 
+  getTripBudget,
+  getPublicTrip
 } = require('../controllers/tripController');
 const authenticateToken = require('../middlewares/authMiddleware');
 
@@ -20,5 +22,7 @@ router.get('/overviewTrip', authenticateToken, overviewTrip);
 router.get('/getTrips', authenticateToken, getTrips);
 router.delete('/deleteTrip', authenticateToken, deleteTrip);
 router.get('/budget', authenticateToken, getBudget);
+router.get('/tripBudget', authenticateToken, getTripBudget);
+router.get('/trip/public/:tripId', getPublicTrip);
 
 module.exports = router;

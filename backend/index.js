@@ -5,6 +5,9 @@ const passport = require('./config/passportConfig');
 const authRoutes = require('./routes/authRoutes');
 const tripRoutes = require('./routes/tripRoutes');
 const userRoutes = require('./routes/userRoutes'); // Přidání uživatelských rout
+const friendsRoutes = require('./routes/friendsRoutes'); // Přidání rout pro přátele
+
+require('./notificationService');
 
 dotenv.config();
 
@@ -23,7 +26,8 @@ app.use(passport.initialize());
 // Přidání rout
 app.use('/auth', authRoutes);
 app.use('/', tripRoutes);
-app.use('/', userRoutes); // Nové uživatelské routy
+app.use('/', userRoutes);
+app.use('/friends', friendsRoutes);
 
 // Server start
 const PORT = process.env.PORT || 5001;

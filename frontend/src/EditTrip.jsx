@@ -7,6 +7,7 @@ import MapComponent from "./MapComponent";
 import { Autocomplete, LoadScript } from "@react-google-maps/api";
 import { useTranslation } from 'react-i18next';
 import { toast, ToastContainer, Slide } from "react-toastify";
+import OverviewMap from "./OverviewMap";
 
 
 const libraries = ["places"];
@@ -22,10 +23,28 @@ const CreateTrip = () => {
   const [dailyBudgets = [], setDailyBudgets] = useState([]); 
   const [accommodationCost, setAccommodationCost] = useState(location.state.accommodationCost || 0);
   const [tempPlan, setTempPlan] = useState("");
+  const [showOverview, setShowOverview] = useState(false);
+  const [userId, setUserId] = useState(null);
 
   const { t, i18n } = useTranslation();
+  
+useEffect(() => { 
+  fetch(`${import.meta.env.VITE_API_URL}/account`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  })
 
-
+  .then((response) => response.json())
+  .then((data) => {
+    setUserId(data.id);
+  })
+  .catch((error) => {
+    console.error('Error fetching user data:', error);
+  });
+}
+, []
+);
 
   const navigate = useNavigate();
 
@@ -33,6 +52,10 @@ const CreateTrip = () => {
     setCurrentDayData(null);
   };
 
+  useEffect(() => {
+    setTempPlan(dailyPlans[currentDayIndex]?.plan || ''); 
+  }, [currentDayIndex, dailyPlans]);
+  
 
   const convertDailyPlans = (activities, startDate, endDate) => {
     const dateRange = eachDayOfInterval({
@@ -97,7 +120,13 @@ const CreateTrip = () => {
   
   
 
-
+  useEffect(() => {
+    if (dailyPlans.length > 0) {
+        setTimeout(() => {
+            handleDayClick(0);
+        }, 100);
+    }
+}, []);
 
 
   const handleUpdate = async () => {
@@ -180,7 +209,9 @@ const CreateTrip = () => {
     const [autocompleteStops, setAutocompleteStops] = useState([]);
     const [locationInputs, setLocationInputs] = useState(dailyPlans.map(plan => plan.location || ''));
 
-
+    useEffect(() => {
+      setLocationInputs(dailyPlans.map(plan => plan.location || ''));
+  }, [dailyPlans]);
 
     const onLoadStart = (autocomplete) => {
         setAutocompleteStart(autocomplete);
@@ -346,7 +377,45 @@ const handleLocationInputChange = (e) => {
         >
             ← {t('back')}
         </a>
-        <h1 className="text-3xl font-bold text-center flex-grow">{tripName}</h1>
+
+      <div className="flex items-center space-x-4">
+        <h1 className="text-3xl font-bold">{tripName}</h1>
+        <button
+          onClick={() => {
+            const shareUrl = `${import.meta.env.VITE_APP_URL}/trip/${tripId}`;
+            navigator.clipboard.writeText(shareUrl).then(() => {
+              window.open(shareUrl, "_blank");
+            });
+          }}
+          className="p-2 hover:opacity-80 hover:text-blue-500 transition-opacity"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 68.7012 102.686"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g>
+              <rect height="102.686" opacity="0" width="68.7012" x="0" y="0" />
+              <path
+                d="M68.7012 43.1152L68.7012 80.6152C68.7012 88.8184 64.5996 92.8711 56.25 92.8711L12.4512 92.8711C4.15039 92.8711 0 88.8184 0 80.6152L0 43.1152C0 34.9121 4.15039 30.8594 12.4512 30.8594L23.1934 30.8594L23.1934 37.8906L12.5488 37.8906C9.0332 37.8906 7.03125 39.7949 7.03125 43.5059L7.03125 80.2246C7.03125 83.9355 9.0332 85.8398 12.5488 85.8398L56.1523 85.8398C59.6191 85.8398 61.6699 83.9355 61.6699 80.2246L61.6699 43.5059C61.6699 39.7949 59.6191 37.8906 56.1523 37.8906L45.459 37.8906L45.459 30.8594L56.25 30.8594C64.5996 30.8594 68.7012 34.9609 68.7012 43.1152Z"
+                fill="currentColor"
+              />
+              <path
+                d="M34.3262 62.5977C36.2305 62.5977 37.8418 61.084 37.8418 59.2285L37.8418 21.2402L37.5488 15.3809L39.502 17.4805L44.873 23.3398C45.5078 24.0723 46.3867 24.3652 47.2656 24.3652C49.0723 24.3652 50.4395 23.0957 50.4395 21.3379C50.4395 20.4102 50.0488 19.6777 49.4141 19.043L36.8652 7.08008C35.9863 6.15234 35.2539 5.9082 34.3262 5.9082C33.4473 5.9082 32.7148 6.15234 31.7871 7.08008L19.2871 19.043C18.6035 19.6777 18.2617 20.4102 18.2617 21.3379C18.2617 23.0957 19.5801 24.3652 21.3867 24.3652C22.2168 24.3652 23.1934 24.0723 23.7793 23.3398L29.1992 17.4805L31.1523 15.3809L30.8594 21.2402L30.8594 59.2285C30.8594 61.084 32.4707 62.5977 34.3262 62.5977Z"
+                fill="currentColor"
+              />
+            </g>
+          </svg>
+        </button>
+      </div>
+
+
+        <button 
+          onClick={() => setShowOverview(true)}
+          className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600">
+          {t('tripOverview')}
+        </button>
         </div>
         <div className=" md:flex md:space-x-4 flex-col md:flex-row">
           {/* Levý panel pro aktuální den */}
@@ -386,10 +455,10 @@ const handleLocationInputChange = (e) => {
                         onChange={(e) => handleExpenseChange(index, "category", e.target.value)}
                         className="border rounded p-1 w-1/3"
                       >
-                        <option value="transport">{t('Transport')}</option>
-                        <option value="food">{t('Food')}</option>
-                        <option value="activities">{t('Activities')}</option>
-                        <option value="other">{t('Other')}</option>
+                        <option value="transport">{t('transport')}</option>
+                        <option value="food">{t('food')}</option>
+                        <option value="activities">{t('activities')}</option>
+                        <option value="other">{t('other')}</option>
                       </select>
                       <input
                         type="number"
@@ -565,8 +634,13 @@ const handleLocationInputChange = (e) => {
                         location={inputType === 'location' ? dailyPlans[currentDayIndex]?.location : null}
                         route={inputType === 'route' ? dailyPlans[currentDayIndex]?.route : { start: '', end: '', stops: [] }}
                         clearMap={!currentDayData}
+                        overviewMode={false}
                         />
                 </div>
+
+                {showOverview && <OverviewMap tripId={tripId} userId={userId} allPlans={dailyPlans} onClose={() => setShowOverview(false)} />}
+
+
 
                 {/* Tlačítka pro rychlé přecházení mezi dny ve spodních rozích */}
                 <div className="flex justify-between items-center bottom-4">

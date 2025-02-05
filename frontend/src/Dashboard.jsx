@@ -12,6 +12,7 @@ import BudgetTracking from "./BudgetTracking";
 import MapComponent from "./MapComponent";
 import UpcomingTrips from "./UpcomingTrips";
 import { useTranslation } from 'react-i18next';
+import FriendsDashboard from "./FriendsDashboard";
 
 
 function Dashboard() {
@@ -308,6 +309,7 @@ function Dashboard() {
             <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
               <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('mapHead')}</h2>
               <p>{t('construction')}</p>
+              <FriendsDashboard userId={userId} />
             </div>
           )}
 

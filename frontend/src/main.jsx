@@ -7,10 +7,11 @@ import RegisterForm from './RegisterForm';
 import LoginForm from './LoginForm'; 
 import Dashboard from './Dashboard';
 import CreateTrip from './CreateTrip';
+import EditTrip from './EditTrip';
 import TestRegister from './RegisterTest'
-import OverviewTrip from './OverviewTrip';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n'; 
+import PublicTrip from './PublicTrip';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -24,8 +25,10 @@ root.render(
         <Route path="/login" element={<LoginForm />} /> {/* Login Form */}
         <Route path="/dashboard" element={<Dashboard />} /> {/* Account Overview */}
         <Route path="/create-trip" element={<CreateTrip />} /> {/* Create Trip */}
+        <Route path="/edit-trip" element={<EditTrip />} /> {/* Create Trip */}
         <Route path="/test" element={<TestRegister />} /> {/* Test Register */}
-        <Route path="/trip/overview/:tripId" element={<OverviewTrip />} /> {/* Trip Overview */}
+        <Route path="/trip/:tripId" element={<PublicTrip />} />
+
       </Routes>
     </Router>
     </I18nextProvider>

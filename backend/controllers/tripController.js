@@ -163,6 +163,97 @@ const getBudget = (req, res) => {
       });
     });
   };
+
+  const getTripBudget = (req, res) => {
+    const userId = req.query.id; 
+    const tripId = req.query.tripId;
+  
+    const query = 'SELECT budgets, accommodation_cost, total_cost FROM trips WHERE id = ?';
+    db.query(query, [tripId], (err, results) => {
+      if (err) {
+        console.error('Error querying database:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+      }
+  
+      if (results.length === 0) {
+        return res.status(404).json({ message: 'No data found' });
+      }
+  
+      let totalTransport = 0;
+      let totalFood = 0;
+      let totalActivities = 0;
+      let totalOther = 0;
+      let totalAccommodation = 0;
+      let totalOverallCost = 0;
+  
+      results.forEach((row) => {
+        const budgets = row.budgets ? JSON.parse(row.budgets) : [];
+  
+        budgets.forEach((day) => {
+          if (day.expenses && Array.isArray(day.expenses)) {
+            day.expenses.forEach((expense) => {
+              switch (expense.category) {
+                case 'transport':
+                  totalTransport += expense.amount || 0;
+                  break;
+                case 'food':
+                  totalFood += expense.amount || 0;
+                  break;
+                case 'activities':
+                  totalActivities += expense.amount || 0;
+                  break;
+                case 'other':
+                  totalOther += expense.amount || 0;
+                  break;
+                default:
+                  break;
+              }
+            });
+          }
+        });
+  
+        totalAccommodation += parseFloat(row.accommodation_cost || 0);
+        totalOverallCost += parseFloat(row.total_cost || 0);
+      });
+  
+      res.json({
+        totalTransport,
+        totalFood,
+        totalActivities,
+        totalOther,
+        totalAccommodation,
+        totalOverallCost,
+      });
+    });
+  };
+
+  // Získání veřejného výletu (jen pro čtení)
+const getPublicTrip = (req, res) => {
+  const { tripId } = req.params;
+
+  const query = 'SELECT * FROM trips WHERE id = ?';
+  db.query(query, [tripId], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'Trip not found' });
+    }
+
+    const trip = results[0];
+    const activities = JSON.parse(trip.activities || '[]');
+    const budgets = trip.budgets ? JSON.parse(trip.budgets) : [];
+
+    res.json({
+      tripName: trip.title,
+      startDate: trip.start_date,
+      endDate: trip.end_date,
+      activities,
+      budgets,
+      accommodationCost: trip.accommodation_cost || 0,
+      totalCost: trip.total_cost || 0,
+    });
+  });
+};
+
   
   
   module.exports = {
@@ -172,7 +263,9 @@ const getBudget = (req, res) => {
     overviewTrip,
     getTrips,
     deleteTrip,
-    getBudget, // Musí být zde!
+    getBudget,
+    getTripBudget,
+    getPublicTrip,
   };
   
   

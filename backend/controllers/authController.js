@@ -45,7 +45,7 @@ const login = (req, res) => {
 const googleOAuth = (req, res) => {
   const user = req.user;
   const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-  res.redirect(`https://journeo.vercel.app/dashboard?token=${token}`);
+  res.redirect(`https://journeo.vercel.app/dashboard?token=${token}`); 
 };
 
 module.exports = { register, login, googleOAuth };

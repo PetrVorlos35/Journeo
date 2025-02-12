@@ -149,25 +149,38 @@ const TripBudgetTracking = ({ userId, tripId }) => {
   }, [userId, tripId, t]);
 
   const renderChart = () => {
-    if (!chartData) return <p className="text-gray-500">Loading chart...</p>;
-
-    switch (chartType) {
-      case 'bar':
-        return <Bar data={chartData} />;
-      case 'pie':
-        return <Pie data={chartData} />;
-      case 'doughnut':
-        return <Doughnut data={chartData} />;
-      case 'radar':
-        return <Radar data={chartData} />;
-      case 'polarArea':
-        return <PolarArea data={chartData} />;
-      case 'line':
-        return <Line data={chartData} />;
-      default:
-        return <p className="text-red-500">Invalid chart type selected.</p>;
-    }
+    if (!chartData) return <p className="text-gray-500 text-center">Loading chart...</p>;
+  
+    const commonOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'top' } },
+    };
+  
+    // Nastavení dynamické šířky a výšky
+    const smallChartContainer = "w-full max-w-md h-64 flex justify-center";
+    const largeChartContainer = "w-full max-w-lg h-80 flex justify-center";
+  
+    const containerClass = chartType === 'bar' || chartType === 'line' ? largeChartContainer : smallChartContainer;
+  
+    return (
+      <div className={containerClass}>
+      {chartType === 'bar' && <Bar data={chartData} options={{ ...commonOptions, aspectRatio: 2 }} />}
+      {chartType === 'line' && <Line data={chartData} options={{ ...commonOptions, aspectRatio: 2 }} />}
+      {chartType !== 'bar' && chartType !== 'line' && (
+        <div className="flex justify-center items-center w-full">
+          <div className="w-80 h-80 flex justify-center items-center">
+            {chartType === 'pie' && <Pie data={chartData} options={commonOptions} />}
+            {chartType === 'doughnut' && <Doughnut data={chartData} options={commonOptions} />}
+            {chartType === 'radar' && <Radar data={chartData} options={commonOptions} />}
+            {chartType === 'polarArea' && <PolarArea data={chartData} options={commonOptions} />}
+          </div>
+        </div>
+      )}
+      </div>
+    );
   };
+  
 
   return (
     <div className="trip-budget-tracking">
@@ -242,7 +255,12 @@ const TripBudgetTracking = ({ userId, tripId }) => {
   )}
       </div>
 
-      <div className="bg-gray-50 p-4 rounded-lg shadow-inner">{renderChart()}</div>
+      <div className="flex justify-center w-full">
+  <div className="w-full max-w-lg">
+    {renderChart()}
+  </div>
+</div>
+
     </div>
   );
 };

@@ -33,6 +33,24 @@ const CreateTrip = () => {
     setCurrentDayData(null);
   };
 
+  useEffect(() => {
+    setTempPlan(dailyPlans[currentDayIndex]?.plan || ''); 
+  }, [currentDayIndex, dailyPlans]);
+
+
+  useEffect(() => {
+    setLocationInputs(dailyPlans.map(plan => plan.location || ''));
+  }, [dailyPlans]);
+
+  
+  useEffect(() => {
+    const forceUpdate = { ...dailyPlans[currentDayIndex] }; // Vytvoření nové reference
+    setCurrentDayData(forceUpdate);
+  }, [dailyPlans, currentDayIndex]);
+  
+  
+  
+
 
   const convertDailyPlans = (activities, startDate, endDate) => {
     const dateRange = eachDayOfInterval({
@@ -339,15 +357,24 @@ const handleLocationInputChange = (e) => {
       <ToastContainer />
       <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} libraries={libraries}>
       <div className="p-6">
-      <div className="flex items-center justify-between mb-4">
-        <a
-            href="/dashboard"
-            className="text-blue-500 hover:text-blue-600 font-bold px-4 py-2 rounded"
-        >
-            ← {t('back')}
-        </a>
-        <h1 className="text-3xl font-bold text-center flex-grow">{tripName}</h1>
-        </div>
+      <div className="grid grid-cols-3 items-center mb-4">
+  {/* Odkaz zpět */}
+  <a
+    href="/dashboard"
+    className="text-blue-500 hover:text-blue-600 font-bold px-2 py-2 rounded text-left"
+  >
+    ← {t('back')}
+  </a>
+
+  {/* Název výletu - vždy na středu */}
+  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center col-span-1">
+    {tripName}
+  </h1>
+
+  {/* Prázdný div pro vycentrování */}
+  <div className="hidden md:block"></div>
+</div>
+
         <div className=" md:flex md:space-x-4 flex-col md:flex-row">
           {/* Levý panel pro aktuální den */}
           <div className="relative md:w-2/3 w-full border rounded-lg p-4 max-h-[600px] overflow-y-auto shadow-md bg-white">

@@ -13,7 +13,7 @@ dotenv.config();
 
 const app = express();
 const corsOptions = {
-  origin: 'https://journeo.vercel.app',
+  origin: `${process.env.APP_URL}`,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],

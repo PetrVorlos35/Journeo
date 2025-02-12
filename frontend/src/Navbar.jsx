@@ -104,14 +104,14 @@ function Navbar() {
         {/* Menu Links */}
         {!isAuthenticated ? (
           <>
-            <a href="/" className="text-gray-700 hover:text-blue-600 text-xl">Home</a>
+            <a href="/" className="text-gray-700 hover:text-blue-600 text-xl">{t('home')}</a>
           </>
         ) : (
           <>
             <a href="/dashboard" className="text-gray-700 hover:text-blue-600 text-xl">Dashboard</a>
           </>
         )}  
-        <a href="/about" className="text-gray-700 hover:text-blue-600 text-xl">About</a>
+        <a href="/about" className="text-gray-700 hover:text-blue-600 text-xl">{t('about')}</a>
         <a href="/features" className="text-gray-700 hover:text-blue-600 text-xl">{t('features')}</a>
         {!isAuthenticated ? (
             <>
@@ -123,9 +123,10 @@ function Navbar() {
               onClick={handleLogout}
               className="text-gray-700 hover:text-blue-600 cursor-pointer text-xl"
             >
-              Logout
+              {t("logout")}
             </a>
           )}
+          <LanguageSelector />
       </div>
     </nav>
   );

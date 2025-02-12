@@ -13,6 +13,7 @@ import MapComponent from "./MapComponent";
 import UpcomingTrips from "./UpcomingTrips";
 import { useTranslation } from 'react-i18next';
 import FriendsDashboard from "./FriendsDashboard";
+// import AuthHandler from "./AuthHandler";
 
 
 function Dashboard() {
@@ -28,6 +29,9 @@ function Dashboard() {
   ]);
   const [userId, setUserId] = useState(null);
   const [statistics, setStatistics] = useState({ distance: 0, time: 0 });
+
+  const [tokenAuth, setToken] = useState(localStorage.getItem('token'));
+
 
   const navigate = useNavigate(); 
   const location = useLocation();
@@ -141,6 +145,10 @@ function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-50">
       <Navbar />
+      {/* <AuthHandler token={tokenAuth} setToken={(newToken) => {
+        setToken(newToken);
+        localStorage.setItem('token', newToken);
+      }} /> */}
       <div className="max-w-7xl mx-auto p-6">
         {/* Tab Navigation */}
         <div className="w-full text-center overflow-x-scroll whitespace-nowrap space-x-4 md:space-x-8 mb-6 px-4 ">

@@ -41,11 +41,26 @@ const login = (req, res) => {
   });
 };
 
+const refreshToken = (req, res) => {
+  const { token } = req.body;
+
+  if (!token) return res.status(401).json({ message: 'No token provided' });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(401).json({ message: 'Invalid or expired token' });
+
+    const newToken = jwt.sign({ email: decoded.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.json({ token: newToken });
+  });
+};
+
+
 // Google OAuth callback
 const googleOAuth = (req, res) => {
   const user = req.user;
   const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-  res.redirect(`https://journeo.vercel.app/dashboard?token=${token}`); 
+  res.redirect(`${process.env.APP_URL}/dashboard?token=${token}`); 
 };
 
-module.exports = { register, login, googleOAuth };
+module.exports = { register, login, googleOAuth, refreshToken };

@@ -19,6 +19,7 @@ const CreateTrip = () => {
   const [dailyPlans = [], setDailyPlans] = useState([]);
   const [currentDayData, setCurrentDayData] = useState(null);
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
+  const [accommodationSegment, setAccommodationSegment] = useState("");
   const [inputType, setInputType] = useState('location'); 
   const [dailyBudgets = [], setDailyBudgets] = useState([]); 
   const [accommodationCost, setAccommodationCost] = useState(location.state.accommodationCost || 0);
@@ -279,19 +280,27 @@ const handleLocationInputChange = (e) => {
       };
 
       const handleDayClick = (index) => {
-        handleClearMap();
-        setTimeout(() => {
+        if (index === 'accommodation') {
+          setAccommodationSegment('accommodation'); // Aktivujeme segment ubytování
+          setCurrentDayData(null);
+          setCurrentDayIndex(null); // Nevybíráme žádný den
+          } else {
+          setAccommodationSegment(null);
+          handleClearMap();
           setCurrentDayIndex(index);
-          setCurrentDayData(dailyPlans[index]);
-        }, 0); 
-
+          setTimeout(() => {
+            setCurrentDayData(dailyPlans[index]);
+          }, 0);
+        }
+      
         const dayData = dailyPlans[index];
-        if (dayData.location) {
+        if (dayData?.location) {
           setInputType('location');
-        } else if (dayData.route.start || dayData.route.end || dayData.route.stops.length > 0) {
+        } else if (dayData?.route?.start || dayData?.route?.end || dayData?.route?.stops.length > 0) {
           setInputType('route');
         }
       };
+      
 
       const handlePrevDay = () => {
         if (currentDayIndex > 0) {
@@ -370,57 +379,92 @@ const handleLocationInputChange = (e) => {
       <ToastContainer />
       <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} libraries={libraries}>
       <div className="p-6">
-      <div className="flex items-center justify-between mb-4">
-        <a
-            href="/dashboard"
-            className="text-blue-500 hover:text-blue-600 font-bold px-4 py-2 rounded"
-        >
-            ← {t('back')}
-        </a>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 space-y-2 md:space-y-0">
+  {/* Odkaz zpět */}
+  <a
+    href="/dashboard"
+    className="text-blue-500 hover:text-blue-600 font-bold flex items-center space-x-2 px-2 py-2 rounded"
+  >
+    <span>←</span>
+    <span>{t('back')}</span>
+  </a>
 
-      <div className="flex items-center space-x-4">
-        <h1 className="text-3xl font-bold">{tripName}</h1>
-        <button
-          onClick={() => {
-            const shareUrl = `${import.meta.env.VITE_APP_URL}/trip/${tripId}`;
-            navigator.clipboard.writeText(shareUrl).then(() => {
-              window.open(shareUrl, "_blank");
-            });
-          }}
-          className="p-2 hover:opacity-80 hover:text-blue-500 transition-opacity"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 68.7012 102.686"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g>
-              <rect height="102.686" opacity="0" width="68.7012" x="0" y="0" />
-              <path
-                d="M68.7012 43.1152L68.7012 80.6152C68.7012 88.8184 64.5996 92.8711 56.25 92.8711L12.4512 92.8711C4.15039 92.8711 0 88.8184 0 80.6152L0 43.1152C0 34.9121 4.15039 30.8594 12.4512 30.8594L23.1934 30.8594L23.1934 37.8906L12.5488 37.8906C9.0332 37.8906 7.03125 39.7949 7.03125 43.5059L7.03125 80.2246C7.03125 83.9355 9.0332 85.8398 12.5488 85.8398L56.1523 85.8398C59.6191 85.8398 61.6699 83.9355 61.6699 80.2246L61.6699 43.5059C61.6699 39.7949 59.6191 37.8906 56.1523 37.8906L45.459 37.8906L45.459 30.8594L56.25 30.8594C64.5996 30.8594 68.7012 34.9609 68.7012 43.1152Z"
-                fill="currentColor"
-              />
-              <path
-                d="M34.3262 62.5977C36.2305 62.5977 37.8418 61.084 37.8418 59.2285L37.8418 21.2402L37.5488 15.3809L39.502 17.4805L44.873 23.3398C45.5078 24.0723 46.3867 24.3652 47.2656 24.3652C49.0723 24.3652 50.4395 23.0957 50.4395 21.3379C50.4395 20.4102 50.0488 19.6777 49.4141 19.043L36.8652 7.08008C35.9863 6.15234 35.2539 5.9082 34.3262 5.9082C33.4473 5.9082 32.7148 6.15234 31.7871 7.08008L19.2871 19.043C18.6035 19.6777 18.2617 20.4102 18.2617 21.3379C18.2617 23.0957 19.5801 24.3652 21.3867 24.3652C22.2168 24.3652 23.1934 24.0723 23.7793 23.3398L29.1992 17.4805L31.1523 15.3809L30.8594 21.2402L30.8594 59.2285C30.8594 61.084 32.4707 62.5977 34.3262 62.5977Z"
-                fill="currentColor"
-              />
-            </g>
-          </svg>
-        </button>
-      </div>
+  {/* Název výletu + tlačítko sdílení */}
+  <div className="flex items-center justify-between w-full md:w-auto space-x-4">
+    <h1 className="text-xl md:text-3xl font-bold text-center md:text-left">{tripName}</h1>
+    
+    <button
+      onClick={() => {
+        const shareUrl = `${import.meta.env.VITE_APP_URL}/trip/${tripId}`;
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          window.open(shareUrl, "_blank");
+        });
+      }}
+      className="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition"
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 68.7012 102.686"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g>
+          <rect height="102.686" opacity="0" width="68.7012" x="0" y="0" />
+          <path
+            d="M68.7012 43.1152L68.7012 80.6152C68.7012 88.8184 64.5996 92.8711 56.25 92.8711L12.4512 92.8711C4.15039 92.8711 0 88.8184 0 80.6152L0 43.1152C0 34.9121 4.15039 30.8594 12.4512 30.8594L23.1934 30.8594L23.1934 37.8906L12.5488 37.8906C9.0332 37.8906 7.03125 39.7949 7.03125 43.5059L7.03125 80.2246C7.03125 83.9355 9.0332 85.8398 12.5488 85.8398L56.1523 85.8398C59.6191 85.8398 61.6699 83.9355 61.6699 80.2246L61.6699 43.5059C61.6699 39.7949 59.6191 37.8906 56.1523 37.8906L45.459 37.8906L45.459 30.8594L56.25 30.8594C64.5996 30.8594 68.7012 34.9609 68.7012 43.1152Z"
+            fill="currentColor"
+          />
+          <path
+            d="M34.3262 62.5977C36.2305 62.5977 37.8418 61.084 37.8418 59.2285L37.8418 21.2402L37.5488 15.3809L39.502 17.4805L44.873 23.3398C45.5078 24.0723 46.3867 24.3652 47.2656 24.3652C49.0723 24.3652 50.4395 23.0957 50.4395 21.3379C50.4395 20.4102 50.0488 19.6777 49.4141 19.043L36.8652 7.08008C35.9863 6.15234 35.2539 5.9082 34.3262 5.9082C33.4473 5.9082 32.7148 6.15234 31.7871 7.08008L19.2871 19.043C18.6035 19.6777 18.2617 20.4102 18.2617 21.3379C18.2617 23.0957 19.5801 24.3652 21.3867 24.3652C22.2168 24.3652 23.1934 24.0723 23.7793 23.3398L29.1992 17.4805L31.1523 15.3809L30.8594 21.2402L30.8594 59.2285C30.8594 61.084 32.4707 62.5977 34.3262 62.5977Z"
+            fill="currentColor"
+          />
+        </g>
+      </svg>
+    </button>
+  </div>
 
+  {/* Tlačítko pro přehled výletu */}
+  <button 
+    onClick={() => setShowOverview(true)}
+    className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 w-full md:w-auto"
+  >
+    {t('tripOverview')}
+  </button>
+</div>
 
-        <button 
-          onClick={() => setShowOverview(true)}
-          className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600">
-          {t('tripOverview')}
-        </button>
-        </div>
         <div className=" md:flex md:space-x-4 flex-col md:flex-row">
           {/* Levý panel pro aktuální den */}
           <div className="relative md:w-2/3 w-full border rounded-lg p-4 max-h-[600px] overflow-y-auto shadow-md bg-white">
-            {dailyPlans.length > 0 && (
+          {accommodationSegment === 'accommodation' ? (
+          <div className="p-6 bg-white rounded-xl">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">{t('accomodationCost')}</h2>
+          
+          <div className="bg-gray-100 p-4 rounded-lg shadow-inner">
+            <label className="block text-lg font-medium text-gray-700 mb-2">{t('accomodationCost')}</label>
+            <input
+              type="number"
+              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+              value={accommodationCost || ''}
+              placeholder="0"
+              onChange={(e) => setAccommodationCost(e.target.value)}
+            />
+          </div>
+        
+          <div className="flex justify-between items-center font-semibold text-lg text-gray-800 mt-4 p-3 border-t">
+            <span>{t('totalBudget')}</span>
+            <span className="text-blue-600 text-xl font-bold">{calculateTripTotal()} CZK</span>
+          </div>
+        
+          <button 
+            onClick={handleUpdate} 
+            className="mt-6 w-full bg-blue-500 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-600 transition-all"
+          >
+            {t('savePlan')}
+          </button>
+        </div>
+        
+        ) : (
+            dailyPlans.length > 0 && (
               <div>
                 <h2 className="text-xl font-semibold mb-2">
                 {t('day')} {currentDayIndex + 1} - {format(dailyPlans[currentDayIndex].date, "dd.MM.yyyy")} <span className="text-center right-4 absolute">{format(dailyPlans[currentDayIndex].date, "EEEE", { locale: getLocale() })}</span>
@@ -665,7 +709,7 @@ const handleLocationInputChange = (e) => {
                 </div>
 
               </div>
-            )}
+            ))}
           </div>
 
           {/* Pravý panel pro kalendář */}
@@ -682,12 +726,20 @@ const handleLocationInputChange = (e) => {
                 </button>
               ))}
             </div>
+            <button
+              className={`w-full text-left mt-2 p-2 border rounded ${accommodationSegment === 'accommodation' ? 'bg-blue-200' : 'hover:bg-gray-100'}`}
+              onClick={() => handleDayClick('accommodation')}
+            >
+              {t('accomodationCost')}
+            </button>
+
+
           </div>
         </div>
 
         
 
-        {(currentDayIndex === dailyPlans.length - 1) && (
+        {/* {(currentDayIndex === dailyPlans.length - 1) && (
             <div className="mt-6 p-4 bg-white rounded shadow-md text-center">
               <h3 className="font-bold text-lg">{t('totalBudget')}</h3>
               <div className="flex justify-between items-center">
@@ -708,7 +760,7 @@ const handleLocationInputChange = (e) => {
                 {t('savePlan')}
                 </button>
             </div>
-        )}
+        )} */}
 
       </div>
       </LoadScript>

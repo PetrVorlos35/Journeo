@@ -670,6 +670,40 @@ const handleLocationInputChange = (e) => {
                       />
                      </Autocomplete>
                     </div>
+
+                    <div className="relative group">
+
+                    <button 
+                      onClick={() => handleDayClick(currentDayIndex)} 
+                      className="mt-4 px-4 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition duration-300 shadow-md relative"
+                      data-tooltip={t('clickToGetRoute')}
+                    >
+                      📍 {t("getRoute")}
+                      <style>{`
+                        button::after {
+                          content: attr(data-tooltip);
+                          position: absolute;
+                          left: 50%;
+                          top: 100%;
+                          margin-top: 8px;
+                          transform: translateX(-50%);
+                          background-color: #2d3748;
+                          color: white;
+                          font-size: 0.75rem;
+                          padding: 4px 8px;
+                          border-radius: 4px;
+                          white-space: nowrap;
+                          opacity: 0;
+                          transition: opacity 0.3s ease-in-out;
+                          z-index: 1000;
+                        }
+                        button:hover::after {
+                          opacity: 1;
+                        }
+                      `}</style>
+                    </button>
+                  </div>
+
                 </div>
                 )}
 

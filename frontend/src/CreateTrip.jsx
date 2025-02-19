@@ -18,6 +18,7 @@ const CreateTrip = () => {
   const [dailyPlans = [], setDailyPlans] = useState([]);
   const [currentDayData, setCurrentDayData] = useState(null);
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
+  const [accommodationSegment, setAccommodationSegment] = useState("");
   const [inputType, setInputType] = useState('location'); 
   const [dailyBudgets = [], setDailyBudgets] = useState([]); 
   const [accommodationCost, setAccommodationCost] = useState(location.state.accommodationCost || 0);
@@ -266,11 +267,18 @@ const handleLocationInputChange = (e) => {
       };
 
       const handleDayClick = (index) => {
-        handleClearMap();
-        setTimeout(() => {
+        if (index === "accommodation") {
+          setAccommodationSegment('accommodation'); // Aktivujeme segment ubytování
+          setCurrentDayData(null);
+          setCurrentDayIndex(null); // Nevybíráme žádný den
+        } else {
+          setAccommodationSegment(null);
+          handleClearMap();
           setCurrentDayIndex(index);
-          setCurrentDayData(dailyPlans[index]);
-        }, 0); 
+          setTimeout(() => {
+            setCurrentDayData(dailyPlans[index]);
+          }, 0); 
+        }
 
         const dayData = dailyPlans[index];
         if (dayData.location) {
@@ -358,27 +366,56 @@ const handleLocationInputChange = (e) => {
       <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} libraries={libraries}>
       <div className="p-6">
       <div className="grid grid-cols-3 items-center mb-4">
-  {/* Odkaz zpět */}
-  <a
-    href="/dashboard"
-    className="text-blue-500 hover:text-blue-600 font-bold px-2 py-2 rounded text-left"
-  >
-    ← {t('back')}
-  </a>
+      {/* Odkaz zpět */}
+      <a
+        href="/dashboard"
+        className="text-blue-500 hover:text-blue-600 font-bold px-2 py-2 rounded text-left"
+      >
+        ← {t('back')}
+      </a>
 
-  {/* Název výletu - vždy na středu */}
-  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center col-span-1">
-    {tripName}
-  </h1>
+      {/* Název výletu - vždy na středu */}
+      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center col-span-1">
+        {tripName}
+      </h1>
 
-  {/* Prázdný div pro vycentrování */}
-  <div className="hidden md:block"></div>
-</div>
+      {/* Prázdný div pro vycentrování */}
+      <div className="hidden md:block"></div>
+    </div>
 
         <div className=" md:flex md:space-x-4 flex-col md:flex-row">
           {/* Levý panel pro aktuální den */}
           <div className="relative md:w-2/3 w-full border rounded-lg p-4 max-h-[600px] overflow-y-auto shadow-md bg-white">
-            {dailyPlans.length > 0 && (
+          {accommodationSegment === 'accommodation' ? (
+          <div className="p-6 bg-white rounded-xl">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">{t('accomodationCost')}</h2>
+          
+          <div className="bg-gray-100 p-4 rounded-lg shadow-inner">
+            <label className="block text-lg font-medium text-gray-700 mb-2">{t('accomodationCost')}</label>
+            <input
+              type="number"
+              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+              value={accommodationCost || ''}
+              placeholder="0"
+              onChange={(e) => setAccommodationCost(e.target.value)}
+            />
+          </div>
+        
+          <div className="flex justify-between items-center font-semibold text-lg text-gray-800 mt-4 p-3 border-t">
+            <span>{t('totalBudget')}</span>
+            <span className="text-blue-600 text-xl font-bold">{calculateTripTotal()} CZK</span>
+          </div>
+        
+          <button 
+            onClick={handleUpdate} 
+            className="mt-6 w-full bg-blue-500 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-600 transition-all"
+          >
+            {t('savePlan')}
+          </button>
+        </div>
+        
+        ) : (
+            dailyPlans.length > 0 && (
               <div>
                 <h2 className="text-xl font-semibold mb-2">
                 {t('day')} {currentDayIndex + 1} - {format(dailyPlans[currentDayIndex].date, "dd.MM.yyyy")} <span className="text-center right-4 absolute">{format(dailyPlans[currentDayIndex].date, "EEEE", { locale: getLocale() })}</span>
@@ -584,6 +621,40 @@ const handleLocationInputChange = (e) => {
                       />
                      </Autocomplete>
                     </div>
+
+                    <div className="relative group">
+
+                    <button 
+                      onClick={() => handleDayClick(currentDayIndex)} 
+                      className="mt-4 px-4 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition duration-300 shadow-md relative"
+                      data-tooltip={t('clickToGetRoute')}
+                    >
+                      📍 {t("getRoute")}
+                      <style>{`
+                        button::after {
+                          content: attr(data-tooltip);
+                          position: absolute;
+                          left: 50%;
+                          top: 100%;
+                          margin-top: 8px;
+                          transform: translateX(-50%);
+                          background-color: #2d3748;
+                          color: white;
+                          font-size: 0.75rem;
+                          padding: 4px 8px;
+                          border-radius: 4px;
+                          white-space: nowrap;
+                          opacity: 0;
+                          transition: opacity 0.3s ease-in-out;
+                          z-index: 1000;
+                        }
+                        button:hover::after {
+                          opacity: 1;
+                        }
+                      `}</style>
+                    </button>
+                    </div>
+
                 </div>
                 )}
 
@@ -618,7 +689,7 @@ const handleLocationInputChange = (e) => {
                 </div>
 
               </div>
-            )}
+            ))}
           </div>
 
           {/* Pravý panel pro kalendář */}
@@ -635,12 +706,18 @@ const handleLocationInputChange = (e) => {
                 </button>
               ))}
             </div>
+            <button
+              className={`w-full text-left mt-2 p-2 border rounded ${accommodationSegment === 'accommodation' ? 'bg-blue-200' : 'hover:bg-gray-100'}`}
+              onClick={() => handleDayClick('accommodation')}
+            >
+              {t('accomodationCost')}
+            </button>
           </div>
         </div>
 
         
 
-        {(currentDayIndex === dailyPlans.length - 1) && (
+        {/* {(currentDayIndex === dailyPlans.length - 1) && (
             <div className="mt-6 p-4 bg-white rounded shadow-md text-center">
               <h3 className="font-bold text-lg">{t('totalBudget')}</h3>
               <div className="flex justify-between items-center">
@@ -661,7 +738,7 @@ const handleLocationInputChange = (e) => {
                 {t('savePlan')}
                 </button>
             </div>
-        )}
+        )} */}
 
       </div>
       </LoadScript>

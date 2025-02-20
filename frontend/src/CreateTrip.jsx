@@ -590,7 +590,7 @@ const handleLocationInputChange = (e) => {
                     {/* Přidání zastávky */}
                     <button
                         onClick={addStop}
-                        className="p-2 flex items-center self-center text-blue-500 hover:text-blue-600"
+                        className="p-2 flex items-center text-blue-500 hover:text-blue-600"
                     >
                         <svg
                         version="1.1"
@@ -626,10 +626,20 @@ const handleLocationInputChange = (e) => {
 
                     <button 
                       onClick={() => handleDayClick(currentDayIndex)} 
-                      className="mt-4 px-4 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition duration-300 shadow-md relative"
+                      className="mt-4 self px-4 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition duration-300 shadow-md relative flex items-center gap-2"
                       data-tooltip={t('clickToGetRoute')}
                     >
-                      📍 {t("getRoute")}
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 30.5664 86.4746" 
+                        className="w-4 h-4 fill-white opacity-85"
+                      >
+                        <g>
+                          <rect height="86.4746" opacity="0" width="30.5664" x="0" y="0"/>
+                          <path d="M30.5664 15.332C30.5664 22.3633 25.8301 28.3203 19.3359 30.127L19.3359 63.1836C19.3359 76.0742 17.041 83.1543 15.2832 83.1543C13.4766 83.1543 11.1816 76.0254 11.1816 63.1836L11.1816 30.127C4.6875 28.2715 0 22.3633 0 15.332C0 6.88477 6.78711 0 15.2832 0C23.7793 0 30.5664 6.88477 30.5664 15.332ZM5.76172 10.9863C5.76172 13.8184 8.20312 16.2598 10.9863 16.2598C13.8672 16.2598 16.2109 13.8184 16.2109 10.9863C16.2109 8.1543 13.8672 5.76172 10.9863 5.76172C8.20312 5.76172 5.76172 8.1543 5.76172 10.9863Z"/>
+                        </g>
+                      </svg>
+                      {t("getRoute")}
                       <style>{`
                         button::after {
                           content: attr(data-tooltip);

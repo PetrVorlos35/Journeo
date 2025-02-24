@@ -18,7 +18,10 @@ const PublicTrip = () => {
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [currentDayData, setCurrentDayData] = useState(null);
   const [inputType, setInputType] = useState("location");
+  const [accommodationSegment, setAccommodationSegment] = useState("");
   const { t, i18n } = useTranslation();
+  const [accommodationCost, setAccommodationCost] = useState(0);
+  const [tripTotal, setTripTotal] = useState(0);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/trip/public/${tripId}`)
@@ -27,8 +30,10 @@ const PublicTrip = () => {
         try {
           const activities = typeof data.activities === "string" ? JSON.parse(data.activities) : data.activities || [];
           const budgets = typeof data.budgets === "string" ? JSON.parse(data.budgets) : data.budgets || [];
+          setAccommodationCost(data.accommodationCost || 0);
+          setTripTotal(data.totalCost || 0);
   
-          setDailyPlans(convertDailyPlans(activities, budgets, data.startDate, data.endDate));
+          setDailyPlans(convertDailyPlans(activities, budgets, data.startDate, data.endDate, accommodationCost, tripTotal));
           setTrip(data);
         } catch (error) {
           console.error("Error parsing trip data:", error);
@@ -64,11 +69,19 @@ const PublicTrip = () => {
   };
 
   const handleDayClick = (index) => {
-    handleClearMap();
-    setTimeout(() => {
+    if (index === "accommodation") {
+      setAccommodationSegment('accommodation'); // Aktivujeme segment ubytování
+      setCurrentDayData(null);
+      setCurrentDayIndex(null); // Nevybíráme žádný den
+    }else{
+      setAccommodationSegment(null);
+      handleClearMap();
       setCurrentDayIndex(index);
-      setCurrentDayData(dailyPlans[index]);
-    }, 0); 
+      setTimeout(() => {
+        setCurrentDayData(dailyPlans[index]);
+      }, 0); 
+    }
+    
 
     // Při změně dne resetuje mapu
     if (dailyPlans[index].location) {
@@ -137,7 +150,32 @@ const PublicTrip = () => {
 
         <div className="md:flex md:space-x-4 flex-col md:flex-row">
           <div className="md:w-2/3 w-full border rounded-lg p-4 max-h-[600px] overflow-y-auto shadow-md bg-white">
-            {dailyPlans.length > 0 && (
+          {accommodationSegment === 'accommodation' ? (
+          <div className="p-6 bg-white rounded-xl">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            {t('accomodationCost')}
+          </h2>
+        
+          <div className="bg-gray-100 p-4 rounded-lg shadow-inner">
+            <label className="block text-lg font-medium text-gray-700 mb-2">
+              {t('accomodationCost')}
+            </label>
+            <div className="w-full border border-gray-300 rounded-lg p-3 bg-gray-50">
+              {Math.round(accommodationCost) || 0}
+            </div>
+          </div>
+        
+          <div className="flex justify-between items-center font-semibold text-lg text-gray-800 mt-4 p-3 border-t">
+            <span>{t('totalBudget')}</span>
+            <span className="text-blue-600 text-xl font-bold">
+              {Math.round(tripTotal)} CZK
+            </span>
+          </div>
+        </div>
+        
+        
+        ) : (
+            dailyPlans.length > 0 && (
               <div>
                <div className="relative">
                <h2 className="text-xl font-semibold mb-2">
@@ -163,7 +201,7 @@ const PublicTrip = () => {
                         <p className="font-semibold text-gray-700">{t(expense.category || "Other")}</p>
                         <p className="text-gray-500">{expense.description || t("noDescription")}</p>
                         </div>
-                        <span className="text-blue-600 font-bold">{expense.amount || 0} CZK</span>
+                        <span className="text-blue-600 font-bold">{Math.round(expense.amount) || 0} CZK</span>
                     </div>
                     ))
                 ) : (
@@ -173,7 +211,7 @@ const PublicTrip = () => {
 
                 <div className="bg-blue-100 text-blue-800 font-bold text-lg p-3 rounded-md shadow-md mt-4 mb-4 flex justify-between">
                 <span>{t("totalDailyExpense")}</span>
-                <span>{dailyPlans[currentDayIndex]?.expenses?.reduce((sum, expense) => sum + (expense.amount || 0), 0)} CZK</span>
+                <span>{Math.round(dailyPlans[currentDayIndex]?.expenses?.reduce((sum, expense) => sum + (expense.amount || 0), 0))} CZK</span>
                 </div>
 
 
@@ -219,7 +257,7 @@ const PublicTrip = () => {
                   />
                 </div>
               </div>
-            )}
+            ))}
           </div>
 
           <div className="md:w-1/3 w-full border rounded-lg p-4 shadow-md max-h-[600px] mt-6 md:mt-0 overflow-y-auto bg-white">
@@ -235,6 +273,12 @@ const PublicTrip = () => {
                 </button>
               ))}
             </div>
+            <button
+              className={`w-full text-left mt-2 p-2 border rounded ${accommodationSegment === 'accommodation' ? 'bg-blue-200' : 'hover:bg-gray-100'}`}
+              onClick={() => handleDayClick('accommodation')}
+            >
+              {t('accomodationCost')}
+            </button>
           </div>
         </div>
       </div>

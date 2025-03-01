@@ -143,7 +143,7 @@ function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-50 dark:from-black dark:to-gray-900">
       <Navbar />
       {/* <AuthHandler token={tokenAuth} setToken={(newToken) => {
         setToken(newToken);
@@ -304,7 +304,7 @@ function Dashboard() {
       className={`inline-block p-3 transition-all duration-300 ${
         activeTab === tab
           ? "text-blue-600 transition-none border-b-blue-600 border-b-2"
-          : " text-gray-500 hover:text-blue-600 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"
+          : " text-gray-500 dark:text-gray-100 hover:text-blue-600 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-blue-600 after:left-1/2 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"
       }`}
     >
       {svg}
@@ -318,14 +318,14 @@ function Dashboard() {
         {/* Tab Content */}
         <div className="flex justify-center transition-all duration-300">
           {activeTab === "upcomingTrips" && (
-            <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
+            <div className="bg-white dark:bg-gray-900 p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
               <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('myTrips')}</h2>
               <UpcomingTrips userId={userId} />
             </div>
           )}
 
           {activeTab === "map" && (
-            <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
+            <div className="bg-white dark:bg-gray-900 p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
               <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('mapHead')}</h2>
               <p>{t('construction')}</p>
               {/* <FriendsDashboard userId={userId} /> */}
@@ -333,7 +333,7 @@ function Dashboard() {
           )}
 
           {activeTab === "budgetTracking" && (
-            <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
+            <div className="bg-white dark:bg-gray-900 p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
               <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('budgetTracking')}</h2>
               <BudgetTracking userId={userId} />
             </div>
@@ -341,16 +341,16 @@ function Dashboard() {
 
 
           {activeTab === "createTrip" && (
-           <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
+           <div className="bg-white dark:bg-gray-900 p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
            <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('newTrip')}</h2>
            <form onSubmit={handleSubmit}>
              <div className="mb-4">
-               <label htmlFor="tripName" className="block text-sm font-medium text-gray-700">{t('tripName')}</label>
+               <label htmlFor="tripName" className="block text-sm font-medium text-gray-700 dark:text-gray-100">{t('tripName')}</label>
                <input
                  type="text"
                  id="tripName"
                  name="tripName"
-                 className="mt-1 p-2 border border-gray-300 rounded w-full"
+                 className="mt-1 p-2 border border-gray-300 dark:bg-black dark:border-gray-800 dark:text-gray-100 rounded w-full"
                  value={tripName}
                  placeholder={t('tripNameDes')}
                  onChange={(e) => setTripName(e.target.value)}
@@ -358,7 +358,7 @@ function Dashboard() {
                />
              </div>
              <div className="mb-4">
-               <label className="block text-sm font-medium text-gray-700">{t('dateFromTo')}</label>
+               <label className="block text-sm font-medium text-gray-700 dark:text-gray-100">{t('dateFromTo')}</label>
                <style>
                  {`
                    .rdrDefinedRangesWrapper {
@@ -389,10 +389,10 @@ function Dashboard() {
           )}
 
           {activeTab === "statistics" && (
-            <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full  sm:w-10/12 md:w-8/12 lg:w-6/12">
+            <div className="bg-white dark:bg-gray-900 p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full  sm:w-10/12 md:w-8/12 lg:w-6/12">
               <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('statsHead')}</h2>
-              <p>{t('statsDistance')} <strong>{statistics.distance} km</strong></p>
-              <p>{t('statsTime')} <strong>{statistics.time} {t('hours')}</strong></p>
+              <p className="dark:text-gray-100">{t('statsDistance')} <strong>{statistics.distance} km</strong></p>
+              <p className="dark:text-gray-100">{t('statsTime')} <strong>{statistics.time} {t('hours')}</strong></p>
             </div>
           )}
 

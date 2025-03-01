@@ -69,7 +69,7 @@ function AccountInfo() {
   };
 
   return (
-    <div className="bg-white p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
+    <div className="bg-white dark:bg-gray-900 p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
       <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('accountOver')}</h2>
 
       {/* Profile Picture */}
@@ -82,53 +82,53 @@ function AccountInfo() {
       {/* Full Name */}
       {isEditing ? (
         <>
-          <label>
+          <label className='dark:text-gray-200'>
           {t('firstName')}
             <input
               type="text"
               name="jmeno"
               value={userInfo.jmeno || ''}
               onChange={handleChange}
-              className="border p-2 rounded mb-2 w-full"
+              className="border p-2 rounded mb-2 w-full dark:bg-black dark:border-gray-800 dark:text-gray-100"
             />
           </label>
-          <label>
+          <label className='dark:text-gray-200'>
           {t('lastName')}
             <input
               type="text"
               name="prijmeni"
               value={userInfo.prijmeni || ''}
               onChange={handleChange}
-              className="border p-2 rounded mb-2 w-full"
+              className="border p-2 rounded mb-2 w-full dark:bg-black dark:border-gray-800 dark:text-gray-100"
             />
           </label>
         </>
       ) : (
-        <p>
+        <p className='dark:text-gray-200'>
           {t('fullName')} <strong>{userInfo.jmeno} {userInfo.prijmeni}</strong>
         </p>
       )}
 
       {/* Nickname */}
       {isEditing ? (
-        <label>
+        <label className='dark:text-gray-200'>
           {t('nickName')}
           <input
             type="text"
             name="prezdivka"
             value={userInfo.prezdivka || ''}
             onChange={handleChange}
-            className="border p-2 rounded mb-2 w-full"
+            className="border p-2 rounded mb-2 w-full dark:bg-black dark:border-gray-800 dark:text-gray-100"
           />
         </label>
       ) : userInfo.prezdivka ? (
-        <p>{t('nickName')} <strong>{userInfo.prezdivka}</strong></p>
+        <p className='dark:text-gray-200'>{t('nickName')} <strong>{userInfo.prezdivka}</strong></p>
       ) : (
         <p className="text-red-500">{t('noNick')}</p>
       )}
 
       {/* Email */}
-      <p>Email: <strong>{userInfo.email}</strong></p>
+      <p className='dark:text-gray-200'>Email: <strong>{userInfo.email}</strong></p>
 
       {/* Save/Cancel or Edit Button */}
       {isEditing ? (

@@ -41,6 +41,17 @@ const PublicTrip = () => {
       })
       .catch((err) => console.error("Error fetching trip:", err));
   }, [tripId]);
+
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+
+      useEffect(() => {
+        const updateTheme = () => {
+          setTheme(localStorage.getItem('theme') || 'light');
+        };
+
+        window.addEventListener('storage', updateTheme); // Listen for storage changes
+        return () => window.removeEventListener('storage', updateTheme);
+      }, []);
   
   
 
@@ -101,13 +112,13 @@ const PublicTrip = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-50 dark:from-black dark:to-gray-900 ">
       <Navbar />
-      <ToastContainer />
+      <ToastContainer theme={theme} />
       <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} libraries={libraries}>
       <div className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-3xl font-bold text-center flex-grow">{trip.tripName}
+          <h1 className="text-3xl font-bold text-center flex-grow dark:text-white">{trip.tripName}
           <button
           onClick={() => {
             const shareUrl = `${import.meta.env.VITE_APP_URL}/trip/${tripId}`;
@@ -149,36 +160,37 @@ const PublicTrip = () => {
         </div>
 
         <div className="md:flex md:space-x-4 flex-col md:flex-row">
-          <div className="md:w-2/3 w-full border rounded-lg p-4 max-h-[600px] overflow-y-auto shadow-md bg-white">
+          <div className="md:w-2/3 w-full border rounded-lg p-4 max-h-[600px] overflow-y-auto shadow-md bg-white dark:bg-gray-900 dark:border-gray-700">
           {accommodationSegment === 'accommodation' ? (
-          <div className="p-6 bg-white rounded-xl">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            {t('accomodationCost')}
-          </h2>
-        
-          <div className="bg-gray-100 p-4 rounded-lg shadow-inner">
-            <label className="block text-lg font-medium text-gray-700 mb-2">
+          <div className="p-6 bg-white rounded-xl dark:bg-gray-900">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4 dark:text-white">
               {t('accomodationCost')}
-            </label>
-            <div className="w-full border border-gray-300 rounded-lg p-3 bg-gray-50">
-              {Math.round(accommodationCost) || 0}
-            </div>
+          </h2>
+      
+          <div className="bg-gray-100 p-4 rounded-lg shadow-inner dark:bg-gray-800">
+              <label className="block text-lg font-medium text-gray-700 mb-2 dark:text-gray-300">
+                  {t('accomodationCost')}
+              </label>
+              <div className="w-full border border-gray-300 rounded-lg p-3 bg-gray-50 dark:border-gray-700 dark:bg-gray-700 dark:text-white">
+                  {Math.round(accommodationCost) || 0}
+              </div>
           </div>
-        
-          <div className="flex justify-between items-center font-semibold text-lg text-gray-800 mt-4 p-3 border-t">
-            <span>{t('totalBudget')}</span>
-            <span className="text-blue-600 text-xl font-bold">
-              {Math.round(tripTotal)} CZK
-            </span>
+      
+          <div className="flex justify-between items-center font-semibold text-lg text-gray-800 mt-4 p-3 border-t dark:border-gray-700 dark:text-gray-300">
+              <span>{t('totalBudget')}</span>
+              <span className="text-blue-600 text-xl font-bold dark:text-blue-400">
+                  {Math.round(tripTotal)} CZK
+              </span>
           </div>
-        </div>
+      </div>
+      
         
         
         ) : (
             dailyPlans.length > 0 && (
               <div>
                <div className="relative">
-               <h2 className="text-xl font-semibold mb-2">
+               <h2 className="text-xl font-semibold mb-2 dark:text-white">
                   {t("day")} {currentDayIndex + 1} - {format(dailyPlans[currentDayIndex].date, "dd.MM.yyyy")}
                   <span className="text-center right-4 absolute">
                     {format(dailyPlans[currentDayIndex].date, "EEEE", { locale: getLocale() })}
@@ -186,64 +198,80 @@ const PublicTrip = () => {
                 </h2>
                </div>
 
-                <p><strong>{t("dailyActivity")}</strong></p>
-                <div className="border p-2 rounded bg-gray-100 mb-4">
-                    <p className="text-gray-600">{dailyPlans[currentDayIndex].plan || t("noActivity")}</p>
+                <p className="dark:text-white"><strong>{t("dailyActivity")}</strong></p>
+                <div className="border p-2 rounded bg-gray-100 mb-4 dark:bg-black dark:border-gray-800">
+                    <p className="text-gray-600 dark:text-white">{dailyPlans[currentDayIndex].plan || t("noActivity")}</p>
                 </div>
 
 
-                <h3 className="font-bold text-lg mb-2">{t("dailyBudget")}</h3>
+                <h3 className="font-bold text-lg mb-2 dark:text-white">{t("dailyBudget")}</h3>
                 <div className="space-y-2">
                 {dailyPlans[currentDayIndex]?.expenses?.length > 0 ? (
                     dailyPlans[currentDayIndex].expenses.map((expense, index) => (
-                    <div key={index} className="border-l-4 p-3 rounded shadow-md bg-gray-50 flex justify-between items-center">
-                        <div>
-                        <p className="font-semibold text-gray-700">{t(expense.category || "Other")}</p>
-                        <p className="text-gray-500">{expense.description || t("noDescription")}</p>
-                        </div>
-                        <span className="text-blue-600 font-bold">{Math.round(expense.amount) || 0} CZK</span>
+                <div 
+                  key={index} 
+                  className="border-l-4 border-blue-600 p-3 rounded shadow-md bg-gray-50 flex justify-between items-center 
+                            dark:bg-black dark:border-l-blue-500 dark:border-gray-800"
+                >
+                    <div>
+                        <p className="font-semibold text-gray-700 dark:text-white">{t(expense.category || "Other")}</p>
+                        <p className="text-gray-500 dark:text-gray-400">{expense.description || t("noDescription")}</p>
                     </div>
+                    <span className="text-blue-600 dark:text-blue-400 font-bold">
+                        {Math.round(expense.amount) || 0} CZK
+                    </span>
+                </div>
+
                     ))
                 ) : (
-                    <p className="text-gray-500">{t("noExpenses")}</p>
+                    <p className="text-gray-500 dark:text-gray-200">{t("noExpenses")}</p>
                 )}
                 </div>
 
-                <div className="bg-blue-100 text-blue-800 font-bold text-lg p-3 rounded-md shadow-md mt-4 mb-4 flex justify-between">
-                <span>{t("totalDailyExpense")}</span>
-                <span>{Math.round(dailyPlans[currentDayIndex]?.expenses?.reduce((sum, expense) => sum + (expense.amount || 0), 0))} CZK</span>
+                <div 
+                  className="bg-blue-100 text-blue-800 font-bold text-lg p-3 rounded-md shadow-md mt-4 mb-4 flex justify-between 
+                            dark:bg-blue-900 dark:text-blue-200"
+                >
+                    <span>{t("totalDailyExpense")}</span>
+                    <span>{Math.round(dailyPlans[currentDayIndex]?.expenses?.reduce((sum, expense) => sum + (expense.amount || 0), 0))} CZK</span>
                 </div>
+
 
 
                 {dailyPlans[currentDayIndex].location && (
-                <div className="border p-2 rounded bg-gray-100 mb-4">
-                    <p><strong>{t("location")}:</strong></p>
-                    <p className="text-gray-600">{dailyPlans[currentDayIndex].location}</p>
-                </div>
+                <div className="border p-2 rounded bg-gray-100 mb-4 dark:bg-black dark:border-gray-800">
+                <p className="dark:text-white"><strong>{t("location")}:</strong></p>
+                <p className="text-gray-600 dark:text-gray-300">{dailyPlans[currentDayIndex].location}</p>
+            </div>
+            
                 )}
 
                 {dailyPlans[currentDayIndex].route.start && dailyPlans[currentDayIndex].route.end && (
-                <div className="border p-3 rounded bg-gray-100 mb-4">
-                    <p className="font-bold">{t("route")}</p>
-                    <div className="flex items-center gap-2 text-gray-700">
-                    <span className="text-green-600 font-bold">Start:</span>
-                    <span>{dailyPlans[currentDayIndex].route.start}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-700">
-                    <span className="text-red-600 font-bold">End:</span>
-                    <span>{dailyPlans[currentDayIndex].route.end}</span>
-                    </div>
-                    {dailyPlans[currentDayIndex].route.stops.length > 0 && (
-                    <div className="mt-2">
-                        <p className="text-gray-500 font-semibold">{t("stops")}:</p>
-                        <ul className="list-disc list-inside text-gray-600">
-                        {dailyPlans[currentDayIndex].route.stops.map((stop, index) => (
-                            <li key={index}>{stop}</li>
-                        ))}
-                        </ul>
-                    </div>
-                    )}
-                </div>
+               <div className="border p-3 rounded bg-gray-100 mb-4 dark:bg-black dark:border-gray-800">
+               <p className="font-bold dark:text-white">{t("route")}</p>
+           
+               <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                   <span className="text-green-600 font-bold dark:text-green-400">Start:</span>
+                   <span>{dailyPlans[currentDayIndex].route.start}</span>
+               </div>
+           
+               <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                   <span className="text-red-600 font-bold dark:text-red-400">End:</span>
+                   <span>{dailyPlans[currentDayIndex].route.end}</span>
+               </div>
+           
+               {dailyPlans[currentDayIndex].route.stops.length > 0 && (
+                   <div className="mt-2">
+                       <p className="text-gray-500 font-semibold dark:text-gray-400">{t("stops")}:</p>
+                       <ul className="list-disc list-inside text-gray-600 dark:text-gray-300">
+                           {dailyPlans[currentDayIndex].route.stops.map((stop, index) => (
+                               <li key={index}>{stop}</li>
+                           ))}
+                       </ul>
+                   </div>
+               )}
+           </div>
+           
                 )}
 
 
@@ -260,26 +288,31 @@ const PublicTrip = () => {
             ))}
           </div>
 
-          <div className="md:w-1/3 w-full border rounded-lg p-4 shadow-md max-h-[600px] mt-6 md:mt-0 overflow-y-auto bg-white">
-            <h3 className="text-lg font-semibold mb-2">{t("calendar")}</h3>
+          <div className="md:w-1/3 w-full border rounded-lg p-4 shadow-md max-h-[600px] mt-6 md:mt-0 overflow-y-auto bg-white dark:bg-gray-900 dark:border-gray-800">
+            <h3 className="text-lg font-semibold mb-2 dark:text-white">{t("calendar")}</h3>
             <div className="space-y-2">
-              {dailyPlans.map((day, index) => (
-                <button
-                  key={index}
-                  className={`w-full text-left p-2 border rounded ${index === currentDayIndex ? "bg-blue-200" : "hover:bg-gray-100"}`}
-                  onClick={() => handleDayClick(index)}
-                >
-                  {t("day")} {index + 1} ({format(day.date, "EEEE", { locale: getLocale() })}) - {format(day.date, "dd.MM.yyyy")}
-                </button>
-              ))}
+                {dailyPlans.map((day, index) => (
+                    <button
+                        key={index}
+                        className={`w-full text-left p-2 border rounded 
+                                    ${index === currentDayIndex ? "bg-blue-200 dark:bg-blue-800" : "hover:bg-gray-100 dark:hover:bg-gray-700"} 
+                                    dark:border-gray-700 dark:text-gray-300`}
+                        onClick={() => handleDayClick(index)}
+                    >
+                        {t("day")} {index + 1} ({format(day.date, "EEEE", { locale: getLocale() })}) - {format(day.date, "dd.MM.yyyy")}
+                    </button>
+                ))}
             </div>
             <button
-              className={`w-full text-left mt-2 p-2 border rounded ${accommodationSegment === 'accommodation' ? 'bg-blue-200' : 'hover:bg-gray-100'}`}
-              onClick={() => handleDayClick('accommodation')}
+                className={`w-full text-left mt-2 p-2 border rounded 
+                            ${accommodationSegment === 'accommodation' ? 'bg-blue-200 dark:bg-blue-800' : 'hover:bg-gray-100 dark:hover:bg-gray-700'} 
+                            dark:border-gray-700 dark:text-gray-300`}
+                onClick={() => handleDayClick('accommodation')}
             >
-              {t('accomodationCost')}
+                {t('accomodationCost')}
             </button>
-          </div>
+        </div>
+
         </div>
       </div>
         </LoadScript>

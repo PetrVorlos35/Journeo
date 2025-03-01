@@ -23,7 +23,7 @@ const LanguageSelector = () => {
         <select
           onChange={(e) => changeLanguage(e.target.value)}
           value={selectedLang}
-          className="border border-gray-300 rounded-md py-1 px-2 text-sm bg-white cursor-pointer focus:ring focus:ring-blue-300"
+          className="border border-gray-300 rounded-md py-1 px-2 text-sm bg-white cursor-pointer focus:ring focus:ring-blue-300 dark:bg-gray-800 dark:border-gray-600"
         >
           <option value="cs">Čeština</option>
           <option value="en">English</option>

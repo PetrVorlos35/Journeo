@@ -14,6 +14,7 @@
     "@vis.gl/react-google-maps": "^1.4.0",
     "axios": "^1.7.9",
     "browser-image-compression": "^2.0.2",
+    "canvas-confetti": "^1.9.3",
     "chart.js": "^4.4.7",
     "google-map-react": "^2.2.1",
     "html2canvas": "^1.4.1",
@@ -35,7 +36,10 @@
     "react-native-calendars": "^1.1307.0",
     "react-router-dom": "^6.26.2",
     "react-toastify": "^11.0.2",
+    "react-tsparticles": "^2.12.2",
     "react-world-flags": "^1.6.0",
+    "tsparticles": "^3.8.1",
+    "tsparticles-engine": "^2.12.0",
     "use-places-autocomplete": "^4.0.1"
   },
   "devDependencies": {

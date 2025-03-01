@@ -47,12 +47,12 @@ function LoginForm() {
   
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-50 dark:from-black dark:to-gray-900">
       <Navbar />
       <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div>
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
             {t('loginHead')}
             </h2>
           </div>
@@ -70,7 +70,7 @@ function LoginForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:bg-black dark:border-gray-800 dark:text-gray-100 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                   placeholder={t('email')}
                 />
               </div>
@@ -86,7 +86,7 @@ function LoginForm() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:bg-black dark:border-gray-800 dark:text-gray-100 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                   placeholder={t('password')}
                 />
               </div>
@@ -105,28 +105,29 @@ function LoginForm() {
             {success && <p className="text-green-500 mt-2">Login successful! Redirecting...</p>}
 
             <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-200">
             {t('noAccount')}{" "}
-              <a href="/register" className="text-indigo-600 hover:text-indigo-500">
+              <a href="/register" className="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
               {t('noAccountLink')}
               </a>
             </p>
           </div>
 
             <div className="relative flex items-center justify-center">
-              <span className="absolute  px-2 text-gray-500">{t('continueW')}</span>
-              <div className="w-full border-t border-gray-300 mt-4"></div>
+              <span className="absolute  px-2 text-gray-500 dark:text-gray-200">{t('continueW')}</span>
+              <div className="w-full border-t border-gray-300 dark:border-gray-700 mt-4"></div>
             </div>
 
             <div className="flex justify-center mt-4">
               <button
                 type="button"
                 onClick={handleGoogleLogin}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 dark:hover:bg-gray-950 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 <img className="h-5 w-5 mr-2" src={googleLogo} alt="Google logo" />
                 Google
               </button>
+
             </div>
           </form>
         </div>

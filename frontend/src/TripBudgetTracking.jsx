@@ -186,20 +186,20 @@ const TripBudgetTracking = ({ userId, tripId }) => {
     <div className="trip-budget-tracking">
       {totals && (
         <div className="text-center mb-6">
-          <h3 className="text-xl font-semibold text-gray-700">{t('totalCost')}</h3>
+          <h3 className="text-xl font-semibold text-gray-700 dark:text-white">{t('totalCost')}</h3>
           <p className="text-lg text-blue-500">{totals?.totalOverallCost || 0} CZK</p>
         </div>
       )}
 
       <div className="flex justify-center items-center mb-6">
-        <label htmlFor="chartType" className="mr-3 text-gray-700 font-medium">
+        <label htmlFor="chartType" className="mr-3 text-gray-700 font-medium dark:text-white">
           {t('budgetChart')}
         </label>
         <select
           id="chartType"
           value={chartType}
           onChange={(e) => setChartType(e.target.value)}
-          className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-black dark:border-gray-800 dark:text-gray-100"
         >
           <option value="doughnut">{t('Doughnut')}</option>
           <option value="bar">{t('Bar')}</option>
@@ -211,7 +211,7 @@ const TripBudgetTracking = ({ userId, tripId }) => {
         {chartType !== savedChartType && (
     <button
       onClick={saveChartType}
-      className="ml-3 p-2 text-blue-500 hover:text-blue-700 focus:outline-none"
+      className="ml-3 p-2 focus:outline-none"
       title="Save selected chart type"
     >
       <svg
@@ -219,13 +219,13 @@ const TripBudgetTracking = ({ userId, tripId }) => {
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
         viewBox="0 0 52.5879 83.252"
-        className="w-6 h-6"
+        className="w-6 h-6 fill-black dark:fill-white"
       >
         <g>
           <rect height="83.252" opacity="0" width="52.5879" x="0" y="0" />
           <path
             d="M4.44336 83.1055C6.49414 83.1055 7.71484 81.8848 11.7188 78.0273L25.9277 64.2578C26.123 64.0625 26.5137 64.0625 26.6602 64.2578L40.8691 78.0273C44.9219 81.8848 46.0938 83.1055 48.1934 83.1055C50.9766 83.1055 52.5879 81.25 52.5879 77.9785L52.5879 11.377C52.5879 3.80859 48.8281 0 41.3574 0L11.2305 0C3.75977 0 0 3.80859 0 11.377L0 77.9785C0 81.25 1.61133 83.1055 4.44336 83.1055ZM8.00781 71.1426C7.4707 71.6309 6.88477 71.4844 6.88477 70.752L6.88477 11.4746C6.88477 8.44727 8.49609 6.88477 11.5723 6.88477L41.0156 6.88477C44.0918 6.88477 45.7031 8.44727 45.7031 11.4746L45.7031 70.752C45.7031 71.4844 45.1172 71.6309 44.6289 71.1426L28.5156 55.8594C27.1484 54.541 25.4395 54.541 24.0723 55.8594Z"
-            fill="black"
+            fill="currentColor"
             fillOpacity="0.85"
           />
         </g>
@@ -240,13 +240,13 @@ const TripBudgetTracking = ({ userId, tripId }) => {
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
         viewBox="0 0 52.5879 83.252"
-        className="w-6 h-6 text-green-500"
+        className="w-6 h-6 fill-black dark:fill-white dark:text-white"
       >
         <g>
           <rect height="83.252" opacity="0" width="52.5879" x="0" y="0" />
           <path
             d="M4.44336 83.1055C6.49414 83.1055 7.71484 81.8848 11.7188 78.0273L25.9277 64.2578C26.123 64.0625 26.5137 64.0625 26.6602 64.2578L40.8691 78.0273C44.9219 81.8848 46.0938 83.1055 48.1934 83.1055C50.9766 83.1055 52.5879 81.25 52.5879 77.9785L52.5879 11.377C52.5879 3.80859 48.8281 0 41.3574 0L11.2305 0C3.75977 0 0 3.80859 0 11.377L0 77.9785C0 81.25 1.61133 83.1055 4.44336 83.1055Z"
-            fill="black"
+            fill="currentColor"
             fillOpacity="0.85"
           />
         </g>

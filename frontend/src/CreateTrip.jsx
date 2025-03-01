@@ -341,6 +341,18 @@ const handleLocationInputChange = (e) => {
         setDailyBudgets(updatedBudgets);
       };
 
+      const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+
+      useEffect(() => {
+        const updateTheme = () => {
+          setTheme(localStorage.getItem('theme') || 'light');
+        };
+
+        window.addEventListener('storage', updateTheme); // Listen for storage changes
+        return () => window.removeEventListener('storage', updateTheme);
+      }, []);
+
+
       const removeExpense = (index) => {
         const updatedBudgets = [...dailyBudgets];
         const updatedExpenses = [...(updatedBudgets[currentDayIndex].expenses || [])];
@@ -360,22 +372,22 @@ const handleLocationInputChange = (e) => {
       };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-50 dark:from-black dark:to-gray-900">
       <Navbar />
-      <ToastContainer />
+      <ToastContainer theme={theme} />
       <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} libraries={libraries}>
       <div className="p-6">
       <div className="grid grid-cols-3 items-center mb-4">
       {/* Odkaz zpět */}
       <a
         href="/dashboard"
-        className="text-blue-500 hover:text-blue-600 font-bold px-2 py-2 rounded text-left"
+        className="text-blue-500 hover:text-blue-600 font-bold px-2 py-2 w-fit rounded text-left"
       >
         ← {t('back')}
       </a>
 
       {/* Název výletu - vždy na středu */}
-      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center col-span-1">
+      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center col-span-1 dark:text-white">
         {tripName}
       </h1>
 
@@ -385,44 +397,48 @@ const handleLocationInputChange = (e) => {
 
         <div className=" md:flex md:space-x-4 flex-col md:flex-row">
           {/* Levý panel pro aktuální den */}
-          <div className="relative md:w-2/3 w-full border rounded-lg p-4 max-h-[600px] overflow-y-auto shadow-md bg-white">
+          <div className="relative md:w-2/3 w-full border rounded-lg p-4 max-h-[600px] overflow-y-auto shadow-md bg-white dark:bg-gray-900 dark:border-gray-700">
           {accommodationSegment === 'accommodation' ? (
-          <div className="p-6 bg-white rounded-xl">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">{t('accomodationCost')}</h2>
-          
-          <div className="bg-gray-100 p-4 rounded-lg shadow-inner">
-            <label className="block text-lg font-medium text-gray-700 mb-2">{t('accomodationCost')}</label>
-            <input
-              type="number"
-              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
-              value={accommodationCost || ''}
-              placeholder="0"
-              onChange={(e) => setAccommodationCost(e.target.value)}
-            />
-          </div>
-        
-          <div className="flex justify-between items-center font-semibold text-lg text-gray-800 mt-4 p-3 border-t">
-            <span>{t('totalBudget')}</span>
-            <span className="text-blue-600 text-xl font-bold">{calculateTripTotal()} CZK</span>
-          </div>
-        
-          <button 
-            onClick={handleUpdate} 
-            className="mt-6 w-full bg-blue-500 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-600 transition-all"
-          >
-            {t('savePlan')}
-          </button>
-        </div>
+            <div className="p-6 bg-white rounded-xl dark:bg-gray-900">
+    <h2 className="text-2xl font-bold text-gray-800 mb-4 dark:text-white">{t('accomodationCost')}</h2>
+
+    <div className="bg-gray-100 p-4 rounded-lg shadow-inner dark:bg-gray-800">
+        <label className="block text-lg font-medium text-gray-700 mb-2 dark:text-gray-300">{t('accomodationCost')}</label>
+        <input
+            type="number"
+            className="w-full border border-gray-300 rounded-lg p-3 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all 
+                       dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+            value={accommodationCost || ''}
+            placeholder="0"
+            onChange={(e) => setAccommodationCost(e.target.value)}
+        />
+    </div>
+
+    <div className="flex justify-between items-center font-semibold text-lg text-gray-800 mt-4 p-3 border-t dark:border-gray-700 dark:text-gray-300">
+        <span>{t('totalBudget')}</span>
+        <span className="text-blue-600 text-xl font-bold dark:text-blue-400">
+            {calculateTripTotal()} CZK
+        </span>
+    </div>
+
+    <button 
+        onClick={handleUpdate} 
+        className="mt-6 w-full bg-blue-500 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-600 transition-all 
+                   dark:bg-blue-600 dark:hover:bg-blue-700"
+    >
+        {t('savePlan')}
+    </button>
+</div>
         
         ) : (
             dailyPlans.length > 0 && (
               <div>
-                <h2 className="text-xl font-semibold mb-2">
+                <h2 className="text-xl font-semibold mb-2 dark:text-white">
                 {t('day')} {currentDayIndex + 1} - {format(dailyPlans[currentDayIndex].date, "dd.MM.yyyy")} <span className="text-center right-4 absolute">{format(dailyPlans[currentDayIndex].date, "EEEE", { locale: getLocale() })}</span>
                 </h2>
 
                 <div className="mb-4">
-                    <label htmlFor="activityDescription" className="block text-gray-700 font-bold mb-2">
+                    <label htmlFor="activityDescription" className="block text-gray-700 font-bold mb-2 dark:text-white">
                     {t('dailyActivity')}
                     </label>
                     <textarea
@@ -434,21 +450,21 @@ const handleLocationInputChange = (e) => {
                         updatedPlans[currentDayIndex].plan = tempPlan; 
                         setDailyPlans(updatedPlans);
                       }}
-                      className="w-full border rounded p-2"
+                      className="w-full border rounded p-2 dark:bg-black dark:border-gray-800 dark:text-gray-100"
                       placeholder={t('dailyActivityDes')}
                     ></textarea>
                 </div>
 
                 {/* Sekce pro denní rozpočet */}
               <div className="mb-4">
-                <h3 className="font-bold text-lg">{t('dailyBudget')}</h3>
+                <h3 className="font-bold text-lg dark:text-white">{t('dailyBudget')}</h3>
                 <div className="flex flex-col gap-2">
                   {dailyBudgets[currentDayIndex]?.expenses?.map((expense, index) => (
                     <div key={index} className="flex items-center gap-2">
                       <select
                         value={expense.category}
                         onChange={(e) => handleExpenseChange(index, "category", e.target.value)}
-                        className="border rounded p-1 w-1/3"
+                        className="border rounded p-1 w-1/3 dark:bg-black dark:border-gray-800 dark:text-gray-100"
                       >
                         <option value="transport">{t('Transport')}</option>
                         <option value="food">{t('Food')}</option>
@@ -460,14 +476,14 @@ const handleLocationInputChange = (e) => {
                         value={expense.amount || ''}
                         onChange={(e) => handleExpenseChange(index, "amount", e.target.value)}
                         placeholder={t('amount')}
-                        className="border rounded p-1 w-1/3"
+                        className="border rounded p-1 w-1/3 dark:bg-black dark:border-gray-800 dark:text-gray-100"
                       />
                       <input
                         type="text"
                         value={expense.description}
                         onChange={(e) => handleExpenseChange(index, "description", e.target.value)}
                         placeholder={t('BudgetDescription')}
-                        className="border rounded p-1 w-1/3"
+                        className="border rounded p-1 w-1/3 dark:bg-black dark:border-gray-800 dark:text-gray-100"
                       />
                       <button
                         onClick={() => removeExpense(index)}
@@ -490,22 +506,22 @@ const handleLocationInputChange = (e) => {
                   </button>
                 </div>
                 <div className="flex justify-between items-center font-bold mt-2">
-                  <span>{t('totalDailyExpense')}</span>
-                  <span>{calculateDailyTotal(dailyBudgets[currentDayIndex])} CZK</span>
+                  <span className="dark:text-white">{t('totalDailyExpense')}</span>
+                  <span className="dark:text-white">{calculateDailyTotal(dailyBudgets[currentDayIndex])} CZK</span>
                 </div>
               </div>
 
                 <div className="mb-4">
-                    <label className="block text-gray-700 font-bold mb-2">{t('option')}</label>
+                    <label className="block text-gray-700 font-bold mb-2 dark:text-white">{t('option')}</label>
                     <div className="flex space-x-4">
                         <button
-                        className={`py-2 px-4 rounded ${inputType === 'location' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                        className={`py-2 px-4 rounded ${inputType === 'location' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700 dark:text-white'}`}
                         onClick={() => handleInputTypeChange('location')}
                         >
                         {t('location')}
                         </button>
                         <button
-                        className={`py-2 px-4 rounded ${inputType === 'route' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                        className={`py-2 px-4 rounded ${inputType === 'route' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700 dark:text-white'}`}
                         onClick={() => handleInputTypeChange('route')}
                         >
                         {t('route')}
@@ -516,14 +532,14 @@ const handleLocationInputChange = (e) => {
                 {/* Dynamické zobrazení uložené lokace */}
                 {inputType === 'location' && (
                 <div className="mb-4">
-                    <label className="block text-gray-700 font-bold mb-2">{t('enterLocation')}</label>
+                    <label className="block text-gray-700 font-bold mb-2 dark:text-white">{t('enterLocation')}</label>
                     <Autocomplete
                     onLoad={onLoadLocation}
                     onPlaceChanged={onPlaceChangedLocation}
                     >
                       <input
                       type="text"
-                      className="w-full border rounded p-2"
+                      className="w-full border rounded p-2 dark:bg-black dark:border-gray-800 dark:text-gray-100"
                       placeholder={t('locationPlaceHolder')}
                       value={locationInputs[currentDayIndex]}
                       onChange={handleLocationInputChange}
@@ -535,7 +551,7 @@ const handleLocationInputChange = (e) => {
                 {/* Dynamické zobrazení uložené trasy */}
                 {inputType === 'route' && (
                 <div className="mb-4">
-                    <label className="block text-gray-700 font-bold mb-2">{t('enterRoute')}</label>
+                    <label className="block text-gray-700 font-bold mb-2 dark:text-white">{t('enterRoute')}</label>
                     <div className="flex flex-col gap-2">
                     {/* Startovní bod */}
                     <Autocomplete
@@ -544,7 +560,7 @@ const handleLocationInputChange = (e) => {
                     >
                         <input
                             type="text"
-                            className="w-full border rounded p-2"
+                            className="w-full border rounded p-2 dark:bg-black dark:border-gray-800 dark:text-gray-100"
                             placeholder={t('routePlaceHolderStart')}
                             value={dailyPlans[currentDayIndex]?.route.start || ''}
                             onChange={(e) => handleRouteChange('start', e.target.value)}
@@ -559,7 +575,7 @@ const handleLocationInputChange = (e) => {
                         >
                             <input
                                 type="text"
-                                className="w-full border rounded p-2"
+                                className="w-full border rounded p-2 dark:bg-black dark:border-gray-800 dark:text-gray-100"
                                 placeholder={`${t('routePlaceHolderStops')} ${index + 1}`}
                                 value={stop}
                                 onChange={(e) => {
@@ -590,7 +606,7 @@ const handleLocationInputChange = (e) => {
                     {/* Přidání zastávky */}
                     <button
                         onClick={addStop}
-                        className="p-2 flex items-center text-blue-500 hover:text-blue-600"
+                        className="p-2 flex items-center w-fit text-blue-500 hover:text-blue-600"
                     >
                         <svg
                         version="1.1"
@@ -614,7 +630,7 @@ const handleLocationInputChange = (e) => {
                     >
                       <input
                           type="text"
-                          className="w-full border rounded p-2"
+                          className="w-full border rounded p-2 dark:bg-black dark:border-gray-800 dark:text-gray-100"
                           placeholder={t('routePlaceHolderEnd')}
                           value={dailyPlans[currentDayIndex]?.route.end || ''}
                           onChange={(e) => handleRouteChange('end', e.target.value)}
@@ -680,7 +696,7 @@ const handleLocationInputChange = (e) => {
                 <div className="flex justify-between items-center bottom-4">
                 <div className="text-left">
                     <button
-                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded disabled:opacity-50 w-full md:w-auto"
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded disabled:opacity-50 w-full md:w-auto dark:bg-black dark:border-gray-800 dark:text-gray-100 dark:hover:bg-gray-900"
                     onClick={handlePrevDay}
                     disabled={currentDayIndex === 0}
                     >
@@ -689,7 +705,7 @@ const handleLocationInputChange = (e) => {
                 </div>
                 <div className="text-right">
                     <button
-                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded disabled:opacity-50 w-full md:w-auto"
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded disabled:opacity-50 w-full md:w-auto dark:bg-black dark:border-gray-800 dark:text-gray-100 dark:hover:bg-gray-900"
                     onClick={handleNextDay}
                     disabled={currentDayIndex === dailyPlans.length - 1}
                     >
@@ -703,26 +719,30 @@ const handleLocationInputChange = (e) => {
           </div>
 
           {/* Pravý panel pro kalendář */}
-          <div className="md:w-1/3 w-full border rounded-lg p-4 shadow-md max-h-[600px] mt-6 md:mt-0 overflow-y-auto bg-white">
-            <h3 className="text-lg font-semibold mb-2">{t('calendar')}</h3>
+          <div className="md:w-1/3 w-full border rounded-lg p-4 shadow-md max-h-[600px] mt-6 md:mt-0 overflow-y-auto bg-white dark:bg-gray-900 dark:border-gray-800">
+            <h3 className="text-lg font-semibold mb-2 dark:text-white">{t("calendar")}</h3>
             <div className="space-y-2">
-              {dailyPlans.map((day, index) => (
-                <button
-                  key={index}
-                  className={`w-full text-left p-2 border rounded ${index === currentDayIndex ? 'bg-blue-200' : 'hover:bg-gray-100'}`}
-                  onClick={() => handleDayClick(index)}
-                >
-                  {t('day')} {index + 1} ({format(dailyPlans[index].date, "EEEE", { locale: getLocale() })}) - {format(day.date, "dd.MM.yyyy")}
-                </button>
-              ))}
+                {dailyPlans.map((day, index) => (
+                    <button
+                        key={index}
+                        className={`w-full text-left p-2 border rounded 
+                                    ${index === currentDayIndex ? "bg-blue-200 dark:bg-blue-800" : "hover:bg-gray-100 dark:hover:bg-gray-700"} 
+                                    dark:border-gray-700 dark:text-gray-300`}
+                        onClick={() => handleDayClick(index)}
+                    >
+                        {t("day")} {index + 1} ({format(day.date, "EEEE", { locale: getLocale() })}) - {format(day.date, "dd.MM.yyyy")}
+                    </button>
+                ))}
             </div>
             <button
-              className={`w-full text-left mt-2 p-2 border rounded ${accommodationSegment === 'accommodation' ? 'bg-blue-200' : 'hover:bg-gray-100'}`}
-              onClick={() => handleDayClick('accommodation')}
+                className={`w-full text-left mt-2 p-2 border rounded 
+                            ${accommodationSegment === 'accommodation' ? 'bg-blue-200 dark:bg-blue-800' : 'hover:bg-gray-100 dark:hover:bg-gray-700'} 
+                            dark:border-gray-700 dark:text-gray-300`}
+                onClick={() => handleDayClick('accommodation')}
             >
-              {t('accomodationCost')}
+                {t('accomodationCost')}
             </button>
-          </div>
+        </div>
         </div>
 
         

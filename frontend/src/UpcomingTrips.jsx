@@ -78,15 +78,26 @@ function UpcomingTrips({ userId }) {
     upcoming: trips.filter(trip => categorizeTrips(trip) === 'upcoming'),
   };
 
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+
+      useEffect(() => {
+        const updateTheme = () => {
+          setTheme(localStorage.getItem('theme') || 'light');
+        };
+
+        window.addEventListener('storage', updateTheme); // Listen for storage changes
+        return () => window.removeEventListener('storage', updateTheme);
+      }, []);
+
   return (
     <div className="p-6">
-      <ToastContainer />
+      <ToastContainer theme={theme} />
       <nav className="flex justify-center mb-6">
         {['past', 'ongoing', 'upcoming'].map((category) => (
           <button
             key={category}
             className={`px-4 py-2 mx-2 rounded-lg ${
-              activeCategory === category ? 'bg-blue-500 text-white' : 'bg-gray-200'
+              activeCategory === category ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 dark:text-gray-100'
             }`}
             onClick={() => setActiveCategory(category)}
           >
@@ -102,13 +113,13 @@ function UpcomingTrips({ userId }) {
           tripsByCategory[activeCategory].map((trip) => (
             <div
               key={trip.id}
-              className="flex mb-4 justify-between items-center bg-white p-4 rounded-lg shadow-md border-l-4 border-red-400 w-full hover:bg-gray-100 transition cursor-pointer"
+              className="flex mb-4 justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border-l-4 border-red-400 dark:border-red-600 w-full hover:bg-gray-100 dark:hover:bg-gray-900 transition cursor-pointer"
               onClick={() => handleViewTrip(trip.title, trip.start_date, trip.end_date, trip.id, trip.activities, trip.budgets, trip.accommodation_cost)}
             >
               <div>
-                <h4 className="font-semibold text-gray-800">{trip.title}</h4>
-                <p>{format(new Date(trip.start_date), 'dd.MM.yyyy')} - {format(new Date(trip.end_date), 'dd.MM.yyyy')}</p>
-                <p className="text-xs mt-1">{t('noActivities')}</p>
+                <h4 className="font-semibold text-gray-800 dark:text-gray-100">{trip.title}</h4>
+                <p className='dark:text-gray-100'>{format(new Date(trip.start_date), 'dd.MM.yyyy')} - {format(new Date(trip.end_date), 'dd.MM.yyyy')}</p>
+                <p className="text-xs mt-1 dark:text-gray-100">{t('noActivities')}</p>
               </div>
               {confirmDelete === trip.id ? (
                 <div className="flex space-x-2">
@@ -129,7 +140,7 @@ function UpcomingTrips({ userId }) {
                 </div>
               ) : (
                 <button
-                  className="ml-4 text-black hover:text-red-600 transition"
+                  className="ml-4 text-black dark:text-gray-100 dark:hover:text-red-600 hover:text-red-600 transition"
                   onClick={(e) => { e.stopPropagation(); setConfirmDelete(trip.id); }}
                   aria-label="Delete trip"
                 >
@@ -139,7 +150,7 @@ function UpcomingTrips({ userId }) {
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-500 mt-4">{t('noTripsInCategory')}</p>
+          <p className="text-center text-gray-500 mt-4 dark:text-gray-200">{t('noTripsInCategory')}</p>
         )}
       </div>
     </div>

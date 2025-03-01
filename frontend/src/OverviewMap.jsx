@@ -122,16 +122,16 @@ const OverviewMap = ({ tripId, userId, allPlans, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 sm:p-0">
-      <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full h-full sm:w-4/5 sm:max-w-4xl sm:h-auto sm:max-h-[95vh] overflow-y-auto relative" ref={contentRef}>
+      <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full h-full sm:w-4/5 sm:max-w-4xl sm:h-auto sm:max-h-[95vh] overflow-y-auto relative dark:text-white dark:bg-gray-800" ref={contentRef}>
         
         <button
-          className="absolute top-4 right-4 text-gray-700 hover:text-red-500 transition-all duration-200"
+          className="absolute top-4 right-4 text-gray-700 dark:text-white dark:hover:text-red-500 hover:text-red-500 transition-all duration-200"
           onClick={onClose}
         >
           &#x2715;
         </button>
         
-        <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-center">{t('tripOverview')}</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-center ">{t('tripOverview')}</h2>
 
         <h3 className="text-xl font-semibold mt-4">{t('dailyPlan')}</h3>
         <ul className="list-disc ml-6">

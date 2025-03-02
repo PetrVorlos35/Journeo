@@ -4,6 +4,11 @@ const DarkModeToggle = () => {
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
 
   useEffect(() => {
+    document.documentElement.style.backgroundColor = darkMode ? 'black' : 'white';
+  }, [darkMode]);
+  
+
+  useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');

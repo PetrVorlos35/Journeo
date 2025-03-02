@@ -1,13 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import i18n from 'i18next';
 import Flags from 'react-world-flags';
 
 const LanguageSelector = () => {
   const [selectedLang, setSelectedLang] = useState(i18n.language);
 
+  useEffect(() => {
+    // Aktualizuje stav při změně jazyka, aby vlajka a select byly synchronizované
+    const updateLanguage = () => setSelectedLang(i18n.language);
+
+    i18n.on('languageChanged', updateLanguage);
+
+    // Nastaví správný jazyk při načtení stránky
+    setSelectedLang(i18n.language);
+
+    return () => {
+      i18n.off('languageChanged', updateLanguage);
+    };
+  }, []);
+
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
-    setSelectedLang(lng);
   };
 
   return (

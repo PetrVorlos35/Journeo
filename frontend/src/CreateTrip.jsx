@@ -397,7 +397,7 @@ const handleLocationInputChange = (e) => {
 
         <div className=" md:flex md:space-x-4 flex-col md:flex-row">
           {/* Levý panel pro aktuální den */}
-          <div className="relative md:w-2/3 w-full border rounded-lg p-4 max-h-[600px] overflow-y-auto shadow-md bg-white dark:bg-gray-900 dark:border-gray-700">
+          <div className="relative md:w-2/3 w-full border rounded-lg p-4 overflow-y-auto shadow-md bg-white dark:bg-gray-900 dark:border-gray-700">
           {accommodationSegment === 'accommodation' ? (
             <div className="p-6 bg-white rounded-xl dark:bg-gray-900">
     <h2 className="text-2xl font-bold text-gray-800 mb-4 dark:text-white">{t('accomodationCost')}</h2>
@@ -719,7 +719,7 @@ const handleLocationInputChange = (e) => {
           </div>
 
           {/* Pravý panel pro kalendář */}
-          <div className="md:w-1/3 w-full border rounded-lg p-4 shadow-md max-h-[600px] mt-6 md:mt-0 overflow-y-auto bg-white dark:bg-gray-900 dark:border-gray-800">
+          <div className="md:w-1/3 w-full border rounded-lg p-4 shadow-md mt-6 md:mt-0 overflow-y-auto bg-white dark:bg-gray-900 dark:border-gray-800">
             <h3 className="text-lg font-semibold mb-2 dark:text-white">{t("calendar")}</h3>
             <div className="space-y-2">
                 {dailyPlans.map((day, index) => (

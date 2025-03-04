@@ -26,6 +26,7 @@ function LandingPage() {
   
 
   const handleLoginClick = () => {
+    handleConfettiClick();
     navigate(isAuthenticated ? "/dashboard" : "/login");
   };
 
@@ -158,6 +159,8 @@ function LandingPage() {
           <p className="text-lg max-w-2xl mx-auto mt-4 text-blue-500 dark:text-gray-300">
             {t("ctaDes")}
           </p>
+
+          <div className="flex flex-col items-center gap-2">
           <button 
             onClick={handleLoginClick} 
             className="mt-6 bg-blue-500 dark:bg-gray-900 text-gray-100 font-bold py-3 px-10 rounded-full shadow-lg text-lg hover:bg-blue-700 dark:hover:bg-gray-700 transition duration-300 transform hover:scale-105 hover:shadow-2xl"
@@ -167,10 +170,11 @@ function LandingPage() {
 
           <button 
             onClick={handleConfettiClick} 
-            className="mt-6 bg-pink-500 dark:bg-pink-700 text-white font-bold py-3 px-10 rounded-full shadow-lg text-lg hover:bg-pink-600 dark:hover:bg-pink-800 transition duration-300 transform hover:scale-105 hover:shadow-2xl"
+            className="mt-4 bg-pink-500 dark:bg-pink-700 text-white font-bold py-3 px-10 rounded-full shadow-lg text-lg hover:bg-pink-600 dark:hover:bg-pink-800 transition duration-300 transform hover:scale-105 hover:shadow-2xl"
           >
-            🎉 Spustit konfety 🎉
+            🎉 {t("confetti")} 🎉
           </button>
+          </div>
 
         </div>
       </section>

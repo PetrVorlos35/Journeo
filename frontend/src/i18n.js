@@ -131,6 +131,7 @@ i18n
           noActivityPlanned: "No activity planned",
           noLocationOrRoute: "No location or route",
           mapOverview: "Map Overview",
+          confetti: "Launch Confetti",
         },
       },
       cs: {
@@ -257,6 +258,7 @@ i18n
           noActivityPlanned: "Žádná aktivita naplánována",
           noLocationOrRoute: "Žádná lokace nebo trasa",
           mapOverview: "Přehled mapy",
+          confetti: "Spustit konfety",
         },
       },
     },

@@ -10,7 +10,7 @@ import jsPDF from 'jspdf';
 
 const mapContainerStyle = {
   width: '100%',
-  height: '500px',
+  height: '300px',
 };
 
 const defaultCenter = {
@@ -21,6 +21,7 @@ const defaultCenter = {
 const OverviewMap = ({ tripId, userId, allPlans, onClose }) => {
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [directionsResponses, setDirectionsResponses] = useState([]);
+  const [dayColors, setDayColors] = useState([]);
   const [locations, setLocations] = useState([]);
   const mapRef = useRef(null);
   const { t, i18n } = useTranslation();
@@ -43,43 +44,78 @@ const OverviewMap = ({ tripId, userId, allPlans, onClose }) => {
     };
   }, []);
 
+  const generateRandomColors = (count) => {
+    const colors = [];
+    
+    for (let i = 0; i < count; i++) {
+      let color;
+      do {
+        color = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+      } while (!isColorVisible(color)); 
+      
+      colors.push(color);
+    }
+  
+    return colors;
+  };
+  
+
+  const isColorVisible = (hex) => {
+    const rgb = hexToRgb(hex);
+    const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000; 
+    return brightness < 200; 
+  };
+  
+
+  const hexToRgb = (hex) => {
+    const bigint = parseInt(hex.substring(1), 16);
+    return { 
+      r: (bigint >> 16) & 255, 
+      g: (bigint >> 8) & 255, 
+      b: bigint & 255 
+    };
+  };
+  
+  
+
   useEffect(() => {
     if (allPlans.length > 0) {
       const directionsService = new google.maps.DirectionsService();
       const bounds = new google.maps.LatLngBounds();
 
-      const allRoutes = allPlans
-        .filter(plan => plan.route.start && plan.route.end)
-        .map(plan => ({
-          origin: plan.route.start,
-          destination: plan.route.end,
-          travelMode: google.maps.TravelMode.DRIVING,
-          waypoints: plan.route.stops.map(stop => ({ location: stop, stopover: true })),
-        }));
-
-      if (allRoutes.length > 0) {
-        allRoutes.forEach(route => {
+      const colors = generateRandomColors(allPlans.length);
+      setDayColors(colors);
+      
+      allPlans.forEach((plan, index) => {
+        if (plan.route.start && plan.route.end) {
+          const route = {
+            origin: plan.route.start,
+            destination: plan.route.end,
+            travelMode: google.maps.TravelMode.DRIVING,
+            waypoints: plan.route.stops.map(stop => ({ location: stop, stopover: true })),
+          };
+          
           directionsService.route(route, (result, status) => {
             if (status === 'OK') {
-              setDirectionsResponses(prev => [...prev, result]);
+              setDirectionsResponses(prev => [...prev, { response: result, color: colors[index % colors.length] }]);
               result.routes[0].legs.forEach(leg => {
                 bounds.extend(leg.start_location);
                 bounds.extend(leg.end_location);
               });
             }
           });
-        });
-      }
+        }
+      });
 
       const geocoder = new google.maps.Geocoder();
       const tempLocations = [];
 
-      allPlans.forEach(plan => {
+      allPlans.forEach((plan, index) => {
         if (plan.location) {
           geocoder.geocode({ address: plan.location }, (results, status) => {
             if (status === 'OK' && results[0]) {
               const loc = results[0].geometry.location;
-              tempLocations.push(loc);
+              tempLocations.push({ location: loc, day: index + 1 });
               bounds.extend(loc);
               setLocations([...tempLocations]);
             }
@@ -137,7 +173,15 @@ const OverviewMap = ({ tripId, userId, allPlans, onClose }) => {
         <ul className="list-disc ml-6">
           {allPlans.map((plan, index) => (
             <li key={index}>
-              <strong>{t('day')} {index + 1} - {format(new Date(plan.date), 'EEEE, dd.MM.yyyy', { locale: getLocale() })}:</strong>
+<span className="inline-flex items-center">
+  <span 
+    className="w-3 h-3 rounded-full mr-2" 
+    style={{ backgroundColor: dayColors[index] }} 
+  />
+  <strong>
+    {t('day')} {index + 1} - {format(new Date(plan.date), 'EEEE, dd.MM.yyyy', { locale: getLocale() })}
+  </strong>
+</span>
               <p>{plan.plan && plan.plan.trim() !== "" ? plan.plan : t('noActivityPlanned')}</p>
               {plan.location && plan.location.trim() !== "" ? (
                 <p><strong>{t('location')}:</strong> {plan.location}</p>
@@ -154,17 +198,21 @@ const OverviewMap = ({ tripId, userId, allPlans, onClose }) => {
         <h3 className="text-xl font-semibold mt-4">{t('mapOverview')}</h3>
         <div className="mb-4 h-64">
           <GoogleMap
-            mapContainerStyle={{ width: '100%', height: '100%' }}
+            mapContainerStyle={mapContainerStyle}
             center={mapCenter}
             zoom={10}
             onLoad={(map) => (mapRef.current = map)}
             options={{ streetViewControl: false, fullscreenControl: false, zoomControl: true }}
           >
-            {directionsResponses.map((response, index) => (
-              <DirectionsRenderer key={index} directions={response} />
+            {directionsResponses.map((item, index) => (
+              <DirectionsRenderer 
+                key={index} 
+                directions={item.response} 
+                options={{ polylineOptions: { strokeColor: item.color, strokeWeight: 4 } }}
+              />
             ))}
             {locations.map((loc, index) => (
-              <MarkerF key={index} position={loc} />
+              <MarkerF key={index} position={loc.location} label={`${loc.day}`} />
             ))}
           </GoogleMap>
         </div>

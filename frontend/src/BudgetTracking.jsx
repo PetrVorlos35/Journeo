@@ -15,6 +15,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import Loading from './Loading';
 
 ChartJS.register(
   ArcElement,
@@ -153,7 +154,7 @@ const BudgetTracking = ({ userId }) => {
   }, [userId, t]);
 
   const renderChart = () => {
-    if (!chartData) return <p className="text-gray-500">Loading chart...</p>;
+    if (!chartData) return <Loading />;
 
     switch (chartType) {
       case 'bar':

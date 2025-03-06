@@ -8,12 +8,14 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css"; 
 // import { LoadScript } from '@react-google-maps/api';
 import BudgetTracking from "./BudgetTracking";
+import UserTripStats from "./UserTripStats";
 // import Map from "./Map";
 // import MapComponent from "./MapComponent";
 import UpcomingTrips from "./UpcomingTrips";
 import { useTranslation } from 'react-i18next';
 // import FriendsDashboard from "./FriendsDashboard";
 // import AuthHandler from "./AuthHandler";
+import Loading from "./Loading";
 
 
 function Dashboard() {
@@ -139,7 +141,7 @@ function Dashboard() {
   }, [navigate, location]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   return (
@@ -391,8 +393,10 @@ function Dashboard() {
           {activeTab === "statistics" && (
             <div className="bg-white dark:bg-gray-900 p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full  sm:w-10/12 md:w-8/12 lg:w-6/12">
               <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('statsHead')}</h2>
-              <p className="dark:text-gray-100">{t('statsDistance')} <strong>{statistics.distance} km</strong></p>
-              <p className="dark:text-gray-100">{t('statsTime')} <strong>{statistics.time} {t('hours')}</strong></p>
+              {/* <p className="dark:text-gray-100">{t('statsDistance')} <strong>{statistics.distance} km</strong></p>
+              <p className="dark:text-gray-100">{t('statsTime')} <strong>{statistics.time} {t('hours')}</strong></p> */}
+              <UserTripStats userId={userId} />
+
             </div>
           )}
 

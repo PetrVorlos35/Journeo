@@ -7,6 +7,7 @@ import MapComponent from "./MapComponent";
 import { useTranslation } from "react-i18next";
 import { LoadScript } from "@react-google-maps/api";
 import { toast, ToastContainer, Slide } from "react-toastify";
+import Loading from "./Loading";
 
 
 const libraries = ["places"];
@@ -105,9 +106,7 @@ const PublicTrip = () => {
 
   if (!trip) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>{t("loading")}</p>
-      </div>
+      <Loading />
     );
   }
 
@@ -303,8 +302,9 @@ const PublicTrip = () => {
                     </button>
                 ))}
             </div>
+            <div className="w-full border-t border-gray-300 dark:border-gray-700 mt-4 mb-4"></div>
             <button
-                className={`w-full text-left mt-2 p-2 border rounded 
+                className={`w-full text-left p-2 border rounded 
                             ${accommodationSegment === 'accommodation' ? 'bg-blue-200 dark:bg-blue-800' : 'hover:bg-gray-100 dark:hover:bg-gray-700'} 
                             dark:border-gray-700 dark:text-gray-300`}
                 onClick={() => handleDayClick('accommodation')}

@@ -3,6 +3,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { Bar, Doughnut, Pie, Radar, PolarArea, Line } from 'react-chartjs-2';
+import Loading from './Loading';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -149,7 +150,7 @@ const TripBudgetTracking = ({ userId, tripId }) => {
   }, [userId, tripId, t]);
 
   const renderChart = () => {
-    if (!chartData) return <p className="text-gray-500 text-center">Loading chart...</p>;
+    if (!chartData) return <Loading />;
   
     const commonOptions = {
       responsive: true,

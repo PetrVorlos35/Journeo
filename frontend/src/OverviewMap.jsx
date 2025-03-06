@@ -130,29 +130,139 @@ const OverviewMap = ({ tripId, userId, allPlans, onClose }) => {
       }, 1000);
     }
   }, [allPlans]);
-
-  const handleDownloadPDF = () => {
-    window.scrollTo(0, 0);  // Posunout na začátek, aby bylo vše vidět
-    const input = contentRef.current;
-    
-    html2canvas(input, { 
-        scale: 2, 
-        useCORS: true,
-        scrollX: 0, 
-        scrollY: -window.scrollY,
-        windowWidth: document.documentElement.scrollWidth,
-        windowHeight: document.documentElement.scrollHeight
-    }).then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        
-        const imgWidth = 210;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-        pdf.save('trip_overview.pdf');
+  
+  
+  
+  const exportMapWithRoutes = async () => {
+    return new Promise((resolve) => {
+      const mapContainer = document.createElement('div');
+      mapContainer.style.width = '800px';
+      mapContainer.style.height = '600px';
+      document.body.appendChild(mapContainer);
+  
+      const map = new google.maps.Map(mapContainer, {
+        zoom: 10,
+        center: mapCenter,
+        disableDefaultUI: true,
+      });
+  
+      // Přidání tras
+      directionsResponses.forEach((item) => {
+        new google.maps.DirectionsRenderer({
+          map,
+          directions: item.response,
+          polylineOptions: { strokeColor: item.color, strokeWeight: 4 },
+        });
+      });
+  
+      // Přidání bodů
+      locations.forEach((loc) => {
+        new google.maps.Marker({
+          position: loc.location,
+          map,
+          label: `${loc.day}`,
+        });
+      });
+  
+      setTimeout(() => {
+        html2canvas(mapContainer, { useCORS: true }).then((canvas) => {
+          document.body.removeChild(mapContainer);
+          resolve(canvas.toDataURL('image/png'));
+        });
+      }, 1000);
     });
-};
+  };
+
+  const exportChartAsImage = async () => {
+    return new Promise((resolve) => {
+      const chartCanvas = document.getElementById('trip-budget-chart');
+      if (chartCanvas) {
+        const imgData = chartCanvas.toDataURL('image/png');
+        resolve(imgData);
+      } else {
+        resolve(null);
+      }
+    });
+  };
+
+  const handleDownloadPDF = async () => {
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    let yPosition = 10;
+  
+    pdf.setFont('times', 'normal'); // ✅ Podpora češtiny
+  
+    pdf.setFontSize(18);
+    pdf.text(t('tripOverview'), 105, yPosition, { align: 'center' });
+    yPosition += 10;
+  
+    pdf.setFontSize(14);
+    pdf.text(t('dailyPlan'), 10, yPosition);
+    yPosition += 6;
+  
+    allPlans.forEach((plan, index) => {
+      const dayText = `${t('day')} ${index + 1} - ${format(new Date(plan.date), 'EEEE, dd.MM.yyyy', { locale: getLocale() })}`;
+      pdf.setFontSize(12);
+      pdf.text(dayText, 10, yPosition);
+      yPosition += 5;
+  
+      if (plan.plan && plan.plan.trim() !== "") {
+        const wrappedText = pdf.splitTextToSize(plan.plan, 180);
+        pdf.setFontSize(10);
+        pdf.text(wrappedText, 15, yPosition);
+        yPosition += wrappedText.length * 5;
+      }
+  
+      if (plan.location && plan.location.trim() !== "") {
+        pdf.text(`${t('location')}: ${plan.location}`, 15, yPosition);
+      } else if (plan.route.start && plan.route.end) {
+        pdf.text(`${t('route')}: ${plan.route.start} → ${plan.route.end} (${plan.route.stops.length} ${t('stops')})`, 15, yPosition);
+      } else {
+        pdf.text(t('noLocationOrRoute'), 15, yPosition);
+      }
+      yPosition += 8;
+    });
+  
+    yPosition += 5;
+    pdf.setFontSize(14);
+    pdf.text(t('budget'), 10, yPosition);
+    yPosition += 6;
+  
+    pdf.setFontSize(12);
+    pdf.text(t('budgetPlaceholder'), 15, yPosition);
+    yPosition += 10;
+  
+    pdf.setFontSize(14);
+    pdf.text(t('mapOverview'), 10, yPosition);
+    yPosition += 6;
+  
+    // **Přidání statické mapy**
+    const staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${mapCenter.lat},${mapCenter.lng}&zoom=10&size=600x300&markers=color:red|label:A|${mapCenter.lat},${mapCenter.lng}&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`;
+  
+    const mapImg = new Image();
+    mapImg.src = staticMapUrl;
+    mapImg.onload = function () {
+      pdf.addImage(mapImg, 'JPEG', 10, yPosition, 180, 90);
+      yPosition += 100;
+  
+      // **Přidání grafu**
+      pdf.setFontSize(14);
+      pdf.text(t('budgetGraph'), 10, yPosition);
+      yPosition += 6;
+  
+      const chartCanvas = document.getElementById('trip-budget-chart');
+      if (chartCanvas) {
+        const chartImage = chartCanvas.toDataURL('image/png');
+        pdf.addImage(chartImage, 'PNG', 10, yPosition, 180, 80);
+      }
+  
+      pdf.save('trip_overview.pdf');
+    };
+  };
+  
+  
+ 
+  
+  
 
 
 

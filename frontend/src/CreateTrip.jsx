@@ -117,34 +117,82 @@ const CreateTrip = () => {
   
 
 
-
-
   const handleUpdate = async () => {
-
     const token = localStorage.getItem("token");
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/updateActivities`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-            tripId,
-            activities: dailyPlans,
-            budgets: dailyBudgets,
-            accommodationCost,
-            totalCost: calculateTripTotal(),
-        })
+    // Vytvoříme pole slibů pro výpočet tras
+    const routePromises = dailyPlans.map((plan, index) => {
+        if (plan.route.start && plan.route.end) {
+            return new Promise((resolve, reject) => {
+                const directionsService = new google.maps.DirectionsService();
+                directionsService.route(
+                    {
+                        origin: plan.route.start,
+                        destination: plan.route.end,
+                        travelMode: google.maps.TravelMode.DRIVING,
+                        waypoints: plan.route.stops.map((stop) => ({ location: stop, stopover: true })),
+                        provideRouteAlternatives: true,
+                    },
+                    (result, status) => {
+                        if (status === "OK" && result.routes.length > 0) {
+                            const routeLegs = result.routes[0].legs;
+                            const totalDistance = routeLegs.reduce((acc, leg) => acc + leg.distance.value, 0) / 1000; // v km
+                            const totalDuration = routeLegs.reduce((acc, leg) => acc + leg.duration.value, 0); // v sekundách
+                            const formattedDuration = `${Math.floor(totalDuration / 3600)} h ${Math.floor((totalDuration % 3600) / 60)} min`;
+
+                            resolve({
+                                index,
+                                distance: `${totalDistance.toFixed(1)} km`,
+                                duration: formattedDuration,
+                            });
+                        } else {
+                            resolve({ index, distance: "0 km", duration: "0 h 0 min" }); // Defaultní hodnoty
+                        }
+                    }
+                );
+            });
+        } else {
+            return Promise.resolve({ index, distance: "0 km", duration: "0 h 0 min" });
+        }
     });
 
-    const result = await response.json();
-    if (response.ok) {
-        console.log(result);
-        navigate('/dashboard');
-    }
+    try {
+        // Počkáme na všechny výsledky tras
+        const routeInfos = await Promise.all(routePromises);
 
-    };
+        // Aktualizujeme dailyPlans s trasovými informacemi
+        const updatedPlans = [...dailyPlans];
+        routeInfos.forEach(({ index, distance, duration }) => {
+            updatedPlans[index].routeInfo = { distance, duration };
+        });
+
+        // Odeslání dat do API
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/updateActivities`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                tripId,
+                activities: updatedPlans,
+                budgets: dailyBudgets,
+                accommodationCost,
+                totalCost: calculateTripTotal(),
+            })
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            console.log(result);
+            navigate('/dashboard');
+        }
+
+    } catch (error) {
+        console.error("Error calculating route statistics:", error);
+    }
+};
+
 
 
 
@@ -351,6 +399,13 @@ const handleLocationInputChange = (e) => {
         window.addEventListener('storage', updateTheme); // Listen for storage changes
         return () => window.removeEventListener('storage', updateTheme);
       }, []);
+
+      const handleRouteStatsUpdate = (distance, duration) => {
+        const updatedPlans = [...dailyPlans];
+        updatedPlans[currentDayIndex].routeInfo = { distance, duration };
+        setDailyPlans(updatedPlans);
+    };
+    
 
 
       const removeExpense = (index) => {
@@ -734,13 +789,21 @@ const handleLocationInputChange = (e) => {
                     </button>
                 ))}
             </div>
+            <div className="w-full border-t border-gray-300 dark:border-gray-700 mt-4 mb-4"></div>
             <button
-                className={`w-full text-left mt-2 p-2 border rounded 
+                className={`w-full text-left p-2 border rounded 
                             ${accommodationSegment === 'accommodation' ? 'bg-blue-200 dark:bg-blue-800' : 'hover:bg-gray-100 dark:hover:bg-gray-700'} 
                             dark:border-gray-700 dark:text-gray-300`}
                 onClick={() => handleDayClick('accommodation')}
             >
                 {t('accomodationCost')}
+            </button>
+            <button 
+                onClick={handleUpdate} 
+                className="mt-6 w-full bg-blue-500 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-600 transition-all 
+                          dark:bg-blue-600 dark:hover:bg-blue-700"
+            >
+                {t('savePlan')}
             </button>
         </div>
         </div>

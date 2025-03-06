@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { Slide, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
+import Loading from './Loading';
 
 function UpcomingTrips({ userId }) {
   const [trips, setTrips] = useState([]);
@@ -108,7 +109,7 @@ function UpcomingTrips({ userId }) {
 
       <div className="trip-category transition-all duration-300 max-h-80 overflow-y-auto">
         {loading ? (
-          <p className="text-center">{t('loading')}</p>
+          <Loading />
         ) : tripsByCategory[activeCategory].length > 0 ? (
           tripsByCategory[activeCategory].map((trip) => (
             <div

@@ -254,6 +254,75 @@ const getPublicTrip = (req, res) => {
   });
 };
 
+const getUserTripStats = (req, res) => {
+  const userId = req.query.id;
+
+  const query = 'SELECT activities FROM trips WHERE user_id = ?';
+  db.query(query, [userId], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    if (results.length === 0) {
+      return res.json({ message: 'No trips found', totalDistance: 0, totalTime: "0 h 0 min" });
+    }
+
+    let totalDistance = 0;
+    let totalDurationMinutes = 0;
+    let longestTrip = { distance: 0, duration: "0 h 0 min" };
+    let shortestTrip = { distance: Infinity, duration: "0 h 0 min" };
+    let tripCount = results.length;
+
+    results.forEach((row) => {
+      if (row.activities) {
+        const activities = JSON.parse(row.activities);
+        activities.forEach((activity) => {
+          if (activity.routeInfo) {
+            const distance = parseFloat(activity.routeInfo.distance) || 0;
+
+            // Opravený parser pro duration
+            let durationMinutes = 0;
+            const durationMatch = activity.routeInfo.duration.match(/(\d+)\s*h\s*(\d*)\s*min?/);
+
+            if (durationMatch) {
+              const hours = parseInt(durationMatch[1]) || 0;
+              const minutes = parseInt(durationMatch[2]) || 0;
+              durationMinutes = hours * 60 + minutes;
+            }
+
+            totalDistance += distance;
+            totalDurationMinutes += durationMinutes;
+
+            if (distance > longestTrip.distance) {
+              longestTrip = { distance, duration: activity.routeInfo.duration };
+            }
+
+            if (distance < shortestTrip.distance) {
+              shortestTrip = { distance, duration: activity.routeInfo.duration };
+            }
+          }
+        });
+      }
+    });
+
+    if (shortestTrip.distance === Infinity) {
+      shortestTrip = { distance: 0, duration: "0 h 0 min" };
+    }
+
+    const avgDistancePerTrip = tripCount > 0 ? (totalDistance / tripCount).toFixed(1) : 0;
+    const totalDurationFormatted = `${Math.floor(totalDurationMinutes / 60)} h ${totalDurationMinutes % 60} min`;
+
+    res.json({
+      totalDistance: totalDistance.toFixed(1) + " km",
+      totalTime: totalDurationFormatted,
+      longestTrip,
+      shortestTrip,
+      avgDistancePerTrip: avgDistancePerTrip + " km",
+      tripCount
+    });
+  });
+};
+
+
+
   
   
   module.exports = {
@@ -266,6 +335,7 @@ const getPublicTrip = (req, res) => {
     getBudget,
     getTripBudget,
     getPublicTrip,
+    getUserTripStats
   };
   
   

@@ -271,7 +271,7 @@ const OverviewMap = ({ tripId, userId, allPlans, onClose }) => {
       <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full h-full sm:w-4/5 sm:max-w-4xl sm:h-auto sm:max-h-[95vh] overflow-y-auto relative dark:text-white dark:bg-gray-800" ref={contentRef}>
         
         <button
-          className="absolute top-4 right-4 text-gray-700 dark:text-white dark:hover:text-red-500 hover:text-red-500 transition-all duration-200"
+          className="absolute top-4 right-4 text-gray-700 cursor-pointer dark:text-white dark:hover:text-red-500 hover:text-red-500 transition-all duration-200"
           onClick={onClose}
         >
           &#x2715;
@@ -283,15 +283,15 @@ const OverviewMap = ({ tripId, userId, allPlans, onClose }) => {
         <ul className="list-disc ml-6">
           {allPlans.map((plan, index) => (
             <li key={index}>
-<span className="inline-flex items-center">
-  <span 
-    className="w-3 h-3 rounded-full mr-2" 
-    style={{ backgroundColor: dayColors[index] }} 
-  />
-  <strong>
-    {t('day')} {index + 1} - {format(new Date(plan.date), 'EEEE, dd.MM.yyyy', { locale: getLocale() })}
-  </strong>
-</span>
+              <span className="inline-flex items-center">
+                <span 
+                  className="w-3 h-3 rounded-full mr-2" 
+                  style={{ backgroundColor: dayColors[index] }} 
+                />
+                <strong>
+                  {t('day')} {index + 1} - {format(new Date(plan.date), 'EEEE, dd.MM.yyyy', { locale: getLocale() })}
+                </strong>
+              </span>
               <p>{plan.plan && plan.plan.trim() !== "" ? plan.plan : t('noActivityPlanned')}</p>
               {plan.location && plan.location.trim() !== "" ? (
                 <p><strong>{t('location')}:</strong> {plan.location}</p>
@@ -330,12 +330,12 @@ const OverviewMap = ({ tripId, userId, allPlans, onClose }) => {
         <h3 className="text-xl font-semibold mt-4">{t('budget')}</h3>
         <TripBudgetTracking userId={userId} tripId={tripId} />
         
-        {/* <button
+        <button
           className="mt-6 px-4 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition duration-300"
           onClick={handleDownloadPDF}
         >
           {t('downloadPDF')}
-        </button> */}
+        </button>
       </div>
     </div>
   );

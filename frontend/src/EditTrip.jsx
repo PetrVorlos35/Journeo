@@ -39,6 +39,7 @@ useEffect(() => {
   .then((response) => response.json())
   .then((data) => {
     setUserId(data.id);
+    handleDayClick(0);
   })
   .catch((error) => {
     console.error('Error fetching user data:', error);
@@ -598,7 +599,7 @@ const handleLocationInputChange = (e) => {
                   ))}
                   <button
                     onClick={addExpense}
-                    className="bg-blue-500 text-white font-bold py-1 px-4 rounded hover:bg-blue-600"
+                    className="bg-blue-500 text-white md:w-fit font-bold py-1 px-4 rounded hover:bg-blue-600"
                   >
                     {t('addExpense')}
                   </button>
@@ -848,7 +849,7 @@ const handleLocationInputChange = (e) => {
             </button>
             <button 
                   onClick={handleUpdate} 
-                  className="mt-6 w-full bg-blue-500 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-600 transition-all 
+                  className="mt-4 w-full bg-blue-500 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-600 transition-all 
                             dark:bg-blue-600 dark:hover:bg-blue-700"
               >
                   {t('savePlan')}

@@ -35,28 +35,33 @@ const UserTripStats = ({ userId }) => {
     if (!userId || loading) return <Loading />;
 
     return (
-        <div className="p-6 bg-white rounded-xl shadow-md dark:bg-gray-900">
+<div className="p-6 bg-white dark:bg-gray-900">
+    {stats?.tripCount === 0 ? (
+        <p className="text-gray-600 dark:text-gray-300 text-center">{t("noTripsFound")}</p>
+    ) : (
+        <>
+            <p className="text-sm md:text-lg dark:text-white text-center sm:text-left">
+                <strong>{t("totalDistance")}:</strong> {stats.totalDistance}
+            </p>
+            <p className="text-sm md:text-lg dark:text-white text-center sm:text-left">
+                <strong>{t("totalTime")}:</strong> {stats.totalTime}
+            </p>
+            <p className="text-sm md:text-lg dark:text-white text-center sm:text-left">
+                <strong>{t("averageDistancePerTrip")}:</strong> {stats.avgDistancePerTrip}
+            </p>
+            <p className="text-sm md:text-lg dark:text-white text-center sm:text-left">
+                <strong>{t("longestTrip")}:</strong> {stats.longestTrip.distance} km ({stats.longestTrip.duration})
+            </p>
+            <p className="text-sm md:text-lg dark:text-white text-center sm:text-left">
+                <strong>{t("shortestTrip")}:</strong> {stats.shortestTrip.distance} km ({stats.shortestTrip.duration})
+            </p>
+            <p className="text-sm md:text-lg dark:text-white text-center sm:text-left">
+                <strong>{t("totalTrips")}:</strong> {stats.tripCount}
+            </p>
+        </>
+    )}
+</div>
 
-            {stats?.tripCount === 0 ? (
-                <p className="text-gray-600 dark:text-gray-300">{t("noTripsFound")}</p>
-            ) : (
-                <>
-                    <p className="text-lg dark:text-white"><strong>{t("totalDistance")}:</strong> {stats.totalDistance}</p>
-                    <p className="text-lg dark:text-white"><strong>{t("totalTime")}:</strong> {stats.totalTime}</p>
-                    <p className="text-lg dark:text-white"><strong>{t("averageDistancePerTrip")}:</strong> {stats.avgDistancePerTrip}</p>
-                    
-                    <p className="text-lg dark:text-white">
-                        <strong>{t("longestTrip")}:</strong> {stats.longestTrip.distance} km ({stats.longestTrip.duration})
-                    </p>
-                    
-                    <p className="text-lg dark:text-white">
-                        <strong>{t("shortestTrip")}:</strong> {stats.shortestTrip.distance} km ({stats.shortestTrip.duration})
-                    </p>
-                    
-                    <p className="text-lg dark:text-white"><strong>{t("totalTrips")}:</strong> {stats.tripCount}</p>
-                </>
-            )}
-        </div>
     );
 };
 UserTripStats.propTypes = {

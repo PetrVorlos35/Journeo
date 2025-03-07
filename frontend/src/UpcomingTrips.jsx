@@ -91,7 +91,7 @@ function UpcomingTrips({ userId }) {
       }, []);
 
   return (
-    <div className="p-6">
+    <div className="md:p-6 p-0 text-sm sm:text-base">
       <ToastContainer theme={theme} />
       <nav className="flex justify-center mb-6">
         {['past', 'ongoing', 'upcoming'].map((category) => (

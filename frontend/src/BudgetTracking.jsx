@@ -155,23 +155,35 @@ const BudgetTracking = ({ userId }) => {
 
   const renderChart = () => {
     if (!chartData) return <Loading />;
-
-    switch (chartType) {
-      case 'bar':
-        return <Bar data={chartData} options={{ responsive: true, plugins: { legend: { position: 'top' } } }} />;
-      case 'pie':
-        return <Pie data={chartData} options={{ responsive: true, plugins: { legend: { position: 'top' } } }} />;
-      case 'doughnut':
-        return <Doughnut data={chartData} options={{ responsive: true, plugins: { legend: { position: 'top' } } }} />;
-      case 'radar':
-        return <Radar data={chartData} options={{ responsive: true, plugins: { legend: { position: 'top' } } }} />;
-      case 'polarArea':
-        return <PolarArea data={chartData} options={{ responsive: true, plugins: { legend: { position: 'top' } } }} />;
-      case 'line':
-        return <Line data={chartData} options={{ responsive: true, plugins: { legend: { position: 'top' } } }} />;
-      default:
-        return <p className="text-red-500">Invalid chart type selected.</p>;
-    }
+  
+    const commonOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'top' } },
+    };
+  
+    // Nastavení dynamické šířky a výšky
+    const smallChartContainer = "w-full max-w-md h-64 flex justify-center";
+    const largeChartContainer = "w-full max-w-lg h-80 flex justify-center";
+  
+    const containerClass = chartType === 'bar' || chartType === 'line' ? largeChartContainer : smallChartContainer;
+  
+    return (
+      <div className={containerClass}>
+      {chartType === 'bar' && <Bar data={chartData} options={{ ...commonOptions, aspectRatio: 2 }} />}
+      {chartType === 'line' && <Line data={chartData} options={{ ...commonOptions, aspectRatio: 2 }} />}
+      {chartType !== 'bar' && chartType !== 'line' && (
+        <div className="flex justify-center items-center w-full">
+          <div className="w-80 h-80 flex justify-center items-center">
+            {chartType === 'pie' && <Pie data={chartData} options={commonOptions} />}
+            {chartType === 'doughnut' && <Doughnut data={chartData} options={commonOptions} />}
+            {chartType === 'radar' && <Radar data={chartData} options={commonOptions} />}
+            {chartType === 'polarArea' && <PolarArea data={chartData} options={commonOptions} />}
+          </div>
+        </div>
+      )}
+      </div>
+    );
   };
 
   return (

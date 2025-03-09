@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { format, eachDayOfInterval } from "date-fns";
 import { cs, enUS } from "date-fns/locale";
 import MapComponent from "./MapComponent";
@@ -435,6 +435,15 @@ const handleLocationInputChange = (e) => {
         });
       };
 
+      const textareaRef = useRef(null);
+
+      useEffect(() => {
+        if (textareaRef.current) {
+          textareaRef.current.style.height = "auto"; // Reset výšky
+          textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Nastavení podle obsahu
+        }
+      }, [tempPlan]);
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-50 dark:from-black dark:to-gray-900">
       <Navbar />
@@ -443,13 +452,14 @@ const handleLocationInputChange = (e) => {
       <div className="p-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 space-y-2 md:space-y-0">
   {/* Odkaz zpět */}
-  <a
+  <div></div>
+  {/* <a
     href="/dashboard"
     className="text-blue-500 hover:text-blue-600 font-bold flex items-center space-x-2 px-2 py-2 rounded"
   >
     <span>←</span>
     <span>{t('back')}</span>
-  </a>
+  </a> */}
 
   {/* Název výletu + tlačítko sdílení */}
   <div className="flex items-center justify-between w-full md:w-auto space-x-4">
@@ -541,6 +551,7 @@ const handleLocationInputChange = (e) => {
                     {t('dailyActivity')}
                     </label>
                     <textarea
+                      ref={textareaRef}
                       id="activityDescription"
                       value={tempPlan} 
                       onChange={(e) => setTempPlan(e.target.value)} 
@@ -789,6 +800,7 @@ const handleLocationInputChange = (e) => {
                         route={inputType === 'route' ? dailyPlans[currentDayIndex]?.route : { start: '', end: '', stops: [] }}
                         clearMap={!currentDayData}
                         overviewMode={false}
+                        isDarkMode={theme === 'dark'}
                         />
                 </div>
 

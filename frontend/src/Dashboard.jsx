@@ -329,7 +329,7 @@ function Dashboard() {
           {activeTab === "map" && (
             <div className="bg-white dark:bg-gray-900 p-6 sm:p-10 rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl w-full sm:w-10/12 md:w-8/12 lg:w-6/12">
               <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('mapHead')}</h2>
-              <p>{t('construction')}</p>
+              <p className="dark:text-white">{t('construction')}</p>
               {/* <FriendsDashboard userId={userId} /> */}
             </div>
           )}

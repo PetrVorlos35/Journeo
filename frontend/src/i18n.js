@@ -140,6 +140,8 @@ i18n
           shortestTrip: "Shortest Trip",
           totalTrips: "Total Trips",
           loading: "Loading...",
+          shareTrip: "Share Trip",
+          savedPlanSuccess: "Plan successfully saved!",
         },
       },
       cs: {
@@ -275,6 +277,8 @@ i18n
           shortestTrip: "Nejkratší výlet",
           totalTrips: "Celkový počet výletů",
           loading: "Načítání...",
+          shareTrip: "Sdílet výlet",
+          savedPlanSuccess: "Plán byl úspěšně uložen!",
         },
       },
     },

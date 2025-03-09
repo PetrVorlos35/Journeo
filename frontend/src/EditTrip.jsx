@@ -207,6 +207,91 @@ const handleUpdate = async () => {
   }
 };
 
+const handleSave = async () => {
+  const token = localStorage.getItem("token");
+
+  // Vytvoříme pole slibů pro výpočet tras
+  const routePromises = dailyPlans.map((plan, index) => {
+      if (plan.route.start && plan.route.end) {
+          return new Promise((resolve, reject) => {
+              const directionsService = new google.maps.DirectionsService();
+              directionsService.route(
+                  {
+                      origin: plan.route.start,
+                      destination: plan.route.end,
+                      travelMode: google.maps.TravelMode.DRIVING,
+                      waypoints: plan.route.stops.map((stop) => ({ location: stop, stopover: true })),
+                      provideRouteAlternatives: true,
+                  },
+                  (result, status) => {
+                      if (status === "OK" && result.routes.length > 0) {
+                          const routeLegs = result.routes[0].legs;
+                          const totalDistance = routeLegs.reduce((acc, leg) => acc + leg.distance.value, 0) / 1000; // v km
+                          const totalDuration = routeLegs.reduce((acc, leg) => acc + leg.duration.value, 0); // v sekundách
+                          const formattedDuration = `${Math.floor(totalDuration / 3600)} h ${Math.floor((totalDuration % 3600) / 60)} min`;
+
+                          resolve({
+                              index,
+                              distance: `${totalDistance.toFixed(1)} km`,
+                              duration: formattedDuration,
+                          });
+                      } else {
+                          resolve({ index, distance: "0 km", duration: "0 h 0 min" }); // Defaultní hodnoty
+                      }
+                  }
+              );
+          });
+      } else {
+          return Promise.resolve({ index, distance: "0 km", duration: "0 h 0 min" });
+      }
+  });
+
+  try {
+      // Počkáme na všechny výsledky tras
+      const routeInfos = await Promise.all(routePromises);
+
+      // Aktualizujeme dailyPlans s trasovými informacemi
+      const updatedPlans = [...dailyPlans];
+      routeInfos.forEach(({ index, distance, duration }) => {
+          updatedPlans[index].routeInfo = { distance, duration };
+      });
+
+      // Odeslání dat do API
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/updateActivities`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+              tripId,
+              activities: updatedPlans,
+              budgets: dailyBudgets,
+              accommodationCost,
+              totalCost: calculateTripTotal(),
+          })
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+          console.log(result);
+          toast.success(t('savedPlanSuccess'), {
+            position: "top-right", 
+            autoClose: 3000, 
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            transition: Slide,
+          });
+      }
+
+  } catch (error) {
+      console.error("Error calculating route statistics:", error);
+  }
+};
+
 
 
 
@@ -473,6 +558,7 @@ const handleLocationInputChange = (e) => {
         });
       }}
       className="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition dark:bg-gray-700 dark:hover:bg-gray-800 dark:text-white"
+      title={t('shareTrip')}
     >
       <svg
         width="24"
@@ -491,6 +577,24 @@ const handleLocationInputChange = (e) => {
             fill="currentColor"
           />
         </g>
+      </svg>
+    </button>
+    <button 
+      onClick={handleSave}
+      title={t('savePlan')}
+      className="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition dark:bg-gray-700 dark:hover:bg-gray-800 dark:text-white"
+    >
+      <svg         
+        width="24"
+        height="24" 
+        viewBox="0 0 68.7012 98.6816" 
+        xmlns="http://www.w3.org/2000/svg" 
+      >
+        <g> 
+          <rect height="98.6816" opacity="0" width="68.7012" x="0" y="0"/> 
+            <path d="M68.7012 41.1133L68.7012 78.6621C68.7012 86.8652 64.5996 90.918 56.25 90.918L12.4512 90.918C4.15039 90.918 0 86.8652 0 78.6621L0 41.1133C0 32.9102 4.15039 28.8574 12.4512 28.8574L23.1934 28.8574L23.1934 35.8887L12.5488 35.8887C9.0332 35.8887 7.03125 37.793 7.03125 41.5039L7.03125 78.2715C7.03125 81.9824 9.0332 83.8867 12.5488 83.8867L56.1523 83.8867C59.6191 83.8867 61.6699 81.9824 61.6699 78.2715L61.6699 41.5039C61.6699 37.793 59.6191 35.8887 56.1523 35.8887L45.459 35.8887L45.459 28.8574L56.25 28.8574C64.5996 28.8574 68.7012 32.959 68.7012 41.1133Z" fill="currentColor" /> 
+            <path d="M34.3262 7.76367C32.4707 7.76367 30.8594 9.32617 30.8594 11.1328L30.8594 49.2188L31.1523 55.0293L29.1992 52.9297L23.7793 47.0703C23.1934 46.3867 22.2656 46.0449 21.3867 46.0449C19.5801 46.0449 18.2617 47.3145 18.2617 49.1211C18.2617 50.0488 18.6035 50.7324 19.2871 51.416L31.8359 63.3789C32.7148 64.2578 33.4473 64.5508 34.3262 64.5508C35.2539 64.5508 35.9863 64.2578 36.8652 63.3789L49.4141 51.416C50.0488 50.7324 50.4395 50.0488 50.4395 49.1211C50.4395 47.3145 49.0723 46.0449 47.2656 46.0449C46.3867 46.0449 45.5078 46.3867 44.873 47.0703L39.502 52.9297L37.5488 55.0293L37.8418 49.2188L37.8418 11.1328C37.8418 9.32617 36.2305 7.76367 34.3262 7.76367Z" fill="currentColor" /> 
+        </g> 
       </svg>
     </button>
   </div>

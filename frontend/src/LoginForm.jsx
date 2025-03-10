@@ -4,6 +4,7 @@ import axios from "axios";
 import Navbar from "./Navbar";
 import googleLogo from "./assets/google.png"; 
 import { useTranslation } from 'react-i18next';
+import Loading from "./Loading";
 
 
 function LoginForm() {
@@ -13,10 +14,13 @@ function LoginForm() {
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [isLoading, setIsLoading] = useState(false);
+
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Zobrazíme Loading před odesláním požadavku
     try {
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, { email, password });
       localStorage.setItem("token", res.data.token);
@@ -28,6 +32,8 @@ function LoginForm() {
     } catch (err) {
       console.error(err);
       setError("Login failed. Please check your credentials.");
+    } finally {
+      setIsLoading(false); // Po odpovědi skryjeme loading
     }
   };
 
@@ -42,12 +48,14 @@ function LoginForm() {
   }, [navigate]);
   
   const handleGoogleLogin = () => {
+    setIsLoading(true);
     window.open(`${import.meta.env.VITE_API_URL}/auth/google`, "_self");
   };
   
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-50 dark:from-black dark:to-gray-900">
+      {isLoading && <Loading fullScreen="true" />}
       <Navbar />
       <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">

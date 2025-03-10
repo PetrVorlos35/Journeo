@@ -4,6 +4,7 @@ import axios from "axios";
 import Navbar from "./Navbar";
 import googleLogo from "./assets/google.png"; 
 import { useTranslation } from 'react-i18next';
+import Loading from "./Loading";
 
 function RegisterForm() {
   const [email, setEmail] = useState("");
@@ -14,9 +15,11 @@ function RegisterForm() {
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match.");
@@ -34,16 +37,20 @@ function RegisterForm() {
     } catch (err) {
       console.error(err);
       setError("Registration failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleGoogleRegister = () => {
+    setIsLoading(true);
     window.open(`${import.meta.env.VITE_API_URL}/auth/google`, "_self");
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-50 dark:from-black dark:to-gray-900">
       <Navbar />
+      {isLoading && <Loading fullScreen="true" />}
       <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div>

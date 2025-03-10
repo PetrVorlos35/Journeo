@@ -17,7 +17,7 @@ const register = async (req, res) => {
     db.query(queryInsertUser, [email, hashedPassword], (err, result) => {
       if (err) return res.status(500).json({ error: err.message });
 
-      const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '30d' });
       res.status(201).json({ message: 'User registered successfully!', token });
     });
   });
@@ -36,7 +36,7 @@ const login = (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
-    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '30d' });
     res.json({ token });
   });
 };
@@ -49,7 +49,7 @@ const refreshToken = (req, res) => {
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) return res.status(401).json({ message: 'Invalid or expired token' });
 
-    const newToken = jwt.sign({ email: decoded.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const newToken = jwt.sign({ email: decoded.email }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
     res.json({ token: newToken });
   });
@@ -59,7 +59,7 @@ const refreshToken = (req, res) => {
 // Google OAuth callback
 const googleOAuth = (req, res) => {
   const user = req.user;
-  const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+  const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '30d' });
   res.redirect(`${process.env.APP_URL}/dashboard?token=${token}`); 
 };
 

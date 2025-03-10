@@ -60,8 +60,8 @@ function UpcomingTrips({ userId }) {
     }
   };
 
-  const handleViewTrip = (tripName, startDate, endDate, tripId, activities, budgets, accommodationCost) => {
-    navigate('/edit-trip', { state: { tripName, startDate, endDate, tripId, activities, budgets, accommodationCost } });
+  const handleViewTrip = (tripName, startDate, endDate, tripId, activities, budgets, accommodationCost, accommodationEntries) => {
+    navigate('/edit-trip', { state: { tripName, startDate, endDate, tripId, activities, budgets, accommodationCost, accommodationEntries } });
   }
 
   const now = new Date();
@@ -115,7 +115,7 @@ function UpcomingTrips({ userId }) {
             <div
               key={trip.id}
               className="flex mb-4 justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border-l-4 border-red-400 dark:border-red-600 w-full hover:bg-gray-100 dark:hover:bg-gray-900 transition cursor-pointer"
-              onClick={() => handleViewTrip(trip.title, trip.start_date, trip.end_date, trip.id, trip.activities, trip.budgets, trip.accommodation_cost)}
+              onClick={() => handleViewTrip(trip.title, trip.start_date, trip.end_date, trip.id, trip.activities, trip.budgets, trip.accommodation_cost, trip.accommodation_entries)}
             >
               <div>
                 <h4 className="font-semibold text-gray-800 dark:text-gray-100">{trip.title}</h4>

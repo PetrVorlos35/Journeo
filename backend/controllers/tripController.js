@@ -13,16 +13,16 @@ const createTrip = (req, res) => {
 
 // Aktualizace aktivit ve výletu
 const updateActivities = (req, res) => {
-  const { tripId, activities, budgets, accommodationCost, totalCost } = req.body;
+  const { tripId, activities, budgets, accommodationEntries, accommodationCost, totalCost } = req.body;
 
   const query = `
     UPDATE trips 
-    SET activities = ?, budgets = ?, accommodation_cost = ?, total_cost = ?
+    SET activities = ?, budgets = ?, accommodation_entries = ?, accommodation_cost = ?, total_cost = ?
     WHERE id = ?`;
 
   db.query(
     query,
-    [JSON.stringify(activities), JSON.stringify(budgets), accommodationCost, totalCost, tripId],
+    [JSON.stringify(activities), JSON.stringify(budgets), JSON.stringify(accommodationEntries), accommodationCost, totalCost, tripId],
     (err) => {
       if (err) return res.status(500).json({ error: err.message });
       res.json({ message: 'Trip updated successfully' });
@@ -241,6 +241,7 @@ const getPublicTrip = (req, res) => {
     const trip = results[0];
     const activities = JSON.parse(trip.activities || '[]');
     const budgets = trip.budgets ? JSON.parse(trip.budgets) : [];
+    const accommodationEntries = trip.accommodation_entries ? JSON.parse(trip.accommodation_entries) : [];
 
     res.json({
       tripName: trip.title,
@@ -248,6 +249,7 @@ const getPublicTrip = (req, res) => {
       endDate: trip.end_date,
       activities,
       budgets,
+      accommodationEntries,
       accommodationCost: trip.accommodation_cost || 0,
       totalCost: trip.total_cost || 0,
     });

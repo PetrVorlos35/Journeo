@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
+
 
 const AutoLogoutHandler = () => {
   const [isInactive, setIsInactive] = useState(false);
   const [countdown, setCountdown] = useState(180); // 10 sekund na odhlášení
   const navigate = useNavigate();
+  const { t } = useTranslation();
   let inactivityTimer;
   let warningTimer;
 
@@ -80,23 +83,23 @@ const AutoLogoutHandler = () => {
 <div className="fixed z-50 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
         <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg text-center w-96">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-            Jste neaktivní! Chcete pokračovat?
+            {t('inactive')}
           </h2>
           <p className="text-xl font-bold text-red-500 my-3">
-            Odhlášení za {countdown} s
+            {t('logoutIn')} {countdown} s
           </p>
           <div className="flex justify-center gap-4 mt-4">
             <button
               onClick={stayLoggedIn}
               className="px-4 py-2 bg-green-500 text-white font-medium rounded-lg shadow-md hover:bg-green-600 transition-all"
             >
-              Ano, pokračovat
+              {t('stayLoggedIn')}
             </button>
             <button
               onClick={handleLogout}
               className="px-4 py-2 bg-red-500 text-white font-medium rounded-lg shadow-md hover:bg-red-600 transition-all"
             >
-              Odhlásit
+              {t('logout')}
             </button>
           </div>
         </div>

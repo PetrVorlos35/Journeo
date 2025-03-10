@@ -22,6 +22,7 @@ const PublicTrip = () => {
   const [accommodationSegment, setAccommodationSegment] = useState("");
   const { t, i18n } = useTranslation();
   const [accommodationCost, setAccommodationCost] = useState(0);
+  const [accommodationEntries, setAccommodationEntries] = useState([]);
   const [tripTotal, setTripTotal] = useState(0);
 
   useEffect(() => {
@@ -31,7 +32,12 @@ const PublicTrip = () => {
         try {
           const activities = typeof data.activities === "string" ? JSON.parse(data.activities) : data.activities || [];
           const budgets = typeof data.budgets === "string" ? JSON.parse(data.budgets) : data.budgets || [];
+          const accommodations = data.accommodationEntries === "string" ? JSON.parse(data.accommodationEntries) : data.accommodationEntries || [];
+          console.log(accommodations);
+          
+
           setAccommodationCost(data.accommodationCost || 0);
+          setAccommodationEntries(accommodations);
           setTripTotal(data.totalCost || 0);
   
           setDailyPlans(convertDailyPlans(activities, budgets, data.startDate, data.endDate, accommodationCost, tripTotal));
@@ -161,27 +167,28 @@ const PublicTrip = () => {
         <div className="md:flex md:space-x-4 flex-col md:flex-row">
           <div className="md:w-2/3 w-full border rounded-lg p-4 overflow-y-auto shadow-md bg-white dark:bg-gray-900 dark:border-gray-700">
           {accommodationSegment === 'accommodation' ? (
-          <div className="p-6 bg-white rounded-xl dark:bg-gray-900">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4 dark:text-white">
-              {t('accomodationCost')}
-          </h2>
-      
-          <div className="bg-gray-100 p-4 rounded-lg shadow-inner dark:bg-gray-800">
-              <label className="block text-lg font-medium text-gray-700 mb-2 dark:text-gray-300">
-                  {t('accomodationCost')}
-              </label>
-              <div className="w-full border border-gray-300 rounded-lg p-3 bg-gray-50 dark:border-gray-700 dark:bg-gray-700 dark:text-white">
-                  {Math.round(accommodationCost) || 0}
+            <div className="bg-gray-100 p-4 rounded-lg shadow-inner dark:bg-gray-800">
+              <h3 className="text-lg font-medium text-gray-700 mb-2 dark:text-gray-300">{t('accomodationCost')}</h3>
+            {console.log(accommodationEntries)}
+              {accommodationEntries.length > 0 ? (
+                accommodationEntries.map((entry, index) => (
+                  <div key={index} className="mb-2 p-3 bg-white border rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                    <p className="font-semibold text-gray-700 dark:text-white">{entry.description}</p>
+                    <p className="text-gray-600 dark:text-gray-300">{Math.round(entry.cost)} CZK</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-600 dark:text-gray-300">{t('noAccommodation')}</p>
+              )}
+
+              <div className="flex justify-between items-center font-semibold text-lg text-gray-800 mt-4 p-3 border-t dark:border-gray-700 dark:text-gray-300">
+                <span>{t('totalBudget')}</span>
+                <span className="text-blue-600 text-xl font-bold dark:text-blue-400">
+                  {Math.round(tripTotal)} CZK
+                </span>
               </div>
           </div>
-      
-          <div className="flex justify-between items-center font-semibold text-lg text-gray-800 mt-4 p-3 border-t dark:border-gray-700 dark:text-gray-300">
-              <span>{t('totalBudget')}</span>
-              <span className="text-blue-600 text-xl font-bold dark:text-blue-400">
-                  {Math.round(tripTotal)} CZK
-              </span>
-          </div>
-      </div>
+
       
         
         
@@ -281,6 +288,7 @@ const PublicTrip = () => {
                     route={inputType === "route" ? dailyPlans[currentDayIndex]?.route : { start: "", end: "", stops: [] }}
                     clearMap={!currentDayData}
                     overviewMode={false}
+                    isDarkMode={theme === 'dark'}
                   />
                 </div>
               </div>

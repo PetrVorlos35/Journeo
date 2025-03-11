@@ -80,7 +80,7 @@ const AutoLogoutHandler = () => {
 
   return (
     isInactive && localStorage.getItem("token") && (
-<div className="fixed z-50 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50 animate-fadeIn">
         <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg text-center w-96">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
             {t('inactive')}

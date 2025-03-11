@@ -289,7 +289,7 @@ const OverviewMap = ({ tripId, userId, allPlans, onClose }) => {
                   style={{ backgroundColor: dayColors[index] }} 
                 />
                 <strong>
-                  {t('day')} {index + 1} - {format(new Date(plan.date), 'EEEE, dd.MM.yyyy', { locale: getLocale() })}
+                  {plan.title} - {format(new Date(plan.date), 'EEEE, dd.MM.yyyy', { locale: getLocale() })}
                 </strong>
               </span>
               <p>{plan.plan && plan.plan.trim() !== "" ? plan.plan : t('noActivityPlanned')}</p>

@@ -33,7 +33,7 @@ function Navbar() {
     navigate("/login");
   };
   return (
-    <nav className="bg-white dark:bg-gray-950 dark:text-white shadow-2xl sticky top-0 z-50">
+    <nav className="bg-white dark:bg-gray-950 dark:text-white shadow-2xl sticky top-0 z-40">
       <div className="container mx-auto flex justify-between items-center py-4 px-4 md:px-8 ">
         {/* Logo */}
         <div>

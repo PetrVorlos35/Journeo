@@ -16,6 +16,8 @@ const libraries = ["places"];
 const CreateTrip = () => {
   const location = useLocation();
   const { tripName = '', startDate = '', endDate = '', tripId = null } = location.state || {};
+  const [tripTitle, setTripTitle] = useState(tripName);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [dailyPlans = [], setDailyPlans] = useState([]);
   const [currentDayData, setCurrentDayData] = useState(null);
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
@@ -27,6 +29,9 @@ const CreateTrip = () => {
   const [tempPlan, setTempPlan] = useState("");
   const [showOverview, setShowOverview] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [isEditingDayTitle, setIsEditingDayTitle] = useState(false);
+  const [tempDayTitle, setTempDayTitle] = useState("");
+
 
   const { t, i18n } = useTranslation();
   
@@ -58,6 +63,47 @@ useEffect(() => {
   useEffect(() => {
     setTempPlan(dailyPlans[currentDayIndex]?.plan || ''); 
   }, [currentDayIndex, dailyPlans]);
+
+  const handleTitleChange = (e) => {
+    setTripTitle(e.target.value);
+  };
+  
+  const handleBlur = () => {
+    setIsEditingTitle(false);
+  };
+  
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      setIsEditingTitle(false);
+    }
+  };
+
+  const handleDayTitleClick = () => {
+    setTempDayTitle(dailyPlans[currentDayIndex]?.title || "");
+    setIsEditingDayTitle(true);
+  };
+  
+  const handleDayTitleChange = (e) => {
+    setTempDayTitle(e.target.value);
+  };
+  
+  const handleDayTitleBlur = () => {
+    saveDayTitle();
+  };
+  
+  const handleDayTitleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      saveDayTitle();
+    }
+  };
+  
+  const saveDayTitle = () => {
+    const updatedPlans = [...dailyPlans];
+    updatedPlans[currentDayIndex].title = tempDayTitle.trim() || `${t('day')} ${currentDayIndex + 1}`;
+    setDailyPlans(updatedPlans);
+    setIsEditingDayTitle(false);
+  };
+  
   
 
   const convertDailyPlans = (activities, startDate, endDate) => {
@@ -197,6 +243,9 @@ const handleUpdate = async () => {
               accommodationEntries,
               accommodationCost: calculateAccommodationTotal(),
               totalCost: calculateTripTotal(),
+              startDate: format(dailyPlans[0].date, "yyyy-MM-dd"),
+              endDate: format(dailyPlans[dailyPlans.length - 1].date, "yyyy-MM-dd"),
+              tripName: tripTitle,
           })
       });
 
@@ -274,6 +323,9 @@ const handleSave = async () => {
               accommodationEntries,
               accommodationCost: calculateAccommodationTotal(),
               totalCost: calculateTripTotal(),
+              startDate: format(dailyPlans[0].date, "yyyy-MM-dd"),
+              endDate: format(dailyPlans[dailyPlans.length - 1].date, "yyyy-MM-dd"),   
+              tripName: tripTitle,   
           })
       });
 
@@ -346,6 +398,72 @@ const handleSave = async () => {
         const updatedPlans = [...dailyPlans];
         updatedPlans[currentDayIndex].route.stops = updatedPlans[currentDayIndex].route.stops.filter((_, i) => i !== index);
         setDailyPlans(updatedPlans);
+      };
+
+      const [showConfirmModal, setShowConfirmModal] = useState(false);
+      const [dayToRemove, setDayToRemove] = useState(null);
+
+      const confirmRemoveDay = (position) => {
+        setDayToRemove(position);
+        setShowConfirmModal(true);
+      };
+
+      const removeDay = () => {
+        if (dayToRemove === "start") {
+          if (dailyPlans.length > 1) {
+            const updatedPlans = dailyPlans.slice(1).map((plan, index) => ({
+              ...plan,
+              title: plan.title.match(/^(Den|Day) \d+$/) ? `${t('day')} ${index + 1}` : plan.title,
+            }));
+            setDailyPlans(updatedPlans);
+            setDailyBudgets(dailyBudgets.slice(1));
+          }
+        } else if (dayToRemove === "end") {
+          if (dailyPlans.length > 1) {
+            setDailyPlans(dailyPlans.slice(0, -1));
+            setDailyBudgets(dailyBudgets.slice(0, -1));
+          }
+        }
+        setShowConfirmModal(false);
+      };
+      
+
+      const addDayAtStart = () => {
+        const newDate = new Date(dailyPlans[0].date);
+        newDate.setDate(newDate.getDate() - 1);
+      
+        const newDay = {
+          date: newDate,
+          plan: '',
+          location: '',
+          route: { start: '', end: '', stops: [] },
+          title: `${t('day')} 1`,
+        };
+      
+        const updatedPlans = [newDay, ...dailyPlans].map((plan, index) => ({
+          ...plan,
+          title: plan.title.match(/^(Den|Day) \d+$/) ? `${t('day')} ${index + 1}` : plan.title,
+        }));
+      
+        setDailyPlans(updatedPlans);
+        setDailyBudgets([{ expenses: [] }, ...dailyBudgets]);
+      };
+      
+
+      const addDayAtEnd = () => {
+        const newDate = new Date(dailyPlans[dailyPlans.length - 1].date);
+        newDate.setDate(newDate.getDate() + 1);
+        
+        const newDay = {
+          date: newDate,
+          plan: '',
+          location: '',
+          route: { start: '', end: '', stops: [] },
+          title: `${t('day')} ${dailyPlans.length + 1}`,
+        };
+      
+        setDailyPlans([...dailyPlans, newDay]);
+        setDailyBudgets([...dailyBudgets, { expenses: [] }]);
       };
 
       const [autocompleteStart, setAutocompleteStart] = useState(null);
@@ -436,6 +554,8 @@ const handleLocationInputChange = (e) => {
             setCurrentDayData(dailyPlans[index]);
           }, 0);
         }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       
         const dayData = dailyPlans[index];
         if (dayData?.location) {
@@ -595,7 +715,24 @@ const handleLocationInputChange = (e) => {
 
   {/* Název výletu + tlačítko sdílení */}
   <div className="flex items-center justify-between w-full md:w-auto space-x-4">
-    <h1 className="text-xl md:text-3xl font-bold text-center md:text-left dark:text-white">{tripName}</h1>
+  {isEditingTitle ? (
+  <input
+    type="text"
+    value={tripTitle}
+    onChange={handleTitleChange}
+    onBlur={handleBlur}
+    onKeyDown={handleKeyDown}
+    autoFocus
+    className="text-xl md:text-3xl font-bold text-center md:text-left dark:text-white bg-transparent border-b border-blue-500 focus:outline-none focus:ring-0"
+  />
+) : (
+  <h1
+    className="text-xl md:text-3xl font-bold text-center md:text-left dark:text-white cursor-pointer hover:opacity-80 transition"
+    onClick={() => setIsEditingTitle(true)}
+  >
+    {tripTitle}
+  </h1>
+)}
     
     <button
       onClick={() => {
@@ -729,22 +866,29 @@ const handleLocationInputChange = (e) => {
         ) : (
             dailyPlans.length > 0 && (
               <div>
-                <h2 className="text-xl font-semibold mb-2 dark:text-white">
-                  {console.log(dailyPlans)}
-                  <input 
-                    type="text" 
-                    className="border rounded p-1 dark:bg-gray-800 dark:border-gray-600 dark:text-white w-fit"
-                    placeholder={t('dayTitlePlaceholder')}
-                    value={dailyPlans[currentDayIndex]?.title || ""}
-                    onChange={(e) => {
-                      const updatedPlans = [...dailyPlans];
-                      updatedPlans[currentDayIndex].title = e.target.value;
-                      setDailyPlans(updatedPlans);
-                    }}
-                    onBlur={() => handleSaveDayTitle(currentDayIndex)}
-                  /> <span className="ml-2">{format(dailyPlans[currentDayIndex].date, "dd.MM.yyyy")}</span>
-                  <span className="text-center right-4 absolute">{format(dailyPlans[currentDayIndex].date, "EEEE", { locale: getLocale() })}</span>
-                </h2>
+<h2 className="text-xl font-semibold mb-2 dark:text-white">
+  {isEditingDayTitle ? (
+    <input 
+      type="text" 
+      className="border rounded p-1 dark:bg-gray-800 dark:border-gray-600 dark:text-white w-fit focus:outline-none focus:ring-2 focus:ring-blue-500"
+      value={tempDayTitle}
+      onChange={handleDayTitleChange}
+      onBlur={handleDayTitleBlur}
+      onKeyDown={handleDayTitleKeyDown}
+      autoFocus
+    />
+  ) : (
+    <span 
+      className="cursor-pointer hover:opacity-80 transition"
+      onClick={handleDayTitleClick}
+    >
+      {dailyPlans[currentDayIndex]?.title || `${t('day')} ${currentDayIndex + 1}`}
+    </span>
+  )}
+  <span className="ml-2">{format(dailyPlans[currentDayIndex].date, "dd.MM.yyyy")}</span>
+  <span className="text-center right-4 absolute">{format(dailyPlans[currentDayIndex].date, "EEEE", { locale: getLocale() })}</span>
+</h2>
+
 
 
                 <div className="mb-4">
@@ -1039,6 +1183,20 @@ const handleLocationInputChange = (e) => {
           <div className="md:w-1/3 w-full border rounded-lg p-4 shadow-md  mt-6 md:mt-0 overflow-y-auto bg-white dark:bg-gray-900 dark:border-gray-800">
             <h3 className="text-lg font-semibold mb-2 dark:text-white">{t("calendar")}</h3>
             <div className="space-y-2">
+            <div className="flex justify-between mt-4">
+            <button 
+              onClick={addDayAtStart}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              {t("addDayStart")}
+            </button>
+            <button 
+              onClick={() => confirmRemoveDay("start")} 
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            >
+              {t("removeDayStart")}
+            </button>
+          </div>
                 {dailyPlans.map((day, index) => (
                     <button
                         key={index}
@@ -1050,6 +1208,20 @@ const handleLocationInputChange = (e) => {
                     {day.title ? `${day.title} - ${format(dailyPlans[index].date, "dd.MM.yyyy")} (${format(day.date, "EEEE", { locale: getLocale() })})` : `${t("day")} ${index + 1} - ${format(day.date, "dd.MM.yyyy")}`}
                     </button>
                 ))}
+          <div className="flex justify-between mt-4">
+            <button 
+              onClick={addDayAtEnd} 
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              {t("addDayEnd")}
+            </button>
+            <button 
+              onClick={() => confirmRemoveDay("end")} 
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            >
+              {t("removeDayEnd")}
+            </button>
+          </div>
             </div>
             <div className="w-full border-t border-gray-300 dark:border-gray-700 mt-4 mb-4"></div>
             <button
@@ -1069,6 +1241,51 @@ const handleLocationInputChange = (e) => {
               </button>
         </div>
         </div>
+        {showConfirmModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50 animate-fadeIn">
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-xl w-[90%] max-w-md transform transition-all duration-300 scale-95 sm:scale-100">
+            {/* Ikona upozornění */}
+            <div className="flex justify-center mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-12 w-12 text-red-500"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12" y2="16" />
+              </svg>
+            </div>
+
+            {/* Nadpis a text */}
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white text-center">{t("confirmDeletion")}</h2>
+            <p className="text-gray-600 dark:text-gray-300 mt-3 text-center leading-relaxed">
+              {t("deleteDayWarning")}
+            </p>
+
+            {/* Akční tlačítka */}
+            <div className="flex justify-center mt-6 space-x-4">
+              <button 
+                onClick={() => setShowConfirmModal(false)} 
+                className="px-5 py-2 rounded-lg font-semibold text-gray-800 bg-gray-300 hover:bg-gray-400 transition-all dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+              >
+                {t("cancel")}
+              </button>
+              <button 
+                onClick={removeDay} 
+                className="px-5 py-2 rounded-lg font-semibold text-white bg-red-500 hover:bg-red-600 transition-all shadow-md"
+              >
+                {t("delete")}
+              </button>
+            </div>
+          </div>
+        </div>
+        )}
 
         
 

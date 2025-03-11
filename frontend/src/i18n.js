@@ -149,6 +149,7 @@ i18n
           remove: "Remove",
           addAccommodation: "Add Accommodation",
           deletedAccommodationSuccess: "Accommodation successfully deleted!",
+          dayTitlePlaceholder: "Day Title",
         },
       },
       cs: {
@@ -293,6 +294,7 @@ i18n
           remove: "Odebrat",
           addAccommodation: "Přidat ubytování",
           deletedAccommodationSuccess: "Ubytování bylo úspěšně smazáno!",
+          dayTitlePlaceholder: "Název dne",
         },
       },
     },

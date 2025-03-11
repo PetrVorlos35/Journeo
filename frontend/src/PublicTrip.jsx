@@ -73,7 +73,8 @@ const PublicTrip = () => {
       plan: activities?.[index]?.plan || "",
       location: activities?.[index]?.location || "",
       route: activities?.[index]?.route || { start: "", end: "", stops: [] },
-      expenses: budgets?.[index]?.expenses || [], // Oprava: bere správně daily budgets
+      expenses: budgets?.[index]?.expenses || [],
+      title: activities[index]?.title || `${t('day')} ${index + 1}`,
     }));
   };
   
@@ -197,7 +198,7 @@ const PublicTrip = () => {
               <div>
                <div className="relative">
                <h2 className="text-xl font-semibold mb-2 dark:text-white">
-                  {t("day")} {currentDayIndex + 1} - {format(dailyPlans[currentDayIndex].date, "dd.MM.yyyy")}
+                  {dailyPlans[currentDayIndex].title} - {format(dailyPlans[currentDayIndex].date, "dd.MM.yyyy")}
                   <span className="text-center right-4 absolute">
                     {format(dailyPlans[currentDayIndex].date, "EEEE", { locale: getLocale() })}
                   </span>
@@ -306,7 +307,7 @@ const PublicTrip = () => {
                                     dark:border-gray-700 dark:text-gray-300`}
                         onClick={() => handleDayClick(index)}
                     >
-                        {t("day")} {index + 1} ({format(day.date, "EEEE", { locale: getLocale() })}) - {format(day.date, "dd.MM.yyyy")}
+                        {dailyPlans[index].title} - {format(day.date, "dd.MM.yyyy")} ({format(day.date, "EEEE", { locale: getLocale() })}) 
                     </button>
                 ))}
             </div>

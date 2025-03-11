@@ -71,6 +71,7 @@ useEffect(() => {
       plan: activities[index]?.plan || '',
       location: activities[index]?.location || '',
       route: activities[index]?.route || { start: '', end: '', stops: [] },
+      title: activities[index]?.title || `${t('day')} ${index + 1}`,
     }));
   };
 
@@ -525,6 +526,18 @@ const handleLocationInputChange = (e) => {
         setDailyBudgets(updatedBudgets);
       };
 
+      const handleSaveDayTitle = (index) => {
+        const updatedPlans = [...dailyPlans];
+      
+        // Ensure title exists and isn't just whitespace
+        if (!updatedPlans[index].title.trim()) {
+          updatedPlans[index].title = `${t('day')} ${index + 1}`;
+        }
+      
+        setDailyPlans(updatedPlans);
+      };
+      
+
       const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
       useEffect(() => {
@@ -650,35 +663,35 @@ const handleLocationInputChange = (e) => {
             <h2 className="text-2xl font-bold text-gray-800 mb-4 dark:text-white">{t('accomodationCost')}</h2>
 
             {accommodationEntries.map((entry, index) => (
-              <div key={index} className="bg-gray-100 p-4 rounded-lg shadow-inner dark:bg-gray-800 mb-2 flex items-center">
-                <input
-                  type="number"
-                  className="w-1/3 border border-gray-300 rounded-lg p-3 bg-gray-50 focus:outline-none 
-                            focus:ring-2 focus:ring-blue-400 transition-all dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-                  placeholder={t('amount')}
-                  value={entry.cost || ''}
-                  onChange={(e) => handleAccommodationChange(index, "cost", e.target.value)}
-                />
-                <input
-                  type="text"
-                  className="ml-4 flex-1 border border-gray-300 rounded-lg p-3 bg-gray-50 focus:outline-none 
-                            focus:ring-2 focus:ring-blue-400 transition-all dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-                  placeholder={t('AccommodationDescription')}
-                  value={entry.description}
-                  onChange={(e) => handleAccommodationChange(index, "description", e.target.value)}
-                />
-                <button
-                  className="text-red-500 hover:text-red-600 ml-4 flex items-center justify-center h-full"
-                  onClick={() => removeAccommodation(index)}
-                >
-                  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 74.6094 92.8223" className="h-6 w-6">
-                    <g>
-                      <rect height="92.8223" opacity="0" width="74.6094" x="0" y="0" />
-                      <path d="M26.0254 73.0957C27.6855 73.0957 28.7598 72.0703 28.7109 70.5566L27.5879 30.5176C27.5391 28.9551 26.4648 27.9785 24.9023 27.9785C23.291 27.9785 22.168 29.0039 22.2168 30.5176L23.3398 70.5566C23.3887 72.1191 24.4629 73.0957 26.0254 73.0957ZM37.3047 73.0957C38.9648 73.0957 40.0879 72.0703 40.0879 70.5566L40.0879 30.5176C40.0879 29.0039 38.9648 27.9785 37.3047 27.9785C35.6445 27.9785 34.5215 29.0039 34.5215 30.5176L34.5215 70.5566C34.5215 72.0703 35.6445 73.0957 37.3047 73.0957ZM48.6328 73.0957C50.1465 73.0957 51.2695 72.1191 51.3184 70.5566L52.3926 30.5176C52.4414 29.0039 51.3672 27.9785 49.707 27.9785C48.1445 27.9785 47.0703 29.0039 47.0215 30.5176L45.9473 70.5566C45.8984 72.0703 46.9727 73.0957 48.6328 73.0957ZM20.2637 18.0176L27.1973 18.0176L27.1973 9.81445C27.1973 7.8125 28.6133 6.49414 30.6641 6.49414L43.8965 6.49414C45.8984 6.49414 47.3145 7.8125 47.3145 9.81445L47.3145 18.0176L54.2969 18.0176L54.2969 9.32617C54.2969 3.56445 50.5371 0 44.3848 0L30.127 0C24.0234 0 20.2637 3.56445 20.2637 9.32617ZM3.22266 21.4844L71.3867 21.4844C73.1934 21.4844 74.6094 20.0195 74.6094 18.2129C74.6094 16.4062 73.1445 14.9414 71.3867 14.9414L3.22266 14.9414C1.51367 14.9414 0 16.4062 0 18.2129C0 20.0195 1.51367 21.4844 3.22266 21.4844ZM19.6777 85.6934L54.9805 85.6934C60.791 85.6934 64.5508 82.0801 64.8438 76.2207L67.3828 20.752L60.4004 20.752L57.959 75.4883C57.8613 77.6855 56.3965 79.1504 54.248 79.1504L20.3125 79.1504C18.2617 79.1504 16.748 77.6367 16.6504 75.4883L14.0625 20.752L7.22656 20.752L9.81445 76.2695C10.1074 82.1289 13.7695 85.6934 19.6777 85.6934Z" fill="currentColor" />
-                    </g>
-                  </svg>
-                </button>
-              </div>
+            <div key={index} className="bg-gray-100 p-4 rounded-lg shadow-inner dark:bg-gray-800 mb-2 flex flex-col md:flex-row md:items-center gap-2">
+              <input
+                type="number"
+                className="w-full md:w-1/3 border border-gray-300 rounded-lg p-3 bg-gray-50 focus:outline-none 
+                          focus:ring-2 focus:ring-blue-400 transition-all dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                placeholder={t('amount')}
+                value={entry.cost || ''}
+                onChange={(e) => handleAccommodationChange(index, "cost", e.target.value)}
+              />
+              <input
+                type="text"
+                className="w-full md:flex-1 border border-gray-300 rounded-lg p-3 bg-gray-50 focus:outline-none 
+                          focus:ring-2 focus:ring-blue-400 transition-all dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                placeholder={t('AccommodationDescription')}
+                value={entry.description}
+                onChange={(e) => handleAccommodationChange(index, "description", e.target.value)}
+              />
+              <button
+                className="text-red-500 hover:text-red-600 md:ml-4 flex items-center justify-center h-full self-center md:self-auto"
+                onClick={() => removeAccommodation(index)}
+              >
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 74.6094 92.8223" className="h-6 w-6">
+                  <g>
+                    <rect height="92.8223" opacity="0" width="74.6094" x="0" y="0" />
+                    <path d="M26.0254 73.0957C27.6855 73.0957 28.7598 72.0703 28.7109 70.5566L27.5879 30.5176C27.5391 28.9551 26.4648 27.9785 24.9023 27.9785C23.291 27.9785 22.168 29.0039 22.2168 30.5176L23.3398 70.5566C23.3887 72.1191 24.4629 73.0957 26.0254 73.0957ZM37.3047 73.0957C38.9648 73.0957 40.0879 72.0703 40.0879 70.5566L40.0879 30.5176C40.0879 29.0039 38.9648 27.9785 37.3047 27.9785C35.6445 27.9785 34.5215 29.0039 34.5215 30.5176L34.5215 70.5566C34.5215 72.0703 35.6445 73.0957 37.3047 73.0957ZM48.6328 73.0957C50.1465 73.0957 51.2695 72.1191 51.3184 70.5566L52.3926 30.5176C52.4414 29.0039 51.3672 27.9785 49.707 27.9785C48.1445 27.9785 47.0703 29.0039 47.0215 30.5176L45.9473 70.5566C45.8984 72.0703 46.9727 73.0957 48.6328 73.0957ZM20.2637 18.0176L27.1973 18.0176L27.1973 9.81445C27.1973 7.8125 28.6133 6.49414 30.6641 6.49414L43.8965 6.49414C45.8984 6.49414 47.3145 7.8125 47.3145 9.81445L47.3145 18.0176L54.2969 18.0176L54.2969 9.32617C54.2969 3.56445 50.5371 0 44.3848 0L30.127 0C24.0234 0 20.2637 3.56445 20.2637 9.32617ZM3.22266 21.4844L71.3867 21.4844C73.1934 21.4844 74.6094 20.0195 74.6094 18.2129C74.6094 16.4062 73.1445 14.9414 71.3867 14.9414L3.22266 14.9414C1.51367 14.9414 0 16.4062 0 18.2129C0 20.0195 1.51367 21.4844 3.22266 21.4844ZM19.6777 85.6934L54.9805 85.6934C60.791 85.6934 64.5508 82.0801 64.8438 76.2207L67.3828 20.752L60.4004 20.752L57.959 75.4883C57.8613 77.6855 56.3965 79.1504 54.248 79.1504L20.3125 79.1504C18.2617 79.1504 16.748 77.6367 16.6504 75.4883L14.0625 20.752L7.22656 20.752L9.81445 76.2695C10.1074 82.1289 13.7695 85.6934 19.6777 85.6934Z" fill="currentColor" />
+                  </g>
+                </svg>
+              </button>
+            </div>
             ))}
 
             <button
@@ -690,6 +703,13 @@ const handleLocationInputChange = (e) => {
             </button>
 
             <div className="flex justify-between items-center font-semibold text-lg text-gray-800 mt-4 p-3 border-t dark:border-gray-700 dark:text-gray-300">
+              <span>{t('accomodationCost')}</span>
+              <span className="text-blue-600 text-xl font-bold dark:text-blue-400">
+                {calculateAccommodationTotal()} CZK
+              </span>
+            </div>
+
+            <div className="flex justify-between items-center font-semibold text-lg text-gray-800 mt-2 p-3 border-t dark:border-gray-700 dark:text-gray-300">
               <span>{t('totalBudget')}</span>
               <span className="text-blue-600 text-xl font-bold dark:text-blue-400">
                 {calculateTripTotal()} CZK
@@ -710,8 +730,22 @@ const handleLocationInputChange = (e) => {
             dailyPlans.length > 0 && (
               <div>
                 <h2 className="text-xl font-semibold mb-2 dark:text-white">
-                {t('day')} {currentDayIndex + 1} - {format(dailyPlans[currentDayIndex].date, "dd.MM.yyyy")} <span className="text-center right-4 absolute">{format(dailyPlans[currentDayIndex].date, "EEEE", { locale: getLocale() })}</span>
+                  {console.log(dailyPlans)}
+                  <input 
+                    type="text" 
+                    className="border rounded p-1 dark:bg-gray-800 dark:border-gray-600 dark:text-white w-fit"
+                    placeholder={t('dayTitlePlaceholder')}
+                    value={dailyPlans[currentDayIndex]?.title || ""}
+                    onChange={(e) => {
+                      const updatedPlans = [...dailyPlans];
+                      updatedPlans[currentDayIndex].title = e.target.value;
+                      setDailyPlans(updatedPlans);
+                    }}
+                    onBlur={() => handleSaveDayTitle(currentDayIndex)}
+                  /> <span className="ml-2">{format(dailyPlans[currentDayIndex].date, "dd.MM.yyyy")}</span>
+                  <span className="text-center right-4 absolute">{format(dailyPlans[currentDayIndex].date, "EEEE", { locale: getLocale() })}</span>
                 </h2>
+
 
                 <div className="mb-4">
                     <label htmlFor="activityDescription" className="block text-gray-700 font-bold mb-2 dark:text-white">
@@ -1013,7 +1047,7 @@ const handleLocationInputChange = (e) => {
                                     dark:border-gray-700 dark:text-gray-300`}
                         onClick={() => handleDayClick(index)}
                     >
-                        {t("day")} {index + 1} ({format(day.date, "EEEE", { locale: getLocale() })}) - {format(day.date, "dd.MM.yyyy")}
+                    {day.title ? `${day.title} - ${format(dailyPlans[index].date, "dd.MM.yyyy")} (${format(day.date, "EEEE", { locale: getLocale() })})` : `${t("day")} ${index + 1} - ${format(day.date, "dd.MM.yyyy")}`}
                     </button>
                 ))}
             </div>

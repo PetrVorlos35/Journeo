@@ -1178,53 +1178,61 @@ const handleLocationInputChange = (e) => {
 
           {/* Pravý panel pro kalendář */}
           <div className="md:w-1/3 w-full border rounded-lg p-6 shadow-lg mt-6 md:mt-0 overflow-y-auto bg-white dark:bg-gray-900 dark:border-gray-800">
-  <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">{t("calendar")}</h3>
-  
-  <div className="space-y-3">
-    <div className="flex justify-between mt-4 gap-2">
-      <button 
-        onClick={addDayAtStart}
-        className="bg-blue-600 text-white px-5 py-2 rounded-lg font-medium shadow hover:bg-blue-700 transition-all"
-      >
-        {t("addDayStart")}
-      </button>
-      <button 
-        onClick={() => confirmRemoveDay("start")} 
-        className="bg-red-600 text-white px-5 py-2 rounded-lg font-medium shadow hover:bg-red-700 transition-all"
-      >
-        {t("removeDayStart")}
-      </button>
-    </div>
+            <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">{t("calendar")}</h3>
 
-    {dailyPlans.map((day, index) => (
-      <button
-        key={index}
-        className={`w-full text-left p-3 border rounded-lg font-medium transition-all 
-                    ${index === currentDayIndex ? "bg-blue-100 dark:bg-blue-800" : "hover:bg-gray-100 dark:hover:bg-gray-700"} 
-                    dark:border-gray-700 dark:text-gray-300`}
-        onClick={() => handleDayClick(index)}
-      >
-        {day.title 
-          ? `${day.title} - ${format(dailyPlans[index].date, "dd.MM.yyyy")} (${format(day.date, "EEEE", { locale: getLocale() })})` 
-          : `${t("day")} ${index + 1} - ${format(day.date, "dd.MM.yyyy")}`}
-      </button>
-    ))}
+            <div className="space-y-3">
+              {dailyPlans.map((day, index) => (
+                <div 
+                  key={index} 
+                  className={`relative flex items-center p-3 border rounded-lg font-medium transition-all shadow-sm
+                              ${index === currentDayIndex ? "bg-blue-100 dark:bg-blue-800" : "hover:bg-gray-100 dark:hover:bg-gray-700"} 
+                              dark:border-gray-700 dark:text-gray-300`}
+                >
+                  {/* Název dne */}
+                  <button 
+                    className="w-full text-left pr-12" 
+                    onClick={() => handleDayClick(index)}
+                  >
+                    {day.title 
+                      ? `${day.title} - ${format(dailyPlans[index].date, "dd.MM.yyyy")} (${format(day.date, "EEEE", { locale: getLocale() })})` 
+                      : `${t("day")} ${index + 1} - ${format(day.date, "dd.MM.yyyy")}`}
+                  </button>
 
-    <div className="flex justify-between mt-4 gap-2">
-      <button 
-        onClick={addDayAtEnd} 
-        className="bg-blue-600 text-white px-5 py-2 rounded-lg font-medium shadow hover:bg-blue-700 transition-all"
-      >
-        {t("addDayEnd")}
-      </button>
-      <button 
-        onClick={() => confirmRemoveDay("end")} 
-        className="bg-red-600 text-white px-5 py-2 rounded-lg font-medium shadow hover:bg-red-700 transition-all"
-      >
-        {t("removeDayEnd")}
-      </button>
-    </div>
-  </div>
+                  {/* Ikony na přidání a odstranění (vedle sebe, vpravo) */}
+                  {(index === 0 || index === dailyPlans.length - 1) && (
+                    <div className="absolute right-2 flex items-center gap-2">
+                      {/* Přidat den */}
+                      <button 
+                        onClick={index === 0 ? addDayAtStart : addDayAtEnd} 
+                        className="text-gray-500 hover:text-green-600 transition-all"
+                        title={index === 0 ? t("addDayStart") : t("addDayEnd")}
+                      >
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="24" height="24" fill="currentColor">
+    <path d="M0 32c0 2.15 1.81 3.96 3.96 3.96h24.02v24.02c0 2.1 1.81 3.96 3.96 3.96s3.91-1.86 3.91-3.96V35.96h24.07c2.1 0 3.91-1.81 3.91-3.96s-1.81-3.96-3.91-3.96H35.85V3.96C35.85 1.86 34.04 0 31.89 0s-3.91 1.81-3.91 3.96v24.07H3.96C1.81 28.03 0 29.85 0 32z"/>
+  </svg>
+
+                      </button>
+
+                      {/* Odstranit den */}
+                      {dailyPlans.length > 1 && (
+                        <button 
+                          onClick={() => confirmRemoveDay(index === 0 ? "start" : "end")} 
+                          className="text-gray-500 hover:text-red-600 transition-all"
+                          title={index === 0 ? t("removeDayStart") : t("removeDayEnd")}
+                        >
+                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 74.6094 92.8223" className="h-6 w-6">
+                    <g>
+                      <rect height="92.8223" opacity="0" width="74.6094" x="0" y="0" />
+                      <path d="M26.0254 73.0957C27.6855 73.0957 28.7598 72.0703 28.7109 70.5566L27.5879 30.5176C27.5391 28.9551 26.4648 27.9785 24.9023 27.9785C23.291 27.9785 22.168 29.0039 22.2168 30.5176L23.3398 70.5566C23.3887 72.1191 24.4629 73.0957 26.0254 73.0957ZM37.3047 73.0957C38.9648 73.0957 40.0879 72.0703 40.0879 70.5566L40.0879 30.5176C40.0879 29.0039 38.9648 27.9785 37.3047 27.9785C35.6445 27.9785 34.5215 29.0039 34.5215 30.5176L34.5215 70.5566C34.5215 72.0703 35.6445 73.0957 37.3047 73.0957ZM48.6328 73.0957C50.1465 73.0957 51.2695 72.1191 51.3184 70.5566L52.3926 30.5176C52.4414 29.0039 51.3672 27.9785 49.707 27.9785C48.1445 27.9785 47.0703 29.0039 47.0215 30.5176L45.9473 70.5566C45.8984 72.0703 46.9727 73.0957 48.6328 73.0957ZM20.2637 18.0176L27.1973 18.0176L27.1973 9.81445C27.1973 7.8125 28.6133 6.49414 30.6641 6.49414L43.8965 6.49414C45.8984 6.49414 47.3145 7.8125 47.3145 9.81445L47.3145 18.0176L54.2969 18.0176L54.2969 9.32617C54.2969 3.56445 50.5371 0 44.3848 0L30.127 0C24.0234 0 20.2637 3.56445 20.2637 9.32617ZM3.22266 21.4844L71.3867 21.4844C73.1934 21.4844 74.6094 20.0195 74.6094 18.2129C74.6094 16.4062 73.1445 14.9414 71.3867 14.9414L3.22266 14.9414C1.51367 14.9414 0 16.4062 0 18.2129C0 20.0195 1.51367 21.4844 3.22266 21.4844ZM19.6777 85.6934L54.9805 85.6934C60.791 85.6934 64.5508 82.0801 64.8438 76.2207L67.3828 20.752L60.4004 20.752L57.959 75.4883C57.8613 77.6855 56.3965 79.1504 54.248 79.1504L20.3125 79.1504C18.2617 79.1504 16.748 77.6367 16.6504 75.4883L14.0625 20.752L7.22656 20.752L9.81445 76.2695C10.1074 82.1289 13.7695 85.6934 19.6777 85.6934Z" fill="currentColor" />
+                    </g>
+                  </svg>
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
 
   <div className="w-full border-t border-gray-300 dark:border-gray-700 mt-5 mb-5"></div>
 
@@ -1245,6 +1253,9 @@ const handleLocationInputChange = (e) => {
     {t('savePlan')}
   </button>
 </div>
+
+
+
 
 
 

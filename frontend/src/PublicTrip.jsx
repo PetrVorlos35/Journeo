@@ -183,6 +183,13 @@ const PublicTrip = () => {
               )}
 
               <div className="flex justify-between items-center font-semibold text-lg text-gray-800 mt-4 p-3 border-t dark:border-gray-700 dark:text-gray-300">
+                <span>{t('accomodationCost')}</span>
+                <span className="text-blue-600 text-xl font-bold dark:text-blue-400">
+                  {Math.round(accommodationCost)} CZK
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center font-semibold text-lg text-gray-800 mt-4 p-3 border-t dark:border-gray-700 dark:text-gray-300">
                 <span>{t('totalBudget')}</span>
                 <span className="text-blue-600 text-xl font-bold dark:text-blue-400">
                   {Math.round(tripTotal)} CZK
@@ -299,26 +306,28 @@ const PublicTrip = () => {
           <div className="md:w-1/3 w-full border rounded-lg p-4 shadow-md  mt-6 md:mt-0 overflow-y-auto bg-white dark:bg-gray-900 dark:border-gray-800">
             <h3 className="text-lg font-semibold mb-2 dark:text-white">{t("calendar")}</h3>
             <div className="space-y-2">
-                {dailyPlans.map((day, index) => (
-                    <button
-                        key={index}
-                        className={`w-full text-left p-2 border rounded 
-                                    ${index === currentDayIndex ? "bg-blue-200 dark:bg-blue-800" : "hover:bg-gray-100 dark:hover:bg-gray-700"} 
-                                    dark:border-gray-700 dark:text-gray-300`}
-                        onClick={() => handleDayClick(index)}
-                    >
-                        {dailyPlans[index].title} - {format(day.date, "dd.MM.yyyy")} ({format(day.date, "EEEE", { locale: getLocale() })}) 
-                    </button>
+              {dailyPlans.map((day, index) => (
+                  <button
+                    key={index}
+                    className={`w-full text-left p-3 border rounded-lg font-medium transition-all 
+                                ${index === currentDayIndex ? "bg-blue-100 dark:bg-blue-800" : "hover:bg-gray-100 dark:hover:bg-gray-700"} 
+                                dark:border-gray-700 dark:text-gray-300`}
+                    onClick={() => handleDayClick(index)}
+                  >
+                    {day.title 
+                      ? `${day.title} - ${format(dailyPlans[index].date, "dd.MM.yyyy")} (${format(day.date, "EEEE", { locale: getLocale() })})` 
+                      : `${t("day")} ${index + 1} - ${format(day.date, "dd.MM.yyyy")}`}
+                  </button>
                 ))}
             </div>
             <div className="w-full border-t border-gray-300 dark:border-gray-700 mt-4 mb-4"></div>
             <button
-                className={`w-full text-left p-2 border rounded 
-                            ${accommodationSegment === 'accommodation' ? 'bg-blue-200 dark:bg-blue-800' : 'hover:bg-gray-100 dark:hover:bg-gray-700'} 
-                            dark:border-gray-700 dark:text-gray-300`}
-                onClick={() => handleDayClick('accommodation')}
+              className={`w-full text-left p-3 border rounded-lg font-medium transition-all
+                          ${accommodationSegment === 'accommodation' ? 'bg-blue-100 dark:bg-blue-800' : 'hover:bg-gray-100 dark:hover:bg-gray-700'} 
+                          dark:border-gray-700 dark:text-gray-300`}
+              onClick={() => handleDayClick('accommodation')}
             >
-                {t('accomodationCost')}
+              {t('accomodationCost')}
             </button>
         </div>
 

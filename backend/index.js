@@ -38,8 +38,12 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 
+
 // Server start
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => {
+const keepAlive = require('http').Server(app);
+keepAlive.keepAliveTimeout = 60000; // Keep connections alive for 60 seconds
+
+keepAlive.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

@@ -64,14 +64,17 @@ const googleOAuth = async (req, res) => {
     const user = req.user;
     const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
-    res.redirect(`${process.env.APP_URL}/dashboard?token=${token}`);
+    console.log("OAuth successful, redirecting...");
+
+    setTimeout(() => {
+      res.redirect(`${process.env.APP_URL}/dashboard?token=${token}`);
+    }, 2000); // Delay redirect by 2 seconds
   } catch (error) {
     console.error('Google OAuth error:', error.message);
-
-    // Redirect back to login page with an error message
     res.redirect(`${process.env.APP_URL}/login?error=auth_failed`);
   }
 };
+
 
 
 module.exports = { register, login, googleOAuth, refreshToken };

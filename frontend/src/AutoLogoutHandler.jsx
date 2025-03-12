@@ -11,6 +11,9 @@ const AutoLogoutHandler = () => {
   let inactivityTimer;
   let warningTimer;
 
+  const publicRoutes = ['/trip/', '/login', '/', '/register']; // Seznam veřejných cest
+
+
   const resetTimer = () => {
     localStorage.setItem("lastActivity", Date.now());
 
@@ -68,9 +71,16 @@ const AutoLogoutHandler = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsInactive(false); // Zavři modal
-    navigate("/login");
+    const currentPath = window.location.pathname;
+    const isPublicRoute = publicRoutes.some(route => currentPath.startsWith(route));
+
+    if (!isPublicRoute) { // Pokud NENÍ na veřejné stránce, odhlásit a přesměrovat
+      localStorage.removeItem("token");
+      setIsInactive(false);
+      navigate("/login");
+    } else {
+      console.log("Veřejná stránka, odhlášení neproběhlo.");
+    }
   };
 
   const stayLoggedIn = () => {

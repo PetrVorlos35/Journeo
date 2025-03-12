@@ -1207,9 +1207,9 @@ const handleLocationInputChange = (e) => {
                         className="text-gray-500 hover:text-green-600 transition-all"
                         title={index === 0 ? t("addDayStart") : t("addDayEnd")}
                       >
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="24" height="24" fill="currentColor">
-    <path d="M0 32c0 2.15 1.81 3.96 3.96 3.96h24.02v24.02c0 2.1 1.81 3.96 3.96 3.96s3.91-1.86 3.91-3.96V35.96h24.07c2.1 0 3.91-1.81 3.91-3.96s-1.81-3.96-3.91-3.96H35.85V3.96C35.85 1.86 34.04 0 31.89 0s-3.91 1.81-3.91 3.96v24.07H3.96C1.81 28.03 0 29.85 0 32z"/>
-  </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="24" height="24" fill="currentColor">
+                        <path d="M0 32c0 2.15 1.81 3.96 3.96 3.96h24.02v24.02c0 2.1 1.81 3.96 3.96 3.96s3.91-1.86 3.91-3.96V35.96h24.07c2.1 0 3.91-1.81 3.91-3.96s-1.81-3.96-3.91-3.96H35.85V3.96C35.85 1.86 34.04 0 31.89 0s-3.91 1.81-3.91 3.96v24.07H3.96C1.81 28.03 0 29.85 0 32z"/>
+                      </svg>
 
                       </button>
 
@@ -1254,12 +1254,8 @@ const handleLocationInputChange = (e) => {
   </button>
 </div>
 
+</div>
 
-
-
-
-
-        </div>
         {showConfirmModal && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50 animate-fadeIn">
           <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-xl w-[90%] max-w-md transform transition-all duration-300 scale-95 sm:scale-100">

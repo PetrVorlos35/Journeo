@@ -12,12 +12,14 @@ const dbConfig = {
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  connectTimeout: 10000 // Zvýšení timeoutu pro připojení
+  connectTimeout: 10000
 };
 
 let db;
 
 function handleDisconnect() {
+  console.log("Inicializace databázového připojení...");
+  
   db = mysql.createPool(dbConfig);
 
   db.getConnection((err, connection) => {
@@ -25,7 +27,7 @@ function handleDisconnect() {
       console.error('Chyba připojení k databázi:', err);
       setTimeout(handleDisconnect, 5000); // Zkusit znovu po 5 sekundách
     } else {
-      console.log('Připojeno k databázi.');
+      console.log('Úspěšně připojeno k databázi.');
       connection.release();
     }
   });
@@ -40,6 +42,18 @@ function handleDisconnect() {
     }
   });
 }
+
+// Udržování aktivního spojení každých 4 minuty
+setInterval(() => {
+  db.query('SELECT 1', (err) => {
+    if (err) {
+      console.error('Chyba při keep-alive dotazu:', err);
+      handleDisconnect();
+    } else {
+      console.log('Databázové spojení je stále aktivní.');
+    }
+  });
+}, 240000); // 4 minuty
 
 handleDisconnect();
 

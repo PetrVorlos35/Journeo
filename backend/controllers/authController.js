@@ -57,10 +57,21 @@ const refreshToken = (req, res) => {
 
 
 // Google OAuth callback
-const googleOAuth = (req, res) => {
-  const user = req.user;
-  const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '30d' });
-  res.redirect(`${process.env.APP_URL}/dashboard?token=${token}`); 
+const googleOAuth = async (req, res) => {
+  try {
+    if (!req.user) throw new Error('User not found');
+
+    const user = req.user;
+    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '30d' });
+
+    res.redirect(`${process.env.APP_URL}/dashboard?token=${token}`);
+  } catch (error) {
+    console.error('Google OAuth error:', error.message);
+
+    // Redirect back to login page with an error message
+    res.redirect(`${process.env.APP_URL}/login?error=auth_failed`);
+  }
 };
+
 
 module.exports = { register, login, googleOAuth, refreshToken };

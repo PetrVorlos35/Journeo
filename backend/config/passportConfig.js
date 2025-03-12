@@ -10,25 +10,36 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: process.env.GOOGLE_CALLBACK_URL,
     },
-    (accessToken, refreshToken, profile, done) => {
+    async (accessToken, refreshToken, profile, done) => {
       const email = profile.emails[0].value;
       const queryCheckUser = 'SELECT * FROM users WHERE email = ?';
 
-      db.query(queryCheckUser, [email], (err, results) => {
-        if (err) return done(err);
+      let retries = 3; // Number of retries in case of failure
+      while (retries > 0) {
+        try {
+          db.query(queryCheckUser, [email], (err, results) => {
+            if (err) throw err;
 
-        if (results.length === 0) {
-          const queryInsertUser = 'INSERT INTO users (email) VALUES (?)';
-          db.query(queryInsertUser, [email], (err, result) => {
-            if (err) return done(err);
-            return done(null, { id: result.insertId, email });
+            if (results.length === 0) {
+              const queryInsertUser = 'INSERT INTO users (email) VALUES (?)';
+              db.query(queryInsertUser, [email], (err, result) => {
+                if (err) throw err;
+                return done(null, { id: result.insertId, email });
+              });
+            } else {
+              return done(null, results[0]);
+            }
           });
-        } else {
-          return done(null, results[0]);
+          break; // Exit loop if successful
+        } catch (error) {
+          console.error('Database error:', error);
+          retries--;
+          if (retries === 0) return done(error);
         }
-      });
+      }
     }
   )
 );
+
 
 module.exports = passport;

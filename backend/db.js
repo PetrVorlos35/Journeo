@@ -9,17 +9,16 @@ const db = mysql.createPool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-db.promise();
-
-db.getConnection((err, connection) => {
-  if (err) {
-    console.error('Database connection failed:', err.stack);
-    return;
+db.on('error', (err) => {
+  console.error('Database error:', err);
+  if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+    console.error('Database connection lost. Reconnecting...');
   }
-  console.log('Connected to database.');
-  connection.release();
 });
 
 module.exports = db;

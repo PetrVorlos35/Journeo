@@ -29,6 +29,15 @@ app.use('/', tripRoutes);
 app.use('/', userRoutes);
 app.use('/friends', friendsRoutes);
 
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+
 // Server start
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {

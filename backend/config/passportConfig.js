@@ -14,7 +14,8 @@ passport.use(
       const email = profile.emails[0].value;
       const queryCheckUser = 'SELECT * FROM users WHERE email = ?';
 
-      let retries = 3; // Number of retries in case of failure
+      let retries = 3; // Number of retries if connection fails
+
       while (retries > 0) {
         try {
           db.query(queryCheckUser, [email], (err, results) => {
@@ -35,11 +36,11 @@ passport.use(
           console.error('Database error:', error);
           retries--;
           if (retries === 0) return done(error);
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait before retrying
         }
       }
     }
   )
 );
-
 
 module.exports = passport;

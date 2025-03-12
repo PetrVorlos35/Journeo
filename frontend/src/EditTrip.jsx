@@ -866,31 +866,28 @@ const handleLocationInputChange = (e) => {
         ) : (
             dailyPlans.length > 0 && (
               <div>
-<h2 className="text-xl font-semibold mb-2 dark:text-white">
-  {isEditingDayTitle ? (
-    <input 
-      type="text" 
-      className="border rounded p-1 dark:bg-gray-800 dark:border-gray-600 dark:text-white w-fit focus:outline-none focus:ring-2 focus:ring-blue-500"
-      value={tempDayTitle}
-      onChange={handleDayTitleChange}
-      onBlur={handleDayTitleBlur}
-      onKeyDown={handleDayTitleKeyDown}
-      autoFocus
-    />
-  ) : (
-    <span 
-      className="cursor-pointer hover:opacity-80 transition"
-      onClick={handleDayTitleClick}
-    >
-      {dailyPlans[currentDayIndex]?.title || `${t('day')} ${currentDayIndex + 1}`}
-    </span>
-  )}
-  <span className="ml-2">{format(dailyPlans[currentDayIndex].date, "dd.MM.yyyy")}</span>
-  <span className="text-center right-4 absolute">{format(dailyPlans[currentDayIndex].date, "EEEE", { locale: getLocale() })}</span>
-</h2>
-
-
-
+                <h2 className="text-xl font-semibold mb-2 dark:text-white">
+                  {isEditingDayTitle ? (
+                    <input 
+                      type="text" 
+                      className="border rounded p-1 dark:bg-gray-800 dark:border-gray-600 dark:text-white w-fit focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={tempDayTitle}
+                      onChange={handleDayTitleChange}
+                      onBlur={handleDayTitleBlur}
+                      onKeyDown={handleDayTitleKeyDown}
+                      autoFocus
+                    />
+                  ) : (
+                    <span 
+                      className="cursor-pointer hover:opacity-80 transition"
+                      onClick={handleDayTitleClick}
+                    >
+                      {dailyPlans[currentDayIndex]?.title || `${t('day')} ${currentDayIndex + 1}`}
+                    </span>
+                  )}
+                  <span className="ml-2">{format(dailyPlans[currentDayIndex].date, "dd.MM.yyyy")}</span>
+                  <span className="text-center right-4 absolute">{format(dailyPlans[currentDayIndex].date, "EEEE", { locale: getLocale() })}</span>
+                </h2>
                 <div className="mb-4">
                     <label htmlFor="activityDescription" className="block text-gray-700 font-bold mb-2 dark:text-white">
                     {t('dailyActivity')}
@@ -1180,66 +1177,77 @@ const handleLocationInputChange = (e) => {
           </div>
 
           {/* Pravý panel pro kalendář */}
-          <div className="md:w-1/3 w-full border rounded-lg p-4 shadow-md  mt-6 md:mt-0 overflow-y-auto bg-white dark:bg-gray-900 dark:border-gray-800">
-            <h3 className="text-lg font-semibold mb-2 dark:text-white">{t("calendar")}</h3>
-            <div className="space-y-2">
-            <div className="flex justify-between mt-4">
-            <button 
-              onClick={addDayAtStart}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              {t("addDayStart")}
-            </button>
-            <button 
-              onClick={() => confirmRemoveDay("start")} 
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-            >
-              {t("removeDayStart")}
-            </button>
-          </div>
-                {dailyPlans.map((day, index) => (
-                    <button
-                        key={index}
-                        className={`w-full text-left p-2 border rounded 
-                                    ${index === currentDayIndex ? "bg-blue-200 dark:bg-blue-800" : "hover:bg-gray-100 dark:hover:bg-gray-700"} 
-                                    dark:border-gray-700 dark:text-gray-300`}
-                        onClick={() => handleDayClick(index)}
-                    >
-                    {day.title ? `${day.title} - ${format(dailyPlans[index].date, "dd.MM.yyyy")} (${format(day.date, "EEEE", { locale: getLocale() })})` : `${t("day")} ${index + 1} - ${format(day.date, "dd.MM.yyyy")}`}
-                    </button>
-                ))}
-          <div className="flex justify-between mt-4">
-            <button 
-              onClick={addDayAtEnd} 
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              {t("addDayEnd")}
-            </button>
-            <button 
-              onClick={() => confirmRemoveDay("end")} 
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-            >
-              {t("removeDayEnd")}
-            </button>
-          </div>
-            </div>
-            <div className="w-full border-t border-gray-300 dark:border-gray-700 mt-4 mb-4"></div>
-            <button
-                className={`w-full text-left p-2 border rounded 
-                            ${accommodationSegment === 'accommodation' ? 'bg-blue-200 dark:bg-blue-800' : 'hover:bg-gray-100 dark:hover:bg-gray-700'} 
-                            dark:border-gray-700 dark:text-gray-300`}
-                onClick={() => handleDayClick('accommodation')}
-            >
-                {t('accomodationCost')}
-            </button>
-            <button 
-                  onClick={handleUpdate} 
-                  className="mt-4 w-full bg-blue-500 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-600 transition-all 
-                            dark:bg-blue-600 dark:hover:bg-blue-700"
-              >
-                  {t('savePlan')}
-              </button>
-        </div>
+          <div className="md:w-1/3 w-full border rounded-lg p-6 shadow-lg mt-6 md:mt-0 overflow-y-auto bg-white dark:bg-gray-900 dark:border-gray-800">
+  <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">{t("calendar")}</h3>
+  
+  <div className="space-y-3">
+    <div className="flex justify-between mt-4 gap-2">
+      <button 
+        onClick={addDayAtStart}
+        className="bg-blue-600 text-white px-5 py-2 rounded-lg font-medium shadow hover:bg-blue-700 transition-all"
+      >
+        {t("addDayStart")}
+      </button>
+      <button 
+        onClick={() => confirmRemoveDay("start")} 
+        className="bg-red-600 text-white px-5 py-2 rounded-lg font-medium shadow hover:bg-red-700 transition-all"
+      >
+        {t("removeDayStart")}
+      </button>
+    </div>
+
+    {dailyPlans.map((day, index) => (
+      <button
+        key={index}
+        className={`w-full text-left p-3 border rounded-lg font-medium transition-all 
+                    ${index === currentDayIndex ? "bg-blue-100 dark:bg-blue-800" : "hover:bg-gray-100 dark:hover:bg-gray-700"} 
+                    dark:border-gray-700 dark:text-gray-300`}
+        onClick={() => handleDayClick(index)}
+      >
+        {day.title 
+          ? `${day.title} - ${format(dailyPlans[index].date, "dd.MM.yyyy")} (${format(day.date, "EEEE", { locale: getLocale() })})` 
+          : `${t("day")} ${index + 1} - ${format(day.date, "dd.MM.yyyy")}`}
+      </button>
+    ))}
+
+    <div className="flex justify-between mt-4 gap-2">
+      <button 
+        onClick={addDayAtEnd} 
+        className="bg-blue-600 text-white px-5 py-2 rounded-lg font-medium shadow hover:bg-blue-700 transition-all"
+      >
+        {t("addDayEnd")}
+      </button>
+      <button 
+        onClick={() => confirmRemoveDay("end")} 
+        className="bg-red-600 text-white px-5 py-2 rounded-lg font-medium shadow hover:bg-red-700 transition-all"
+      >
+        {t("removeDayEnd")}
+      </button>
+    </div>
+  </div>
+
+  <div className="w-full border-t border-gray-300 dark:border-gray-700 mt-5 mb-5"></div>
+
+  <button
+    className={`w-full text-left p-3 border rounded-lg font-medium transition-all
+                ${accommodationSegment === 'accommodation' ? 'bg-blue-100 dark:bg-blue-800' : 'hover:bg-gray-100 dark:hover:bg-gray-700'} 
+                dark:border-gray-700 dark:text-gray-300`}
+    onClick={() => handleDayClick('accommodation')}
+  >
+    {t('accomodationCost')}
+  </button>
+
+  <button 
+    onClick={handleUpdate} 
+    className="mt-5 w-full bg-blue-600 text-white font-semibold py-3 rounded-lg shadow-lg hover:bg-blue-700 transition-all 
+              dark:bg-blue-700 dark:hover:bg-blue-800"
+  >
+    {t('savePlan')}
+  </button>
+</div>
+
+
+
         </div>
         {showConfirmModal && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50 animate-fadeIn">

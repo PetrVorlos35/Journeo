@@ -1,56 +1,56 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 
-
 const AutoLogoutHandler = () => {
   const [isInactive, setIsInactive] = useState(false);
-  const [countdown, setCountdown] = useState(180); // 10 sekund na odhlášení
+  const [countdown, setCountdown] = useState(180); // 3 minuty na odhlášení
   const navigate = useNavigate();
   const { t } = useTranslation();
-  let inactivityTimer;
-  let warningTimer;
+  const inactivityTimer = useRef(null);
+  const countdownTimer = useRef(null);
+  const warningTimer = useRef(null);
 
-  const publicRoutes = ['/trip/', '/login', '/', '/register']; // Seznam veřejných cest
-
+  const publicRoutes = ['/trip/', '/login', '/register']; // Seznam veřejných cest
 
   const resetTimer = () => {
     localStorage.setItem("lastActivity", Date.now());
 
     if (!localStorage.getItem("token")) return; // Pokud není token, timer se nespustí
 
-    if (!isInactive) { // Resetuj jen pokud už není varování aktivní
-      clearTimeout(inactivityTimer);
-      clearTimeout(warningTimer);
-      
-      inactivityTimer = setTimeout(() => {
+    // Resetujeme všechny existující timeouty
+    clearTimeout(inactivityTimer.current);
+    clearTimeout(warningTimer.current);
+
+    if (!isInactive) { 
+      inactivityTimer.current = setTimeout(() => {
         setIsInactive(true);
-        setCountdown(180); // Reset odpočtu na 10 sekund
+        setCountdown(180); // 3 minuty do odhlášení
         startCountdown();
-        warningTimer = setTimeout(() => {
-          handleLogout();
-        }, 180000); // 10 sekund do odhlášení
-      }, 300000); // 20 sekund nečinnosti
+        warningTimer.current = setTimeout(handleLogout, 180000); // Automatické odhlášení po 3 minutách
+      }, 300000); // 5 minut nečinnosti
     }
   };
 
   useEffect(() => {
     const lastActivity = localStorage.getItem("lastActivity");
     const currentTime = Date.now();
-    
+
     if (lastActivity && currentTime - lastActivity > 300000) { // 5 minut
       handleLogout();
     }
-  
+
     resetTimer(); // Spustíme časovač znovu
   }, []);
-  
 
   const startCountdown = () => {
-    const interval = setInterval(() => {
+    if (countdownTimer.current) clearInterval(countdownTimer.current); // Zastavení předchozího intervalu
+
+    countdownTimer.current = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          clearInterval(interval);
+          clearInterval(countdownTimer.current);
+          handleLogout();
           return 0;
         }
         return prev - 1;
@@ -67,6 +67,9 @@ const AutoLogoutHandler = () => {
     return () => {
       window.removeEventListener("mousemove", resetTimer);
       window.removeEventListener("keydown", resetTimer);
+      clearTimeout(inactivityTimer.current);
+      clearTimeout(warningTimer.current);
+      clearInterval(countdownTimer.current);
     };
   }, []);
 
@@ -77,6 +80,7 @@ const AutoLogoutHandler = () => {
     if (!isPublicRoute) { // Pokud NENÍ na veřejné stránce, odhlásit a přesměrovat
       localStorage.removeItem("token");
       setIsInactive(false);
+      clearInterval(countdownTimer.current);
       navigate("/login");
     } else {
       console.log("Veřejná stránka, odhlášení neproběhlo.");
@@ -90,7 +94,7 @@ const AutoLogoutHandler = () => {
 
   return (
     isInactive && localStorage.getItem("token") && (
-<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50 animate-fadeIn">
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50 animate-fadeIn">
         <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg text-center w-96">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
             {t('inactive')}

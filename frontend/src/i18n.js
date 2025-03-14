@@ -157,6 +157,11 @@ i18n
           removeDayStart: "Remove first day",
           addDayEnd: "Add last day",
           removeDayEnd: "Remove last day",
+          successTitle: "Successful Registration!",
+          instructions: "Before you can log in, you must verify your email. Check your inbox and click the verification link.",
+          redirectMessage: "Automatically redirecting to login in 5 seconds...",
+          loginButton: "Go to Login",
+      
         },
       },
       cs: {
@@ -309,6 +314,10 @@ i18n
           removeDayStart: "Odebrat první den",
           addDayEnd: "Přidat poslední den",
           removeDayEnd: "Odebrat poslední den",
+          successTitle: "Úspěšná registrace!",
+          instructions: "Než se můžeš přihlásit, musíš nejprve ověřit svůj e-mail. Podívej se do své schránky a klikni na ověřovací odkaz.",
+          redirectMessage: "Automatické přesměrování na přihlášení za 5 sekund...",
+          loginButton: "Přejít na přihlášení",      
         },
       },
     },

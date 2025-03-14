@@ -13,6 +13,7 @@ import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n'; 
 import PublicTrip from './PublicTrip';
 import AutoLogoutHandler from './AutoLogoutHandler';
+import EmailVerificationNotice from './EmailVerificationNotice';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -30,6 +31,7 @@ root.render(
         <Route path="/edit-trip" element={<EditTrip />} /> {/* Create Trip */}
         <Route path="/test" element={<TestRegister />} /> {/* Test Register */}
         <Route path="/trip/:tripId" element={<PublicTrip />} />
+        <Route path="/verify-email" element={<EmailVerificationNotice />} />
 
       </Routes>
     </Router>

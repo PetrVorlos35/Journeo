@@ -33,7 +33,7 @@ function RegisterForm() {
       setErrorMessage("");
       setError("");
       setTimeout(() => {
-        navigate("/login");
+        navigate("/verify-email");
       }, 1000);
     } catch (err) {
       console.error(err);

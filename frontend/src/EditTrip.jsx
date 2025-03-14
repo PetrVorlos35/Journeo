@@ -179,11 +179,12 @@ useEffect(() => {
     }
 }, []);
 
+const hasInitialized = useRef(false);
+
 useEffect(() => {
-  if (dailyPlans.length > 0) {
-    setTimeout(() => {
-      handleDayClick(0); // Automaticky vybere první den při načtení
-    }, 100);
+  if (dailyPlans.length > 0 && !hasInitialized.current) {
+    handleDayClick(0); // Spustí se jen jednou při prvním načtení a až bude dailyPlans připraveno
+    hasInitialized.current = true; // Nastavíme flag, aby se to už nespustilo znovu
   }
 }, [dailyPlans]);
 

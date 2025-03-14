@@ -179,6 +179,15 @@ useEffect(() => {
     }
 }, []);
 
+useEffect(() => {
+  if (dailyPlans.length > 0) {
+    setTimeout(() => {
+      handleDayClick(0); // Automaticky vybere první den při načtení
+    }, 100);
+  }
+}, [dailyPlans]);
+
+
 
 const handleUpdate = async () => {
   const token = localStorage.getItem("token");
@@ -409,6 +418,8 @@ const handleSave = async () => {
       };
 
       const removeDay = () => {
+        let newIndex = currentDayIndex; // Store the new index after removal
+      
         if (dayToRemove === "start") {
           if (dailyPlans.length > 1) {
             const updatedPlans = dailyPlans.slice(1).map((plan, index) => ({
@@ -417,15 +428,32 @@ const handleSave = async () => {
             }));
             setDailyPlans(updatedPlans);
             setDailyBudgets(dailyBudgets.slice(1));
+      
+            if (currentDayIndex === 0) {
+              newIndex = 0; // Stay at the first day
+            } else {
+              newIndex = Math.max(0, currentDayIndex - 1); // Move back if possible
+            }
           }
         } else if (dayToRemove === "end") {
           if (dailyPlans.length > 1) {
             setDailyPlans(dailyPlans.slice(0, -1));
             setDailyBudgets(dailyBudgets.slice(0, -1));
+      
+            if (currentDayIndex === dailyPlans.length - 1) {
+              newIndex = Math.max(0, currentDayIndex - 1); // Move to the previous day if it was the last one
+            }
           }
         }
+      
+        setCurrentDayIndex(newIndex); // Ensure we move to a valid day
+        setTimeout(() => {
+          setCurrentDayData(dailyPlans[newIndex]); // Update day data after removal
+        }, 0);
+      
         setShowConfirmModal(false);
       };
+      
       
 
       const addDayAtStart = () => {

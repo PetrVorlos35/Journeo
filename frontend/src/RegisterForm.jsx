@@ -23,6 +23,7 @@ function RegisterForm() {
     
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match.");
+      setIsLoading(false);
       return;
     }
 

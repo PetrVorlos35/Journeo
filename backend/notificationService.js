@@ -31,6 +31,52 @@ const sendEmail = (to, subject, htmlContent) => {
     });
   };
 
+  const createVerificationEmail = (verificationLink) => {
+    return `
+      <html>
+      <head>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+          }
+          .container {
+            max-width: 500px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: auto;
+          }
+          h2 {
+            color: #007bff;
+          }
+          .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 20px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h2>Ověř svůj e-mail</h2>
+          <p>Klikni na tlačítko níže pro ověření e-mailu:</p>
+          <a href="${verificationLink}" target="_blank" class="btn">Ověřit e-mail</a>
+        </div>
+      </body>
+      </html>
+    `;
+  };
+  
+
   const createEmailTemplate = (userName, tripTitle, tripDate, tripLink) => {
     const formattedDateCZ = new Date(tripDate).toLocaleDateString('cs-CZ', {
       weekday: 'long',
@@ -139,3 +185,5 @@ cron.schedule('17 15 * * *', async () => {
   }
 });
 
+
+module.exports = { sendEmail, createVerificationEmail }; // Přidání exportu

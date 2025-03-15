@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import { useState, useEffect, useRef } from "react";
-import { format, eachDayOfInterval } from "date-fns";
+import { format, eachDayOfInterval, set } from "date-fns";
 import { cs, enUS } from "date-fns/locale";
 import MapComponent from "./MapComponent";
 import { Autocomplete, LoadScript } from "@react-google-maps/api";
@@ -410,6 +410,7 @@ const handleSave = async () => {
         setDailyPlans(updatedPlans);
       };
 
+      const [showExitModal, setShowExitModal] = useState(false);
       const [showConfirmModal, setShowConfirmModal] = useState(false);
       const [dayToRemove, setDayToRemove] = useState(null);
 
@@ -733,16 +734,15 @@ const handleLocationInputChange = (e) => {
       <div className="p-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 space-y-2 md:space-y-0">
   {/* Odkaz zpět */}
-  <div></div>
-  {/* <a
-    href="/dashboard"
-    className="text-blue-500 hover:text-blue-600 font-bold flex items-center space-x-2 px-2 py-2 rounded"
-  >
-    <span>←</span>
-    <span>{t('back')}</span>
-  </a> */}
-
-  {/* Název výletu + tlačítko sdílení */}
+  <div>
+    <button
+      onClick={() => setShowExitModal(true)}
+      className="text-blue-500 hover:text-blue-600 font-bold flex items-center space-x-2 px-2 py-2 rounded"
+    >
+      <span>←</span>
+      <span>{t('back')}</span>
+    </button>
+  </div>
   <div className="flex items-center justify-between w-full md:w-auto space-x-4">
   {isEditingTitle ? (
   <input
@@ -1088,7 +1088,7 @@ const handleLocationInputChange = (e) => {
                     {/* Přidání zastávky */}
                     <button
                         onClick={addStop}
-                        className="p-2 flex items-center text-blue-500 hover:text-blue-600"
+                        className="p-2 flex items-center text-blue-500 hover:text-blue-600 w-fit"
                     >
                         <svg
                         version="1.1"
@@ -1326,6 +1326,70 @@ const handleLocationInputChange = (e) => {
                 className="px-5 py-2 rounded-lg font-semibold text-white bg-red-500 hover:bg-red-600 transition-all shadow-md"
               >
                 {t("delete")}
+              </button>
+            </div>
+          </div>
+        </div>
+        )}
+
+        {showExitModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50 animate-fadeIn">
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-xl w-[90%] max-w-md transform transition-all duration-300 scale-95 sm:scale-100">
+          <button
+        className="no-print absolute top-4 right-4 text-gray-700 cursor-pointer dark:text-white dark:hover:text-red-500 hover:text-red-500 transition-all duration-200"
+        onClick={() => setShowExitModal(false)}
+      >
+        <svg
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 61.3893 61.4014"
+          width="24"
+          height="24"
+          fill="currentColor"
+        >
+          <g>
+            <rect height="61.4014" opacity="0" width="61.3893" x="0" y="0" />
+            <path d="M1.15364 60.2661C2.71614 61.7798 5.2552 61.7798 6.76887 60.2661L30.6947 36.2915L54.6693 60.2661C56.1341 61.7798 58.722 61.7798 60.2357 60.2661C61.7493 58.7036 61.7493 56.1646 60.2357 54.6997L36.2611 30.7251L60.2357 6.79932C61.7493 5.28564 61.7982 2.69775 60.2357 1.18408C58.6732-0.280762 56.1341-0.280762 54.6693 1.18408L30.6947 25.1587L6.76887 1.18408C5.2552-0.280762 2.66731-0.32959 1.15364 1.18408C-0.311207 2.74658-0.311207 5.28564 1.15364 6.79932L25.1282 30.7251L1.15364 54.6997C-0.311207 56.1646-0.360035 58.7524 1.15364 60.2661Z" />
+          </g>
+        </svg>
+      </button>
+            {/* Ikona upozornění */}
+            <div className="flex justify-center mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-12 w-12 text-red-500"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12" y2="16" />
+              </svg>
+            </div>
+
+            {/* Nadpis a text */}
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white text-center">{t("confirmExit")}</h2>
+            <p className="text-gray-600 dark:text-gray-300 mt-3 text-center leading-relaxed">
+              {t("exitWarning")}
+            </p>
+
+            {/* Akční tlačítka */}
+            <div className="flex justify-center mt-6 space-x-4">
+              <button 
+                onClick={() => navigate('/dashboard')}
+                className="px-5 py-2 rounded-lg font-semibold text-gray-800 bg-gray-300 hover:bg-gray-400 transition-all dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+              >
+                {t('exit')}
+              </button>
+              <button 
+                onClick={handleUpdate}
+                className="px-5 py-2 rounded-lg font-semibold text-white bg-blue-500 hover:bg-blue-600 transition-all shadow-md"
+              >
+                {t('saveAndExit')}
               </button>
             </div>
           </div>

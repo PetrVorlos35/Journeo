@@ -6,7 +6,7 @@ const Loading = ({ fullScreen = false }) => {
     const { t } = useTranslation();
 
   return (
-    <div className={`flex items-center justify-center ${fullScreen ? "fixed inset-0 bg-white dark:bg-black bg-opacity-80 z-50" : "p-4"}`}>
+    <div className={`flex items-center justify-center ${fullScreen ? "fixed inset-0 bg-white dark:bg-black bg-opacity-80 dark:bg-opacity-80 z-50" : "p-4"}`}>
       <div className="flex flex-col items-center">
         {/* Animovaný spinner */}
         <div className="w-12 h-12 border-4 border-blue-500 border-solid border-t-transparent rounded-full animate-spin"></div>

@@ -50,7 +50,7 @@ setInterval(() => {
       console.error('Chyba při keep-alive dotazu:', err);
       handleDisconnect();
     } else {
-      console.log('Databázové spojení je stále aktivní.');
+
     }
   });
 }, 240000); // 4 minuty

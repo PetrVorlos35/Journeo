@@ -17,7 +17,7 @@ const LanguageSelector = () => {
     return () => {
       i18n.off('languageChanged', updateLanguage);
     };
-  }, []);
+  }, [selectedLang]);
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);

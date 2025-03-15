@@ -1,4 +1,4 @@
-import i18n from 'i18next';
+import i18n, { exists } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
@@ -161,7 +161,10 @@ i18n
           instructions: "Before you can log in, you must verify your email. Check your inbox and click the verification link.",
           redirectMessage: "Automatically redirecting to login in 5 seconds...",
           loginButton: "Go to Login",
-      
+          exit: "Exit",
+          saveAndExit: "Save and Exit",
+          confirmExit: "Are you sure you want to exit?",
+          exitWarning: "Warning: This will discard all unsaved changes!",
         },
       },
       cs: {
@@ -317,7 +320,11 @@ i18n
           successTitle: "Úspěšná registrace!",
           instructions: "Než se můžeš přihlásit, musíš nejprve ověřit svůj e-mail. Podívej se do své schránky a klikni na ověřovací odkaz.",
           redirectMessage: "Automatické přesměrování na přihlášení za 5 sekund...",
-          loginButton: "Přejít na přihlášení",      
+          loginButton: "Přejít na přihlášení",
+          exit: "Opustit", 
+          saveAndExit: "Uložit a opustit", 
+          confirmExit: "Opravdu chcete opustit?",
+          exitWarning: "Varování: Tímto se zahodí všechny neuložené změny!",  
         },
       },
     },

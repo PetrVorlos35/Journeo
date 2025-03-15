@@ -11,7 +11,7 @@ const AutoLogoutHandler = () => {
   const countdownTimer = useRef(null);
   const warningTimer = useRef(null);
 
-  const publicRoutes = ['/trip/', '/login', '/register']; // Seznam veřejných cest
+  const publicRoutes = ['/trip/', '/login', '/register', '/verify-email']; // Seznam veřejných cest
 
   const resetTimer = () => {
     localStorage.setItem("lastActivity", Date.now());

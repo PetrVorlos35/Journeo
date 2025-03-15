@@ -6,15 +6,10 @@ import { DateRangePicker } from "react-date-range";
 import { cs, enUS } from "date-fns/locale"; 
 import "react-date-range/dist/styles.css"; 
 import "react-date-range/dist/theme/default.css"; 
-// import { LoadScript } from '@react-google-maps/api';
 import BudgetTracking from "./BudgetTracking";
 import UserTripStats from "./UserTripStats";
-// import Map from "./Map";
-// import MapComponent from "./MapComponent";
 import UpcomingTrips from "./UpcomingTrips";
 import { useTranslation } from 'react-i18next';
-// import FriendsDashboard from "./FriendsDashboard";
-// import AuthHandler from "./AuthHandler";
 import Loading from "./Loading";
 
 
@@ -30,10 +25,6 @@ function Dashboard() {
     }
   ]);
   const [userId, setUserId] = useState(null);
-  const [statistics, setStatistics] = useState({ distance: 0, time: 0 });
-
-  const [tokenAuth, setToken] = useState(localStorage.getItem('token'));
-
 
   const navigate = useNavigate(); 
   const location = useLocation();

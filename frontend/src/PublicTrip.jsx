@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import Navbar from "./Navbar";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { format, eachDayOfInterval } from "date-fns";
 import { cs, enUS } from "date-fns/locale";
 import MapComponent from "./MapComponent";
@@ -48,6 +48,15 @@ const PublicTrip = () => {
       })
       .catch((err) => console.error("Error fetching trip:", err));
   }, [tripId]);
+
+  const hasInitialized = useRef(false);
+  
+  useEffect(() => {
+    if (dailyPlans.length > 0 && !hasInitialized.current) {
+      handleDayClick(0); // Spustí se jen jednou při prvním načtení a až bude dailyPlans připraveno
+      hasInitialized.current = true; // Nastavíme flag, aby se to už nespustilo znovu
+    }
+  }, [dailyPlans]);
 
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 

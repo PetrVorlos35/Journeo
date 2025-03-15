@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
+import { FaRoute, FaClock, FaRuler, FaArrowUp, FaArrowDown, FaListUl } from "react-icons/fa";
 import Loading from "./Loading";
 
 const UserTripStats = ({ userId }) => {
@@ -9,11 +10,11 @@ const UserTripStats = ({ userId }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!userId) return; // Pokud userId není k dispozici, neprováděj fetch
+        if (!userId) return;
 
         const fetchStats = async () => {
             try {
-                const token = localStorage.getItem("token"); 
+                const token = localStorage.getItem("token");
                 const response = await fetch(`${import.meta.env.VITE_API_URL}/tripStats?id=${userId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
@@ -35,35 +36,37 @@ const UserTripStats = ({ userId }) => {
     if (!userId || loading) return <Loading />;
 
     return (
-<div className="p-6 bg-white dark:bg-gray-900">
-    {stats?.tripCount === 0 ? (
-        <p className="text-gray-600 dark:text-gray-300 text-center">{t("noTripsFound")}</p>
-    ) : (
-        <>
-            <p className="text-sm md:text-lg dark:text-white text-center sm:text-left">
-                <strong>{t("totalDistance")}:</strong> {stats.totalDistance}
-            </p>
-            <p className="text-sm md:text-lg dark:text-white text-center sm:text-left">
-                <strong>{t("totalTime")}:</strong> {stats.totalTime}
-            </p>
-            <p className="text-sm md:text-lg dark:text-white text-center sm:text-left">
-                <strong>{t("averageDistancePerTrip")}:</strong> {stats.avgDistancePerTrip}
-            </p>
-            <p className="text-sm md:text-lg dark:text-white text-center sm:text-left">
-                <strong>{t("longestTrip")}:</strong> {stats.longestTrip.distance} km ({stats.longestTrip.duration})
-            </p>
-            <p className="text-sm md:text-lg dark:text-white text-center sm:text-left">
-                <strong>{t("shortestTrip")}:</strong> {stats.shortestTrip.distance} km ({stats.shortestTrip.duration})
-            </p>
-            <p className="text-sm md:text-lg dark:text-white text-center sm:text-left">
-                <strong>{t("totalTrips")}:</strong> {stats.tripCount}
-            </p>
-        </>
-    )}
-</div>
-
+        <div className="p-6 bg-gray-100 dark:bg-gray-800 rounded-xl shadow-lg max-w-2xl mx-auto">
+            {stats?.tripCount === 0 ? (
+                <p className="text-gray-600 dark:text-gray-300 text-center">{t("noTripsFound")}</p>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <StatItem icon={<FaRoute />} label={t("totalDistance")} value={`${stats.totalDistance} `} />
+                    <StatItem icon={<FaClock />} label={t("totalTime")} value={stats.totalTime} />
+                    <StatItem icon={<FaRuler />} label={t("averageDistancePerTrip")} value={`${stats.avgDistancePerTrip} `} />
+                    <StatItem icon={<FaArrowUp />} label={t("longestTrip")} value={`${stats.longestTrip.distance} km (${stats.longestTrip.duration})`} />
+                    <StatItem icon={<FaArrowDown />} label={t("shortestTrip")} value={`${stats.shortestTrip.distance} km (${stats.shortestTrip.duration})`} />
+                    <StatItem icon={<FaListUl />} label={t("totalTrips")} value={stats.tripCount} />
+                </div>
+            )}
+        </div>
     );
 };
+
+const StatItem = ({ icon, label, value }) => (
+    <div className="flex flex-col items-center justify-center bg-white dark:bg-gray-900 rounded-lg p-5 shadow-md text-center">
+        <div className="text-gray-900 dark:text-gray-200 text-3xl">{icon}</div>
+        <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">{label}</p>
+        <p className="text-xl font-semibold text-gray-900 dark:text-white mt-1">{value}</p>
+    </div>
+);
+
+StatItem.propTypes = {
+    icon: PropTypes.node.isRequired,
+    label: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+};
+
 UserTripStats.propTypes = {
     userId: PropTypes.number.isRequired,
 };

@@ -9,33 +9,88 @@ const mapContainerStyle = {
 };
 
 const defaultCenter = {
-  lat: 50.0755, // Výchozí souřadnice (např. Praha)
+  lat: 50.0755, // Praha
   lng: 14.4378,
 };
 
-const MapComponent = ({ location, route, clearMap }) => {
+
+// Dark mode styl pro Google Mapu
+const darkModeStyle = [
+  { elementType: 'geometry', stylers: [{ color: '#212121' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#212121' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#757575' }] },
+  {
+    featureType: 'administrative.locality',
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#bdbdbd' }],
+  },
+  {
+    featureType: 'road',
+    elementType: 'geometry',
+    stylers: [{ color: '#424242' }],
+  },
+  {
+    featureType: 'water',
+    elementType: 'geometry',
+    stylers: [{ color: '#1f1f1f' }],
+  },
+];
+
+const MapComponent = ({ location, route, clearMap, isDarkMode }) => {
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [directionsResponse, setDirectionsResponse] = useState(null);
   const [routeInfo, setRouteInfo] = useState(null);
   const [googleMapsLink, setGoogleMapsLink] = useState('');
-
   const { t } = useTranslation();
 
-
+  // Nastavení mapOptions s podporou Dark Mode
   const mapOptions = {
     streetViewControl: false,
     fullscreenControl: false,
+    styles: isDarkMode ? darkModeStyle : [], // Přepínání mezi světlým a tmavým režimem
   };
+
+  
+
+  useEffect(() => {
+    if (!isDarkMode) return; // Aplikuje styly jen když je dark mode aktivní
+  
+    const interval = setInterval(() => {
+      const buttons = document.querySelectorAll('.gm-style-mtc button, .gmnoprint button');
+      const fullscreenBtn = document.querySelector('.gm-fullscreen-control');
+      const zoomControls = document.querySelectorAll('.gmnoprint[controlwidth="40"] button');
+  
+      buttons.forEach(button => {
+        button.style.background = '#1f1f1f';
+        button.style.color = 'white';
+        button.style.border = '1px solid #444';
+      });
+  
+      zoomControls.forEach(button => {
+        button.style.background = '#1f1f1f';
+        button.style.color = 'white';
+        button.style.border = '1px solid #444';
+      });
+  
+      if (fullscreenBtn) {
+        fullscreenBtn.style.background = '#1f1f1f';
+        fullscreenBtn.style.border = '1px solid #444';
+        fullscreenBtn.style.color = 'white';
+      }
+    }, 500); // Opakuje se každých 500ms, dokud nenajde prvky
+  
+    return () => clearInterval(interval); // Vyčistí interval při odmontování komponenty
+  }, [isDarkMode]); // Bude se aplikovat jen při změně dark mode
+  
 
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const userLocation = {
+          setMapCenter({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
-          };
-          setMapCenter(userLocation);
+          });
         },
         (error) => {
           console.error("Error fetching user location:", error);
@@ -43,10 +98,9 @@ const MapComponent = ({ location, route, clearMap }) => {
       );
     }
     if (clearMap) {
-      setDirectionsResponse(null); // Vyčisti trasu
-      setMapCenter(defaultCenter); // Resetuj mapu na výchozí pozici
+      setDirectionsResponse(null);
+      setMapCenter(defaultCenter);
     } else if (location) {
-      // Pokud je zadaná lokace, přesuňte centrum mapy na lokaci
       const geocoder = new google.maps.Geocoder();
       geocoder.geocode({ address: location }, (results, status) => {
         if (status === 'OK' && results[0]) {
@@ -54,7 +108,6 @@ const MapComponent = ({ location, route, clearMap }) => {
         }
       });
     } else if (route) {
-      // Pokud je zadaná trasa, vypočítejte trasu
       const directionsService = new google.maps.DirectionsService();
       directionsService
         .route({
@@ -63,47 +116,39 @@ const MapComponent = ({ location, route, clearMap }) => {
           travelMode: google.maps.TravelMode.DRIVING,
           waypoints: route.stops.map((stop) => ({ location: stop, stopover: true })),
           provideRouteAlternatives: true,
-        }) .then((result) => {
+        })
+        .then((result) => {
           setDirectionsResponse(result);
-        
           if (result.routes.length > 0) {
             const routeLegs = result.routes[0].legs;
-        
-            // Sečtení celkové vzdálenosti a doby trvání pro celou trasu
-            const totalDistance = routeLegs.reduce((acc, leg) => acc + leg.distance.value, 0); // v metrech
-            const totalDuration = routeLegs.reduce((acc, leg) => acc + leg.duration.value, 0); // v sekundách
-        
+            const totalDistance = routeLegs.reduce((acc, leg) => acc + leg.distance.value, 0);
+            const totalDuration = routeLegs.reduce((acc, leg) => acc + leg.duration.value, 0);
+
             setRouteInfo({
-              distance: (totalDistance / 1000).toFixed(1) + " km", // Převod na km
-              duration: Math.floor(totalDuration / 3600) + " h " + Math.floor((totalDuration % 3600) / 60) + " min", // Převod na h:min
+              distance: (totalDistance / 1000).toFixed(1) + " km",
+              duration: Math.floor(totalDuration / 3600) + " h " + Math.floor((totalDuration % 3600) / 60) + " min",
             });
-        
-            // Generování odkazu do Google Maps pro celou trasu
+
             const waypointsParam = route.stops.length > 0 ? `&waypoints=${route.stops.map(stop => encodeURIComponent(stop)).join('|')}` : '';
-            const mapsLink = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(route.start)}&destination=${encodeURIComponent(route.end)}&travelmode=driving${waypointsParam}`;
-            setGoogleMapsLink(mapsLink);
+            setGoogleMapsLink(`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(route.start)}&destination=${encodeURIComponent(route.end)}&travelmode=driving${waypointsParam}`);
           }
         })
-        
         .catch((err) => console.error("Error calculating route:", err));
     }
   }, [clearMap, location, route]);
 
   return (
     <div className="relative">
-   {/* Zobrazení informací o trase */}
-   {route?.start && route?.end && routeInfo && (
-      <div className="absolute bottom-4 left-4 bg-white p-2 z-50 rounded-md shadow-md text-sm">
-        <p><strong>{t('distance')}:</strong> {routeInfo.distance}</p>
-        <p><strong>{t('drivingTime')}:</strong> {routeInfo.duration}</p>
-        <a href={googleMapsLink} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
-        {t('openInMaps')}
-        </a>
-      </div>
-    )}
-  
-      {/* Mapa */}
-      <GoogleMap mapContainerStyle={mapContainerStyle} center={mapCenter} zoom={location ? 13 : 10} options={mapOptions}>
+      {route?.start && route?.end && routeInfo && (
+        <div className="absolute bottom-4 left-4 bg-white dark:bg-gray-800 p-2 z-50 rounded-md shadow-md text-sm text-black dark:text-white">
+          <p><strong>{t('distance')}:</strong> {routeInfo.distance}</p>
+          <p><strong>{t('drivingTime')}:</strong> {routeInfo.duration}</p>
+          <a href={googleMapsLink} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+            {t('openInMaps')}
+          </a>
+        </div>
+      )}
+      <GoogleMap  key={isDarkMode} mapContainerStyle={mapContainerStyle} center={mapCenter} zoom={location ? 13 : 10} options={mapOptions}>
         {location && <MarkerF position={mapCenter} />}
         {route?.start && route?.end && directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
       </GoogleMap>
@@ -119,6 +164,7 @@ MapComponent.propTypes = {
     stops: PropTypes.arrayOf(PropTypes.string).isRequired,
   }),
   clearMap: PropTypes.bool.isRequired,
+  isDarkMode: PropTypes.bool.isRequired, // Nový prop pro detekci dark mode
 };
 
 export default MapComponent;

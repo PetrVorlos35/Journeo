@@ -160,8 +160,8 @@ const sendEmail = (to, subject, htmlContent) => {
   
   
 
-// Cron job - spustí se jednou denně v 8:00
-cron.schedule('17 15 * * *', async () => {
+
+cron.schedule('30 8 * * *', async () => {
   console.log('Kontroluji nadcházející výlety...');
   
   try {
@@ -173,7 +173,7 @@ cron.schedule('17 15 * * *', async () => {
     `);
 
     rows.forEach(trip => {
-        const htmlMessage = createEmailTemplate(trip.userName, trip.title, trip.start_date, `http://localhost:5173/trip/${trip.id}`);
+        const htmlMessage = createEmailTemplate(trip.userName, trip.title, trip.start_date, `${process.env.APP_URL}/trip/${trip.id}`);
         sendEmail(trip.email, 'Připomínka výletu', htmlMessage);
       });
       

@@ -19,7 +19,7 @@ const defaultCenter = {
   lng: 14.4378,
 };
 
-const OverviewMap = ({ tripId, userId, allPlans, onClose }) => {
+const OverviewMap = ({ tripId, userId, allPlans, onClose, tripName }) => {
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [directionsResponses, setDirectionsResponses] = useState([]);
   const [dayColors, setDayColors] = useState([]);
@@ -199,7 +199,7 @@ const OverviewMap = ({ tripId, userId, allPlans, onClose }) => {
       </button>
 
         <div className="print-section">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-center ">{t('tripOverview')}</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-center ">{t('tripOverview')} {tripName}</h2>
 
         <h3 className="text-xl font-semibold mt-4">{t('dailyPlan')}</h3>
         <ul className="list-disc ml-6">

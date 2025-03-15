@@ -1176,7 +1176,7 @@ const handleLocationInputChange = (e) => {
                         />
                 </div>
 
-                {showOverview && <OverviewMap tripId={tripId} userId={userId} allPlans={dailyPlans} onClose={() => setShowOverview(false)} />}
+                {showOverview && <OverviewMap tripId={tripId} userId={userId} allPlans={dailyPlans} onClose={() => setShowOverview(false)} tripName={tripTitle} />}
 
 
 

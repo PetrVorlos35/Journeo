@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -90,22 +90,51 @@ function UpcomingTrips({ userId }) {
         return () => window.removeEventListener('storage', updateTheme);
       }, []);
 
+
+      const tabRefs = useRef([]);
+      const [underlineStyle, setUnderlineStyle] = useState({ left: "0px", width: "0px" });
+    
+      const [hoveredTab, setHoveredTab] = useState(null);
+    
+      useEffect(() => {
+        const targetTab = hoveredTab ?? activeCategory; // Pokud je hover, tak bere hoveredTab, jinak activeCategory
+        if (tabRefs.current[targetTab]) {
+          const { offsetLeft, offsetWidth } = tabRefs.current[targetTab];
+          setUnderlineStyle({ left: `${offsetLeft}px`, width: `${offsetWidth}px` });
+        }
+      }, [activeCategory, hoveredTab]);
   return (
     <div className="md:p-6 p-0 text-sm sm:text-base">
       <ToastContainer theme={theme} />
-      <nav className="flex justify-center mb-6">
-        {['past', 'ongoing', 'upcoming'].map((category) => (
+      <div className="relative mb-6 border-b dark:border-gray-700">
+      <div className="flex justify-center w-full max-w-lg mx-auto relative">
+        {["past", "ongoing", "upcoming"].map((category, index) => (
           <button
             key={category}
-            className={`px-4 py-2 mx-2 rounded-lg ${
-              activeCategory === category ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 dark:text-gray-100'
+            ref={(el) => (tabRefs.current[category] = el)}
+            className={`relative text-center px-4 sm:px-6 py-2 text-sm sm:text-lg font-medium transition-all duration-300 ${
+              activeCategory === category
+                ? "text-blue-600 dark:text-blue-400"
+                : "text-gray-500 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
             }`}
             onClick={() => setActiveCategory(category)}
+            onMouseEnter={() => setHoveredTab(category)}
+            onMouseLeave={() => setHoveredTab(null)}
           >
             {t(`trips${category.charAt(0).toUpperCase() + category.slice(1)}`)}
           </button>
         ))}
-      </nav>
+      </div>
+
+      {/* Dynamická underline čára (reaguje na hover i kliknutí) */}
+      <div
+        className="absolute bottom-0 h-[2px] bg-blue-500 dark:bg-blue-400 transition-all duration-300"
+        style={{
+          left: underlineStyle.left,
+          width: underlineStyle.width,
+        }}
+      />
+    </div>
 
       <div className="trip-category transition-all duration-300 max-h-80 overflow-y-auto">
         {loading ? (

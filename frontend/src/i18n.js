@@ -1,4 +1,4 @@
-import i18n, { exists } from 'i18next';
+import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
@@ -165,6 +165,7 @@ i18n
           saveAndExit: "Save and Exit",
           confirmExit: "Are you sure you want to exit?",
           exitWarning: "Warning: This will discard all unsaved changes!",
+          noDescription: "No description",
         },
       },
       cs: {
@@ -325,6 +326,7 @@ i18n
           saveAndExit: "Uložit a opustit", 
           confirmExit: "Opravdu chcete opustit?",
           exitWarning: "Varování: Tímto se zahodí všechny neuložené změny!",  
+          noDescription: "Bez popisu",
         },
       },
     },

@@ -267,6 +267,7 @@ OverviewMap.propTypes = {
   onClose: PropTypes.func.isRequired,
   tripId: PropTypes.number.isRequired,
   userId: PropTypes.number.isRequired,
+  tripName: PropTypes.string.isRequired,
 };
 
 export default OverviewMap;

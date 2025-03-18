@@ -84,7 +84,7 @@ const MapComponent = ({ location, route, clearMap, isDarkMode }) => {
   
 
   useEffect(() => {
-    if (navigator.geolocation) {
+    if (navigator.geolocation && !location) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setMapCenter({

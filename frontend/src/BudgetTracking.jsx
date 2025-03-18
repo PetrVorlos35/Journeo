@@ -112,11 +112,11 @@ const BudgetTracking = ({ userId }) => {
 
         const chartDataset = {
           labels: [
-            `${t('Transport')} (${totalTransport} CZK)`,
-            `${t('Food')} (${totalFood} CZK)`,
-            `${t('Activities')} (${totalActivities} CZK)`,
-            `${t('Other')} (${totalOther} CZK)`,
-            `${t('Accommodation')} (${totalAccommodation} CZK)`,
+            `${t('transport')} (${totalTransport} CZK)`,
+            `${t('food')} (${totalFood} CZK)`,
+            `${t('activities')} (${totalActivities} CZK)`,
+            `${t('other')} (${totalOther} CZK)`,
+            `${t('accommodation')} (${totalAccommodation} CZK)`,
           ],
           datasets: [
             {

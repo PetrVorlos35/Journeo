@@ -144,7 +144,7 @@ function Dashboard() {
       }} /> */}
       <div className="max-w-7xl mx-auto p-6">
         {/* Tab Navigation */}
-        <div className="w-full text-center overflow-x-scroll whitespace-nowrap space-x-4 md:space-x-8 mb-6 px-4 ">
+        <div className="w-full text-center overflow-x-auto whitespace-nowrap space-x-4 md:space-x-8 mb-6 px-4 ">
   {[
     { tab: "createTrip", label: t("planTrip"), svg: (
       <svg

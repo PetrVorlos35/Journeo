@@ -272,6 +272,7 @@ const getUserTripStats = (req, res) => {
     let longestTrip = { distance: 0, duration: "0 h 0 min" };
     let shortestTrip = { distance: Infinity, duration: "0 h 0 min" };
     let tripCount = results.length;
+    let hasRoutes = false;
 
     results.forEach((row) => {
       if (row.activities) {
@@ -280,25 +281,29 @@ const getUserTripStats = (req, res) => {
           if (activity.routeInfo) {
             const distance = parseFloat(activity.routeInfo.distance) || 0;
 
-            // Opravený parser pro duration
-            let durationMinutes = 0;
-            const durationMatch = activity.routeInfo.duration.match(/(\d+)\s*h\s*(\d*)\s*min?/);
+            // Only process if there's an actual route with distance
+            if (distance > 0) {
+              hasRoutes = true;
+              
+              let durationMinutes = 0;
+              const durationMatch = activity.routeInfo.duration.match(/(\d+)\s*h\s*(\d*)\s*min?/);
 
-            if (durationMatch) {
-              const hours = parseInt(durationMatch[1]) || 0;
-              const minutes = parseInt(durationMatch[2]) || 0;
-              durationMinutes = hours * 60 + minutes;
-            }
+              if (durationMatch) {
+                const hours = parseInt(durationMatch[1]) || 0;
+                const minutes = parseInt(durationMatch[2]) || 0;
+                durationMinutes = hours * 60 + minutes;
+              }
 
-            totalDistance += distance;
-            totalDurationMinutes += durationMinutes;
+              totalDistance += distance;
+              totalDurationMinutes += durationMinutes;
 
-            if (distance > longestTrip.distance) {
-              longestTrip = { distance, duration: activity.routeInfo.duration };
-            }
+              if (distance > longestTrip.distance) {
+                longestTrip = { distance, duration: activity.routeInfo.duration };
+              }
 
-            if (distance < shortestTrip.distance) {
-              shortestTrip = { distance, duration: activity.routeInfo.duration };
+              if (distance < shortestTrip.distance) {
+                shortestTrip = { distance, duration: activity.routeInfo.duration };
+              }
             }
           }
         });

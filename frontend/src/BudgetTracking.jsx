@@ -165,7 +165,7 @@ const BudgetTracking = ({ userId }) => {
       return (
         <div className="flex justify-center items-center h-40">
           <p className="text-gray-500 dark:text-gray-400 text-lg">
-            {t('No data available')}
+            {t('NoDataAvailable')}
           </p>
         </div>
       );

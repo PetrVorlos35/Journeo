@@ -34,6 +34,8 @@ const BudgetTracking = ({ userId }) => {
   const [chartData, setChartData] = useState(null);
   const [chartType, setChartType] = useState('doughnut');
   const [savedChartType, setSavedChartType] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
 
   const { t } = useTranslation();
 
@@ -79,6 +81,7 @@ const BudgetTracking = ({ userId }) => {
 
   useEffect(() => {
     const fetchBudgetData = async () => {
+      setIsLoading(true);
       try {
         const token = localStorage.getItem('token');
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/budget?id=${userId}`, {
@@ -148,14 +151,25 @@ const BudgetTracking = ({ userId }) => {
       } catch (error) {
         console.error('Error fetching budget data:', error.message);
       }
+      finally {
+        setIsLoading(false);
+      }
     };
 
     fetchBudgetData();
   }, [userId, t]);
 
   const renderChart = () => {
-    if (!chartData) return <Loading />;
-  
+    if (isLoading) return <Loading />;
+    if (!chartData) {
+      return (
+        <div className="flex justify-center items-center h-40">
+          <p className="text-gray-500 dark:text-gray-400 text-lg">
+            {t('No data available')}
+          </p>
+        </div>
+      );
+    }  
     switch (chartType) {
       case 'bar':
         return <Bar data={chartData} options={{ responsive: true, plugins: { legend: { position: 'top' } } }} />;

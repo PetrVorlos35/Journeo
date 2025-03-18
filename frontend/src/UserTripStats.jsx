@@ -11,17 +11,21 @@ const UserTripStats = ({ userId }) => {
 
     useEffect(() => {
         if (!userId) return;
-
+    
         const fetchStats = async () => {
             try {
                 const token = localStorage.getItem("token");
                 const response = await fetch(`${import.meta.env.VITE_API_URL}/tripStats?id=${userId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-
+    
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                 const data = await response.json();
-                setStats(data);
+                if (!data) {
+                    setStats(null); // Explicitně nastavíme null, pokud jsou data prázdná
+                } else {
+                    setStats(data);
+                }
             } catch (error) {
                 console.error("Error fetching trip stats:", error);
                 setStats(null);
@@ -29,24 +33,50 @@ const UserTripStats = ({ userId }) => {
                 setLoading(false);
             }
         };
-
+    
         fetchStats();
     }, [userId]);
+    
 
     if (!userId || loading) return <Loading />;
 
+
     return (
         <div className="p-6 bg-gray-100 dark:bg-gray-800 rounded-xl shadow-lg max-w-2xl mx-auto">
-            {stats?.tripCount === 0 ? (
-                <p className="text-gray-600 dark:text-gray-300 text-center">{t("noTripsFound")}</p>
+               {(!stats || stats?.tripCount === 0) ? (
+                <p className="text-red-500 dark:text-red-400 text-center">{t("noDataFound")}</p>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <StatItem icon={<FaRoute />} label={t("totalDistance")} value={`${stats.totalDistance} `} />
-                    <StatItem icon={<FaClock />} label={t("totalTime")} value={stats.totalTime} />
-                    <StatItem icon={<FaRuler />} label={t("averageDistancePerTrip")} value={`${stats.avgDistancePerTrip} `} />
-                    <StatItem icon={<FaArrowUp />} label={t("longestTrip")} value={`${stats.longestTrip.distance} km (${stats.longestTrip.duration})`} />
-                    <StatItem icon={<FaArrowDown />} label={t("shortestTrip")} value={`${stats.shortestTrip.distance} km (${stats.shortestTrip.duration})`} />
-                    <StatItem icon={<FaListUl />} label={t("totalTrips")} value={stats.tripCount} />
+                    <StatItem 
+                        icon={<FaRoute />} 
+                        label={t("totalDistance")} 
+                        value={`${stats.totalDistance || 0} `} 
+                    />
+                    <StatItem 
+                        icon={<FaClock />} 
+                        label={t("totalTime")} 
+                        value={stats.totalTime || '0'} 
+                    />
+                    <StatItem 
+                        icon={<FaRuler />} 
+                        label={t("averageDistancePerTrip")} 
+                        value={`${stats.avgDistancePerTrip || 0} `} 
+                    />
+                    <StatItem 
+                        icon={<FaArrowUp />} 
+                        label={t("longestTrip")} 
+                        value={stats.longestTrip ? `${stats.longestTrip.distance} km (${stats.longestTrip.duration})` : '0 km (0h)'} 
+                    />
+                    <StatItem 
+                        icon={<FaArrowDown />} 
+                        label={t("shortestTrip")} 
+                        value={stats.shortestTrip ? `${stats.shortestTrip.distance} km (${stats.shortestTrip.duration})` : '0 km (0h)'} 
+                    />
+                    <StatItem 
+                        icon={<FaListUl />} 
+                        label={t("totalTrips")} 
+                        value={stats.tripCount || 0} 
+                    />
                 </div>
             )}
         </div>

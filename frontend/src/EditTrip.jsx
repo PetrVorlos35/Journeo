@@ -942,7 +942,7 @@ const handleLocationInputChange = (e) => {
                     {dailyBudgets[currentDayIndex]?.expenses?.map((expense, index) => (
                       <div
                         key={index}
-                        className="flex flex-col md:flex-row items-center gap-2 md:gap-4 p-3 border rounded-lg bg-gray-50 dark:bg-gray-800 shadow-sm"
+                        className="flex flex-col md:flex-row items-center gap-2 md:gap-4 p-3 border rounded-lg dark:border-gray-600 bg-gray-50 dark:bg-gray-800 shadow-sm"
                       >
                         {/* Kategorie výdajů */}
                         <select

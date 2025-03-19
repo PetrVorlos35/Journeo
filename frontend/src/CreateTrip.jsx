@@ -1017,6 +1017,7 @@ const handleLocationInputChange = (e) => {
                         location={inputType === 'location' ? dailyPlans[currentDayIndex]?.location : null}
                         route={inputType === 'route' ? dailyPlans[currentDayIndex]?.route : { start: '', end: '', stops: [] }}
                         clearMap={!currentDayData}
+                        isDarkMode={theme === 'dark'}
                         />
                 </div>
 

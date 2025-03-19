@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import Loading from './Loading';
 
 
 function AccountInfo() {
@@ -77,20 +78,24 @@ function AccountInfo() {
 
   {/* Profilový obrázek */}
   <div className="flex justify-center mb-6">
-    {userInfo.profilovka ? (
-      <img
-        src={userInfo.profilovka}
-        alt="Profile"
-        className="w-24 h-24 rounded-full border-4 border-blue-500 dark:border-blue-400 transition-transform transform hover:scale-105"
-      />
-    ) : (
-      <img
-        src={`https://api.dicebear.com/7.x/pixel-art/svg?seed=${userInfo.email || userInfo.jmeno || "guest"}`}
-        alt="Generated Avatar"
-        className="w-24 h-24 rounded-full border-4 border-gray-400 dark:border-gray-600 transition-transform transform hover:scale-105"
-      />
-    )}
-  </div>
+  {userInfo.profilovka ? (
+    <img
+      src={userInfo.profilovka}
+      alt="Profile"
+      className="w-24 h-24 rounded-full border-4 border-blue-500 dark:border-blue-400 transition-transform transform hover:scale-105"
+    />
+  ) : userInfo.email ? (
+    <img
+      src={`https://api.dicebear.com/7.x/pixel-art/svg?seed=${userInfo.email}`}
+      alt="Generated Avatar"
+      className="w-24 h-24 rounded-full border-4 border-gray-400 dark:border-gray-600 transition-transform transform hover:scale-105"
+    />
+  ) : (
+    <div className="w-24 h-24">
+      <Loading />
+    </div>
+  )}
+</div>
 
   {/* Jméno a Přezdívka */}
   <div className="space-y-4">

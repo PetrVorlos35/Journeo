@@ -143,7 +143,13 @@ function UpcomingTrips({ userId }) {
           tripsByCategory[activeCategory].map((trip) => (
             <div
               key={trip.id}
-              className="flex mb-4 justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border-l-4 border-red-400 dark:border-red-600 w-full hover:bg-gray-100 dark:hover:bg-gray-900 transition cursor-pointer"
+              className={`flex mb-4 justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border-l-4 w-full hover:bg-gray-100 dark:hover:bg-gray-900 transition cursor-pointer ${
+                categorizeTrips(trip) === 'past' 
+                  ? 'border-gray-400 dark:border-gray-600' 
+                  : categorizeTrips(trip) === 'ongoing'
+                  ? 'border-green-400 dark:border-green-600'
+                  : 'border-blue-400 dark:border-blue-600'
+              }`}
               onClick={() => handleViewTrip(trip.title, trip.start_date, trip.end_date, trip.id, trip.activities, trip.budgets, trip.accommodation_cost, trip.accommodation_entries)}
             >
               <div>
